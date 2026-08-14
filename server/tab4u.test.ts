@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { assertTab4uUrl, parseTab4uHtml } from "./tab4u";
+import { assertTab4uUrl, fetchTab4uSong, parseTab4uHtml } from "./tab4u";
 
 describe("Tab4U parser", () => {
   it("keeps chord rows and lyric rows in source order", () => {
@@ -33,6 +33,17 @@ describe("Tab4U parser", () => {
   it("rejects non-Tab4U hosts", () => {
     expect(() => assertTab4uUrl("https://example.com/song.html")).toThrow();
     expect(() => assertTab4uUrl("http://www.tab4u.com/song.html")).toThrow();
+  });
+});
+
+describe("Tab4U fetch flow", () => {
+  it("parses a successful Tab4U response through the fetch helper", async () => {
+    const html = readFileSync(resolve(process.cwd(), "server/fixtures/tab4u-table-variant.html"), "utf8");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(html, { status: 200 })));
+    const song = await fetchTab4uSong("https://www.tab4u.com/tabs/songs/fixture.html");
+    expect(song.title).toBe("אקורדים לשיר להתאפק");
+    expect(song.lines[0]?.section).toBe("פתיחה");
+    vi.unstubAllGlobals();
   });
 });
 
