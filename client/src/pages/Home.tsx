@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 import { ArrowDown, ArrowUp, Copy, ExternalLink, Maximize2, Music2, Play, RotateCcw, Settings2, Sparkles } from "lucide-react";
 
 /**
@@ -57,12 +59,23 @@ function ChordLine({ chord, shift, flats }: { chord: string; shift: number; flat
 }
 
 export default function Home() {
+  // The useAuth hook provides authentication state.
+  // To implement login/logout, call logout(), or start login from an event
+  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
+  // startLogin() during render (no href={startLogin()}) — it mints a one-time
+  // nonce cookie and must run only at the moment of navigation.
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   const [shift, setShift] = useState(0);
   const [flats, setFlats] = useState(false);
   const [url, setUrl] = useState("https://www.tab4u.com/tabs/songs/75402_%D7%9E%D7%A8%D7%A1%D7%93%D7%A1_%D7%91%D7%A0%D7%93_-_%D7%9C%D7%94%D7%AA%D7%90%D7%A4%D7%A7.html");
   const [loaded, setLoaded] = useState(true);
   const [playing, setPlaying] = useState(false);
+  const fetchSong = trpc.tab4u.fetchSong.useQuery({ url }, { enabled: false, retry: false });
   const keyLabel = useMemo(() => transposeChord("D", shift, flats), [shift, flats]);
+  const activeSong = fetchSong.data?.lines?.map((line) => ({ label: line.section ?? "", chord: line.chord, lyric: line.lyric })) ?? demoSong;
+  const activeTitle = fetchSong.data?.title?.replace(/^אקורדים לשיר\s*/i, "") || "להתאפק";
+  const activeArtist = fetchSong.data?.artist || "מרסדס בנד";
 
   return (
     <div dir="rtl" className="app-shell">
@@ -88,9 +101,9 @@ export default function Home() {
             <label htmlFor="song-url">קישור לשיר</label>
             <div className="url-row">
               <input id="song-url" value={url} onChange={(event) => setUrl(event.target.value)} dir="ltr" />
-              <button className="load-button" onClick={() => setLoaded(true)}><ExternalLink size={16} /> טען</button>
+              <button className="load-button" onClick={() => { void fetchSong.refetch(); setLoaded(true); }} disabled={fetchSong.isFetching}><ExternalLink size={16} /> {fetchSong.isFetching ? "טוען" : "טען"}</button>
             </div>
-            <p className="field-note">כרגע מוצגת תצוגת הדגמה. החיבור הישיר לאתר ייכנס בשלב הבא.</p>
+            <p className="field-note">{fetchSong.error ? "לא הצלחתי לקרוא את הדף. אפשר לבדוק את הקישור או להמשיך עם תצוגת ההדגמה." : fetchSong.data ? "השיר נטען מהקישור. מיקומי האקורדים נשמרו." : "אפשר לטעון קישור של Tab4U; תצוגת הדגמה זמינה מיד."}</p>
           </div>
           <div className="shift-panel">
             <div className="panel-heading"><span>שינוי סולם</span><strong>{shift > 0 ? `+${shift}` : shift} <small>חצאי טון</small></strong></div>
@@ -107,16 +120,16 @@ export default function Home() {
 
         <section className="song-stage">
           <div className="song-toolbar">
-            <div className="song-meta"><span className="live-tag">LIVE VIEW</span><div><h2>{loaded ? "להתאפק" : "עדיין לא נטען"}</h2><p>מרסדס בנד · Tab4U</p></div></div>
+            <div className="song-meta"><span className="live-tag">LIVE VIEW</span><div><h2>{loaded ? activeTitle : "עדיין לא נטען"}</h2><p>{activeArtist} · Tab4U</p></div></div>
             <div className="song-tools"><button onClick={() => setPlaying((value) => !value)} className={playing ? "tool active-tool" : "tool"}><Play size={15} fill={playing ? "currentColor" : "none"} /> {playing ? "עצור" : "גלילה"}</button><button className="tool"><Maximize2 size={15} /> מסך מלא</button><button className="tool"><Copy size={15} /> העתק</button></div>
           </div>
           <div className="song-paper">
             <div className="paper-topline"><span>אקורדים לשיר</span><span className="position-note">המיקום נשמר · {shift === 0 ? "מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`}</span></div>
             <article className="song-content"><div className="reading-guide" aria-hidden="true" />
-              <div className="song-title">להתאפק</div>
-              <div className="song-artist">מרסדס בנד</div>
+              <div className="song-title">{activeTitle}</div>
+              <div className="song-artist">{activeArtist}</div>
               <div className="rule" />
-              {demoSong.map((line, index) => <div className={`song-row ${line.label ? "section-row" : ""}`} key={`${line.lyric}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}<ChordLine chord={line.chord} shift={shift} flats={flats} /><div className="lyric-line">{line.lyric || "\u00A0"}</div></div>)}
+              {activeSong.map((line, index) => <div className={`song-row ${line.label ? "section-row" : ""}`} key={`${line.lyric}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}<ChordLine chord={line.chord} shift={shift} flats={flats} /><div className="lyric-line">{line.lyric || "\u00A0"}</div></div>)}
               <div className="end-marker">— סוף —</div>
             </article>
           </div>

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "ChordShift for Tab4U",
+  "version": "0.1.0",
+  "description": "שינוי שמות אקורדים בדפי Tab4U בלי להזיז את מיקומם בשיר.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.tab4u.com/*", "https://tab4u.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.tab4u.com/tabs/songs/*", "https://tab4u.com/tabs/songs/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "ChordShift for Tab4U"
+  }
+}
