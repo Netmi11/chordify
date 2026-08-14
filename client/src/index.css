@@ -96,3 +96,71 @@ button:active { transform: scale(.97); }
 @media (max-width: 850px) { .workspace { grid-template-columns: 1fr; } .control-rail { order: 0; padding: 25px 20px 23px; gap: 24px; border-left: 0; border-bottom: 1px solid rgba(183,199,202,.12); } .rail-copy h1 br { display: none; } .intro { max-width: 550px; } .rail-footer { margin-top: 0; } .song-stage { padding: 22px 12px 50px; } .song-toolbar { align-items: flex-start; flex-direction: column; } .song-tools { width: 100%; justify-content: space-between; } .song-paper { border-radius: 8px; } }
 @media (max-width: 520px) { .topbar { height: 62px; padding: 0 15px; } .status-dot { display: none; } .song-content { padding: 36px 20px 48px; } .chord-line, .lyric-line { font-size: 15px; } .song-title { font-size: 25px; } .url-row { align-items: stretch; } .load-button { padding: 0 10px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }
+
+/* Mobile stage mode: the song remains primary, controls move to the thumb zone. */
+.mobile-dock { display: none; }
+.mobile-reset { display: none; }
+@media (max-width: 640px) {
+  body { padding-bottom: 78px; }
+  .app-shell { min-height: 100dvh; }
+  .topbar { height: 58px; padding: 0 14px; }
+  .brand-mark { width: 29px; height: 29px; }
+  .brand-name { font-size: 14px; }
+  .brand-caption { font-size: 9px; }
+  .topbar-actions .icon-button { padding: 9px 2px; }
+  .workspace { display: block; min-height: auto; }
+  .control-rail { padding: 18px 14px 12px; gap: 14px; border-bottom: 1px solid rgba(183,199,202,.14); }
+  .rail-copy { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; }
+  .rail-copy .eyebrow { grid-column: 1 / -1; margin: 0; font-size: 9px; }
+  .rail-copy h1 { font-size: 21px; line-height: 1.05; }
+  .rail-copy h1 br { display: none; }
+  .intro { margin: 0; font-size: 11px; line-height: 1.45; max-width: none; }
+  .url-entry { display: grid; grid-template-columns: 1fr; }
+  .url-entry label { margin-bottom: 5px; font-size: 10px; }
+  .url-row { gap: 6px; }
+  .url-row input { height: 40px; font-size: 9px; }
+  .load-button { height: 40px; min-width: 66px; justify-content: center; font-size: 11px; padding: 0 9px; }
+  .field-note { margin-top: 4px; font-size: 9px; }
+  .shift-panel { display: none; }
+  .rail-footer { display: none; }
+  .song-stage { padding: 15px 8px 24px; background-image: none; }
+  .song-toolbar { margin: 0 5px 11px; gap: 8px; }
+  .song-meta { gap: 8px; }
+  .song-meta h2 { font-size: 16px; }
+  .song-meta p { font-size: 9px; }
+  .live-tag { font-size: 8px; padding: 3px 4px; }
+  .song-tools { display: none; }
+  .song-paper { min-height: 640px; border-radius: 9px; }
+  .paper-topline { height: 34px; padding: 0 13px; font-size: 9px; }
+  .position-note { font-size: 8px; }
+  .song-content { padding: 29px 15px 45px; }
+  .song-title { font-size: 23px; }
+  .song-artist { font-size: 11px; }
+  .rule { margin: 22px 0 26px; }
+  .song-row { min-height: 51px; }
+  .song-row.section-row { margin-top: 23px; }
+  .section-label { right: -2px; top: -20px; font-size: 10px; }
+  .chord-line { font-size: clamp(14px, 4.5vw, 18px); min-height: 25px; overflow-x: auto; scrollbar-width: none; }
+  .chord-line::-webkit-scrollbar { display: none; }
+  .lyric-line { font-size: clamp(14px, 4.5vw, 17px); min-height: 27px; }
+  .reading-guide { right: 8px; top: 89px; bottom: 39px; }
+  .mobile-dock { position: fixed; z-index: 30; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; left: 8px; right: 8px; bottom: 8px; min-height: 62px; padding: 6px 4px; direction: ltr; background: rgba(16,25,35,.97); border: 1px solid rgba(243,165,74,.3); border-radius: 15px; box-shadow: 0 14px 35px rgba(0,0,0,.4); backdrop-filter: blur(18px); }
+  .mobile-dock button { min-height: 50px; border: 0; border-radius: 10px; background: transparent; color: #9dafb3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 9px; }
+  .mobile-dock button:active, .mobile-dock .dock-active { color: #f3a54a; background: rgba(243,165,74,.11); }
+  .mobile-key { direction: rtl; text-align: center; color: #f3a54a; }
+  .mobile-key small { display: block; color: #789099; font-size: 8px; }
+  .mobile-key strong { display: block; font: 500 19px "IBM Plex Mono", monospace; }
+  .mobile-reset { position: fixed; z-index: 31; display: grid; place-items: center; left: 18px; bottom: 86px; width: 34px; height: 34px; border: 1px solid #354752; border-radius: 50%; color: #91a3ac; background: #162530; }
+}
+@media (max-width: 640px) and (orientation: landscape) {
+  body { padding-bottom: 70px; }
+  .control-rail { padding: 10px 14px; }
+  .rail-copy { grid-template-columns: auto 1fr; }
+  .rail-copy h1 { font-size: 18px; }
+  .intro { font-size: 10px; }
+  .url-entry { display: none; }
+  .song-stage { padding-top: 10px; }
+  .song-content { padding-top: 24px; }
+  .mobile-dock { min-height: 54px; bottom: 6px; }
+  .mobile-dock button { min-height: 42px; }
+}

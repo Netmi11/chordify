@@ -72,6 +72,12 @@ const trpcClient = trpc.createClient({
   ],
 });
 
+if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+  void navigator.serviceWorker.register("/sw.js").catch((error) => {
+    console.warn("[PWA] Service worker registration skipped", error);
+  });
+}
+
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>
