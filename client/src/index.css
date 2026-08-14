@@ -164,3 +164,9 @@ button:active { transform: scale(.97); }
   .mobile-dock { min-height: 54px; bottom: 6px; }
   .mobile-dock button { min-height: 42px; }
 }
+
+.loading-icon { display: inline-flex; align-items: center; justify-content: center; }
+.is-spinning { animation: chordshift-spin 850ms linear infinite; }
+.load-button:disabled { cursor: wait; opacity: .82; }
+@keyframes chordshift-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .is-spinning { animation: none; } }

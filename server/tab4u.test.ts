@@ -30,6 +30,28 @@ describe("Tab4U parser", () => {
     expect(song.lines).toHaveLength(5);
   });
 
+  it("keeps one-cell chord and lyric rows from the separated Tab4U layout", () => {
+    const html = `
+      <h1>אקורדים לשיר שם מעבר לפסנתר</h1>
+      <div id="songContentTPL">
+        <table>
+          <tr><td class="song"><span class="titLine">פתיחה:</span></td></tr>
+          <tr><td class="chords firstChords"><span class="c_C">Am</span>&nbsp;<span class="c_C">D7</span></td></tr>
+          <tr><td class="song">שם&nbsp;מעבר&nbsp;לפסנתר</td></tr>
+          <tr><td class="chords firstChords"><span class="c_C">Dm7</span>&nbsp;&nbsp;<span class="c_C">Em</span></td></tr>
+          <tr><td class="song">עישנה&nbsp;סיגריות&nbsp;בשרשרת</td></tr>
+        </table>
+      </div>`;
+    const song = parseTab4uHtml(html, "https://www.tab4u.com/tabs/songs/66419.html");
+    expect(song.lines).toEqual([
+      { section: "פתיחה", chord: "", lyric: "" },
+      { chord: "Am D7", lyric: "" },
+      { chord: "", lyric: "שם מעבר לפסנתר" },
+      { chord: "Dm7  Em", lyric: "" },
+      { chord: "", lyric: "עישנה סיגריות בשרשרת" },
+    ]);
+  });
+
   it("rejects non-Tab4U hosts", () => {
     expect(() => assertTab4uUrl("https://example.com/song.html")).toThrow();
     expect(() => assertTab4uUrl("http://www.tab4u.com/song.html")).toThrow();

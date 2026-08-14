@@ -40,14 +40,31 @@ function parseTableRows(fragment: string): Tab4uSongLine[] {
   const lines: Tab4uSongLine[] = [];
   const rows = fragment.match(/<tr[\s\S]*?<\/tr>/gi) ?? [];
   for (const row of rows) {
-    const cells = row.match(/<t[dh][^>]*>[\s\S]*?<\/t[dh]>/gi)?.map((cell) => cleanText(cell, false)) ?? [];
+    const cells = row.match(/<t[dh][^>]*>[\s\S]*?<\/t[dh]>/gi) ?? [];
+    if (cells.length === 1) {
+      const cell = cells[0];
+      const text = cleanText(cell, false);
+      const trimmed = text.trim();
+      if (!trimmed) {
+        lines.push({ chord: "", lyric: "" });
+        continue;
+      }
+      const isChordCell = /class=["'][^"']*chords?[^"']*["']/i.test(cell) || /class=["'][^"']*c_C[^"']*["']/i.test(cell);
+      const isSection = /class=["'][^"']*titLine[^"']*["']/i.test(cell) || (trimmed.endsWith(":") && !/[A-G](?:#|b)?[a-z0-9+\-/]*$/i.test(trimmed));
+      if (isSection) {
+        lines.push({ section: trimmed.replace(/:$/, ""), chord: "", lyric: "" });
+      } else if (isChordCell) {
+        lines.push({ chord: trimmed, lyric: "" });
+      } else {
+        lines.push({ chord: "", lyric: trimmed });
+      }
+      continue;
+    }
     if (cells.length < 2) continue;
-    const [first, second] = cells;
+    const [first, second] = cells.map((cell) => cleanText(cell, false));
     const firstTrimmed = first.trim();
     const section = firstTrimmed.endsWith(":") && !/[A-G](?:#|b)?[a-z0-9+\-/]*$/i.test(firstTrimmed) ? firstTrimmed.replace(/:$/, "") : undefined;
-    const chord = section ? second : first;
-    const lyric = section ? "" : second;
-    lines.push({ section, chord, lyric });
+    lines.push({ section, chord: section ? second : first, lyric: section ? "" : second });
   }
   return lines;
 }
