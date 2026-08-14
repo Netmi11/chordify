@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { assertTab4uUrl, fetchTab4uSong, parseTab4uHtml } from "./tab4u";
+import { combineSongLines, getStartingKey } from "../client/src/pages/Home";
 
 describe("Tab4U parser", () => {
   it("keeps chord rows and lyric rows in source order", () => {
@@ -55,6 +56,25 @@ describe("Tab4U parser", () => {
   it("rejects non-Tab4U hosts", () => {
     expect(() => assertTab4uUrl("https://example.com/song.html")).toThrow();
     expect(() => assertTab4uUrl("http://www.tab4u.com/song.html")).toThrow();
+  });
+});
+
+describe("ChordShift display logic", () => {
+  it("combines a chord-only row with the lyric row below it", () => {
+    expect(combineSongLines([
+      { chord: "Am D7", lyric: "" },
+      { chord: "", lyric: "שם מעבר לפסנתר" },
+      { chord: "Dm7", lyric: "" },
+      { chord: "", lyric: "עישנה סיגריות" },
+    ])).toEqual([
+      { chord: "Am D7", lyric: "שם מעבר לפסנתר" },
+      { chord: "Dm7", lyric: "עישנה סיגריות" },
+    ]);
+  });
+
+  it("uses the opening chord root and preserves minor mode", () => {
+    expect(getStartingKey([{ chord: "Am6 D7" }])).toBe("Am");
+    expect(getStartingKey([{ chord: "Fmaj7 C7" }])).toBe("F");
   });
 });
 

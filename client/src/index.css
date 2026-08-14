@@ -170,3 +170,8 @@ button:active { transform: scale(.97); }
 .load-button:disabled { cursor: wait; opacity: .82; }
 @keyframes chordshift-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .is-spinning { animation: none; } }
+
+.clear-url-button { width: 34px; height: 39px; flex: 0 0 34px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #33444e; border-radius: 7px; background: #162530; color: #9aabb0; }
+.clear-url-button:hover:not(:disabled) { color: #f3a54a; border-color: #f3a54a; }
+.clear-url-button:disabled { opacity: .38; cursor: default; }
+@media (max-width: 520px) { .clear-url-button { width: 34px; flex-basis: 34px; } }
