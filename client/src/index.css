@@ -175,3 +175,41 @@ button:active { transform: scale(.97); }
 .clear-url-button:hover:not(:disabled) { color: #f3a54a; border-color: #f3a54a; }
 .clear-url-button:disabled { opacity: .38; cursor: default; }
 @media (max-width: 520px) { .clear-url-button { width: 34px; flex-basis: 34px; } }
+
+.shortcut-row {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.shortcut-button {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(244, 180, 72, 0.32);
+  border-radius: 0.55rem;
+  background: rgba(244, 180, 72, 0.08);
+  color: var(--amber, #f4b448);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: background 160ms ease-out, border-color 160ms ease-out, transform 160ms ease-out;
+}
+
+.shortcut-button:hover,
+.shortcut-button.active {
+  background: rgba(244, 180, 72, 0.18);
+  border-color: rgba(244, 180, 72, 0.78);
+}
+
+.shortcut-button:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 720px) {
+  .shortcut-row { justify-content: center; }
+  .shortcut-button { flex: 1; min-height: 2.7rem; }
+}
