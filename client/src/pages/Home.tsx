@@ -1,24 +1,126 @@
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+import { useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, Copy, ExternalLink, Maximize2, Music2, Play, RotateCcw, Settings2, Sparkles } from "lucide-react";
 
 /**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Best Practices, Design Guide and Common Pitfalls
+ * Style reminder: Stage Slate — dark stage-tool minimalism, amber action color,
+ * monospaced chord layer, and fixed chord placement. Every interaction must be
+ * instant and preserve the source line geometry.
  */
+
+const sharpNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const flatNotes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
+const demoSong = [
+  { label: "פתיחה", chord: "Am   Gm   Am   Fmaj7", lyric: "" },
+  { label: "בית", chord: "Dmaj7", lyric: "החלה הפלישה" },
+  { label: "", chord: "Dmaj7          Dmaj7", lyric: "תכיני תמיטה" },
+  { label: "", chord: "Em7", lyric: "חכי לי אני בא" },
+  { label: "", chord: "A7", lyric: "אני אתאפק   אני אתאפק   אני אתאפק" },
+  { label: "", chord: "", lyric: "אני מבטיח לך" },
+  { label: "", chord: "Dmaj7", lyric: "נתחיל בלחישה" },
+  { label: "", chord: "Dmaj7", lyric: "נמשיך בנשיכה" },
+  { label: "", chord: "Em7", lyric: "אל מעבר לבושה" },
+  { label: "", chord: "A7", lyric: "אני אתאפק   אני אתאפק   אני אתאפק" },
+  { label: "", chord: "", lyric: "אני אוהב אותך" },
+  { label: "פזמון", chord: "D", lyric: "אמוציונאלי ולא נורמאלית" },
+  { label: "", chord: "D", lyric: "אני מוכרח לך את מוכרחה לי" },
+  { label: "", chord: "Gmaj7", lyric: "כל כך הרבה זמן שלא הגעתי" },
+  { label: "", chord: "A", lyric: "לא נתעסק בלהתרסק" },
+  { label: "", chord: "", lyric: "לא נתעסק בלהתרסק" },
+  { label: "", chord: "", lyric: "אני מבטיח לך" },
+  { label: "מעבר", chord: "D   D   Gmaj7   A", lyric: "" },
+  { label: "", chord: "Dmaj7", lyric: "אני מבטיח לך" },
+];
+
+function transposeChord(chord: string, steps: number, flats: boolean) {
+  return chord.replace(/([A-G](?:#|b)?)([^/\s]*)(?:\/([A-G](?:#|b)?))?/g, (_match, root: string, suffix: string, bass?: string) => {
+    const source = root.includes("b") ? flatNotes : sharpNotes;
+    const rootIndex = source.indexOf(root);
+    if (rootIndex < 0) return _match;
+    const output = flats ? flatNotes : sharpNotes;
+    const shiftedRoot = output[(rootIndex + steps + 120) % 12];
+    const shiftedBass = bass ? output[(source.indexOf(bass) + steps + 120) % 12] : "";
+    return `${shiftedRoot}${suffix}${shiftedBass ? `/${shiftedBass}` : ""}`;
+  });
+}
+
+function ChordLine({ chord, shift, flats }: { chord: string; shift: number; flats: boolean }) {
+  const parts = chord.split(/(\s+)/);
+  return (
+    <div className="chord-line" aria-label={`אקורדים אחרי שינוי של ${shift} חצאי טונים`}>
+      {parts.map((part, index) => {
+        const isChord = /[A-G](?:#|b)?/.test(part);
+        return isChord ? <span className="chord-mark" key={`${part}-${index}`}>{transposeChord(part, shift, flats)}</span> : <span key={`${part}-${index}`}>{part}</span>;
+      })}
+    </div>
+  );
+}
+
 export default function Home() {
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  const [shift, setShift] = useState(0);
+  const [flats, setFlats] = useState(false);
+  const [url, setUrl] = useState("https://www.tab4u.com/tabs/songs/75402_%D7%9E%D7%A8%D7%A1%D7%93%D7%A1_%D7%91%D7%A0%D7%93_-_%D7%9C%D7%94%D7%AA%D7%90%D7%A4%D7%A7.html");
+  const [loaded, setLoaded] = useState(true);
+  const [playing, setPlaying] = useState(false);
+  const keyLabel = useMemo(() => transposeChord("D", shift, flats), [shift, flats]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
+    <div dir="rtl" className="app-shell">
+      <header className="topbar">
+        <div className="brand-lockup">
+          <img src="/manus-storage/stage-slate-pick-mark_6b2a5d37.png" alt="" className="brand-mark" />
+          <div><div className="brand-name">ChordShift</div><div className="brand-caption">כלי נגינה ל־Tab4U</div></div>
+        </div>
+        <div className="topbar-actions">
+          <span className="status-dot"><span /> מוכן לנגינה</span>
+          <button className="icon-button" aria-label="הגדרות"><Settings2 size={18} /></button>
+        </div>
+      </header>
+
+      <main className="workspace">
+        <section className="control-rail">
+          <div className="rail-copy">
+            <p className="eyebrow"><Sparkles size={14} /> שלב ראשון</p>
+            <h1>בחר סולם.<br /><em>נגן.</em></h1>
+            <p className="intro">שינוי מהיר של שמות האקורדים, בלי לשנות את מיקום ההחלפה בשיר.</p>
+          </div>
+          <div className="url-entry">
+            <label htmlFor="song-url">קישור לשיר</label>
+            <div className="url-row">
+              <input id="song-url" value={url} onChange={(event) => setUrl(event.target.value)} dir="ltr" />
+              <button className="load-button" onClick={() => setLoaded(true)}><ExternalLink size={16} /> טען</button>
+            </div>
+            <p className="field-note">כרגע מוצגת תצוגת הדגמה. החיבור הישיר לאתר ייכנס בשלב הבא.</p>
+          </div>
+          <div className="shift-panel">
+            <div className="panel-heading"><span>שינוי סולם</span><strong>{shift > 0 ? `+${shift}` : shift} <small>חצאי טון</small></strong></div>
+            <div className="shift-controls">
+              <button className="shift-button" onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button>
+              <div className="key-display"><span>סולם תצוגה</span><b>{keyLabel}</b></div>
+              <button className="shift-button" onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button>
+            </div>
+            <div className="quick-shifts">{[-3, -2, -1, 0, 1, 2, 3].map((value) => <button key={value} className={shift === value ? "quick active" : "quick"} onClick={() => setShift(value)}>{value > 0 ? `+${value}` : value}</button>)}</div>
+            <div className="notation-row"><span>כתיבת אקורדים</span><button onClick={() => setFlats((value) => !value)} className="notation-toggle">{flats ? "♭ במולים" : "♯ דיאזים"}</button></div>
+          </div>
+          <div className="rail-footer"><button className="reset-button" onClick={() => { setShift(0); setFlats(false); }}><RotateCcw size={14} /> חזור למקור</button><span>שמירה מקומית בלבד</span></div>
+        </section>
+
+        <section className="song-stage">
+          <div className="song-toolbar">
+            <div className="song-meta"><span className="live-tag">LIVE VIEW</span><div><h2>{loaded ? "להתאפק" : "עדיין לא נטען"}</h2><p>מרסדס בנד · Tab4U</p></div></div>
+            <div className="song-tools"><button onClick={() => setPlaying((value) => !value)} className={playing ? "tool active-tool" : "tool"}><Play size={15} fill={playing ? "currentColor" : "none"} /> {playing ? "עצור" : "גלילה"}</button><button className="tool"><Maximize2 size={15} /> מסך מלא</button><button className="tool"><Copy size={15} /> העתק</button></div>
+          </div>
+          <div className="song-paper">
+            <div className="paper-topline"><span>אקורדים לשיר</span><span className="position-note">המיקום נשמר · {shift === 0 ? "מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`}</span></div>
+            <article className="song-content"><div className="reading-guide" aria-hidden="true" />
+              <div className="song-title">להתאפק</div>
+              <div className="song-artist">מרסדס בנד</div>
+              <div className="rule" />
+              {demoSong.map((line, index) => <div className={`song-row ${line.label ? "section-row" : ""}`} key={`${line.lyric}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}<ChordLine chord={line.chord} shift={shift} flats={flats} /><div className="lyric-line">{line.lyric || "\u00A0"}</div></div>)}
+              <div className="end-marker">— סוף —</div>
+            </article>
+          </div>
+        </section>
       </main>
     </div>
   );

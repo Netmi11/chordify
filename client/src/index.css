@@ -1,177 +1,98 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/** Stage Slate design system: dark stage-tool minimalism, amber actions, IBM Plex Mono chords, preserved source geometry. */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.015 65);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
-}
-
-.dark {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-500);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.85 0.005 65);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.85 0.005 65);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.85 0.005 65);
-  --secondary: oklch(0.24 0.006 286.033);
-  --secondary-foreground: oklch(0.7 0.005 65);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground:  oklch(0.92 0.005 65);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.488 0.243 264.376);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.85 0.005 65);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground:  oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.488 0.243 264.376);
-}
+:root { --background: oklch(0.15 0.018 250); --foreground: oklch(0.93 0.014 80); --card: oklch(0.19 0.02 250); --card-foreground: oklch(0.93 0.014 80); --primary: oklch(0.76 0.16 70); --primary-foreground: oklch(0.18 0.025 60); --border: oklch(0.3 0.028 250); --input: oklch(0.18 0.02 250); --ring: oklch(0.76 0.16 70); --radius: 0.8rem; }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  button:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]),
-  [type="button"]:not(:disabled),
-  [type="submit"]:not(:disabled),
-  [type="reset"]:not(:disabled),
-  a[href],
-  select:not(:disabled),
-  input[type="checkbox"]:not(:disabled),
-  input[type="radio"]:not(:disabled) {
-    @apply cursor-pointer;
-  }
+  * { box-sizing: border-box; border-color: var(--border); }
+  html { background: #101923; }
+  body { margin: 0; min-width: 320px; background: #101923; color: var(--foreground); font-family: "Rubik", sans-serif; }
+  button, input { font: inherit; }
+  button { cursor: pointer; }
 }
 
-@layer components {
-  /**
-   * Custom container utility that centers content and adds responsive padding.
-   *
-   * This overrides Tailwind's default container behavior to:
-   * - Auto-center content (mx-auto)
-   * - Add responsive horizontal padding
-   * - Set max-width for large screens
-   *
-   * Usage: <div className="container">...</div>
-   *
-   * For custom widths, use max-w-* utilities directly:
-   * <div className="max-w-6xl mx-auto px-4">...</div>
-   */
-  .container {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem; /* 16px - mobile padding */
-    padding-right: 1rem;
-  }
-
-  .flex {
-    min-height: 0;
-    min-width: 0;
-  }
-
-  @media (min-width: 640px) {
-    .container {
-      padding-left: 1.5rem; /* 24px - tablet padding */
-      padding-right: 1.5rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .container {
-      padding-left: 2rem; /* 32px - desktop padding */
-      padding-right: 2rem;
-      max-width: 1280px; /* Standard content width */
-    }
-  }
-}
+.app-shell { min-height: 100vh; background: radial-gradient(circle at 75% -15%, rgba(58, 92, 107, .3), transparent 35%), #101923; }
+.topbar { height: 72px; padding: 0 clamp(18px, 4vw, 56px); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(183, 199, 202, .12); background: rgba(11, 18, 27, .76); backdrop-filter: blur(16px); position: sticky; top: 0; z-index: 10; }
+.brand-lockup, .topbar-actions, .url-row, .song-meta, .song-tools, .panel-heading, .shift-controls, .notation-row, .rail-footer { display: flex; align-items: center; }
+.brand-lockup { gap: 11px; }
+.brand-mark { width: 34px; height: 34px; object-fit: contain; }
+.brand-name { font-weight: 700; letter-spacing: -.02em; font-size: 16px; }
+.brand-caption { color: #81929b; font-size: 11px; margin-top: 2px; }
+.topbar-actions { gap: 16px; }
+.status-dot { color: #9cafb0; font-size: 12px; display: flex; gap: 7px; align-items: center; }
+.status-dot span { width: 6px; height: 6px; border-radius: 50%; background: #71c5a6; box-shadow: 0 0 12px rgba(113,197,166,.8); }
+.icon-button, .tool, .reset-button { color: #98aab0; border: 0; background: transparent; display: inline-flex; align-items: center; gap: 7px; transition: color 160ms ease, transform 160ms ease, background 160ms ease; }
+.icon-button { padding: 7px; }
+.icon-button:hover, .tool:hover, .reset-button:hover { color: #f3a54a; }
+button:active { transform: scale(.97); }
+.workspace { display: grid; grid-template-columns: minmax(280px, 350px) minmax(0, 1fr); max-width: 1440px; margin: 0 auto; min-height: calc(100vh - 72px); }
+.control-rail { padding: clamp(27px, 4vw, 52px) clamp(22px, 3.2vw, 46px); border-left: 1px solid rgba(183,199,202,.12); background: linear-gradient(150deg, rgba(25, 38, 48, .88), rgba(12, 20, 29, .9)); display: flex; flex-direction: column; gap: 34px; }
+.eyebrow { color: #f3a54a; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; display: flex; gap: 7px; align-items: center; margin: 0 0 18px; }
+.rail-copy h1 { font-size: clamp(25px, 2.5vw, 32px); line-height: 1.15; letter-spacing: -.05em; margin: 0; font-weight: 650; }
+.rail-copy h1 em { font-style: normal; color: #e9f0e9; }
+.intro { color: #91a3ac; line-height: 1.7; font-size: 14px; margin: 17px 0 0; max-width: 265px; }
+.url-entry label { display: block; color: #c4d0d0; font-size: 12px; margin-bottom: 9px; }
+.url-row { gap: 7px; }
+.url-row input { min-width: 0; width: 100%; height: 39px; border-radius: 7px; border: 1px solid #33444e; background: #111c26; color: #a9bbc1; padding: 0 11px; font-size: 10px; outline: none; }
+.url-row input:focus { border-color: #f3a54a; box-shadow: 0 0 0 3px rgba(243,165,74,.1); }
+.load-button { white-space: nowrap; height: 39px; padding: 0 12px; border-radius: 7px; background: #f3a54a; color: #202225; border: 0; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.field-note { margin: 8px 0 0; color: #63747d; font-size: 10px; line-height: 1.5; }
+.shift-panel { border-top: 1px solid rgba(183,199,202,.16); border-bottom: 1px solid rgba(183,199,202,.16); padding: 21px 0; }
+.panel-heading { justify-content: space-between; color: #aebcc0; font-size: 12px; }
+.panel-heading strong { color: #f3a54a; font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 500; }
+.panel-heading small { color: #758990; font-family: "Rubik", sans-serif; font-size: 10px; font-weight: 400; }
+.shift-controls { justify-content: space-between; margin: 24px 0 17px; }
+.shift-button { width: 64px; height: 56px; border: 1px solid #354752; border-radius: 8px; background: #162530; color: #aebfc1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 10px; transition: all 160ms ease; }
+.shift-button:hover { border-color: #f3a54a; color: #f3a54a; background: #1b2c38; }
+.key-display { text-align: center; }
+.key-display span { display: block; color: #758990; font-size: 10px; margin-bottom: 5px; }
+.key-display b { font-family: "IBM Plex Mono", monospace; font-size: 29px; color: #e9f0e9; font-weight: 500; }
+.quick-shifts { display: flex; gap: 5px; justify-content: center; direction: ltr; }
+.quick { border: 1px solid #30414b; background: transparent; color: #7d9298; border-radius: 5px; height: 25px; min-width: 27px; font-family: "IBM Plex Mono", monospace; font-size: 10px; }
+.quick:hover, .quick.active { border-color: #f3a54a; color: #f3a54a; background: rgba(243,165,74,.09); }
+.notation-row { justify-content: space-between; margin-top: 19px; color: #81949b; font-size: 11px; }
+.notation-toggle { border: 0; color: #b8c8c8; background: #25353d; font-size: 11px; border-radius: 5px; padding: 5px 8px; }
+.rail-footer { margin-top: auto; justify-content: space-between; color: #5e7079; font-size: 10px; gap: 10px; }
+.reset-button { font-size: 11px; padding: 0; }
+.song-stage { padding: clamp(22px, 4vw, 56px) clamp(18px, 5vw, 82px); background-image: linear-gradient(rgba(16,25,35,.91), rgba(16,25,35,.91)), url('/manus-storage/stage-slate-subtle-pattern_085c9fe1.png'); background-size: cover; }
+.song-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 850px; margin: 0 auto 22px; }
+.song-meta { gap: 12px; }
+.live-tag { color: #f3a54a; border: 1px solid rgba(243,165,74,.4); border-radius: 4px; font-size: 9px; letter-spacing: .08em; padding: 4px 6px; }
+.song-meta h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.song-meta p { margin: 3px 0 0; color: #71848c; font-size: 11px; }
+.song-tools { gap: 17px; direction: rtl; }
+.tool { font-size: 11px; padding: 5px 0; }
+.active-tool { color: #f3a54a; }
+.song-paper { max-width: 850px; min-height: 780px; margin: 0 auto; background: rgba(20, 31, 41, .84); border: 1px solid rgba(183,199,202,.16); border-radius: 10px; box-shadow: 0 24px 80px rgba(0,0,0,.22); overflow: hidden; }
+.paper-topline { height: 42px; padding: 0 23px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(183,199,202,.12); color: #82959b; font-size: 10px; }
+.position-note { color: #6d817f; }
+.song-content { padding: 42px clamp(22px, 6vw, 82px) 58px; text-align: right; direction: rtl; position: relative; }
+.reading-guide { position: absolute; top: 98px; bottom: 52px; right: clamp(14px, 3vw, 42px); width: 1px; background: linear-gradient(to bottom, rgba(243,165,74,.24), transparent 28%, transparent 72%, rgba(243,165,74,.12)); pointer-events: none; }
+.song-title { font-size: 26px; font-weight: 650; letter-spacing: -.04em; }
+.song-artist { color: #7d9297; font-size: 13px; margin-top: 6px; }
+.rule { height: 1px; background: rgba(183,199,202,.14); margin: 28px 0 29px; }
+.song-row { min-height: 48px; position: relative; line-height: 1.55; }
+.song-row.section-row { margin-top: 21px; }
+.section-label { position: absolute; right: -18px; top: -22px; color: #f3a54a; font-size: 11px; font-weight: 600; }
+.chord-line { min-height: 24px; color: #f3a54a; font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 500; white-space: pre; direction: ltr; text-align: right; letter-spacing: .015em; }
+.chord-mark { display: inline-block; background: rgba(243,165,74,.08); border-radius: 3px; padding: 0 2px; transition: color 160ms ease, background 160ms ease; }
+.lyric-line { color: #d2dada; font-size: 17px; min-height: 26px; white-space: pre-wrap; }
+.end-marker { color: #60747d; font-size: 11px; text-align: center; padding-top: 25px; }
+@media (max-width: 850px) { .workspace { grid-template-columns: 1fr; } .control-rail { order: 0; padding: 25px 20px 23px; gap: 24px; border-left: 0; border-bottom: 1px solid rgba(183,199,202,.12); } .rail-copy h1 br { display: none; } .intro { max-width: 550px; } .rail-footer { margin-top: 0; } .song-stage { padding: 22px 12px 50px; } .song-toolbar { align-items: flex-start; flex-direction: column; } .song-tools { width: 100%; justify-content: space-between; } .song-paper { border-radius: 8px; } }
+@media (max-width: 520px) { .topbar { height: 62px; padding: 0 15px; } .status-dot { display: none; } .song-content { padding: 36px 20px 48px; } .chord-line, .lyric-line { font-size: 15px; } .song-title { font-size: 25px; } .url-row { align-items: stretch; } .load-button { padding: 0 10px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }
