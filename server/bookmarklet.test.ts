@@ -20,7 +20,7 @@ describe("self-contained bookmarklet", () => {
 
 describe("bookmarklet runtime", () => {
   it("injects the toolbar, transposes +7, resets, and preserves lyric rows", () => {
-    const dom = new JSDOM(`<!doctype html><body><div id="songContentTPL"><div class="chords">Am Gm Am Fmaj7</div><div class="lyric">החלה הפלישה</div><div class="chords">Dmaj7</div><div class="lyric">תכיני תמיטה</div><div class="chords">Em7</div><div class="lyric">חכי לי אני בא</div></div></body>`, { runScripts: "outside-only" });
+    const dom = new JSDOM(`<!doctype html><body><div id="songContentTPL"><div class="chords">Am Gm Am Fmaj7</div><div class="lyric">החלה הפלישה</div><div class="chords">Dmaj7</div><div class="lyric">תכיני תמיטה</div><div class="chords">Em7</div><div class="lyric">חכי לי אני בא</div></div></body>`, { runScripts: "outside-only", url: "https://www.tab4u.com/tabs/songs/test.html" });
     dom.window.eval(BOOKMARKLET_SOURCE);
     const root = dom.window.document.querySelector("#songContentTPL")!;
     const toolbar = dom.window.document.querySelector("#chordshift-toolbar")!;
@@ -28,6 +28,10 @@ describe("bookmarklet runtime", () => {
     expect(toolbar.classList.contains("cs-open")).toBe(false);
     (toolbar.querySelector(".cs-launcher") as HTMLButtonElement).click();
     expect(toolbar.classList.contains("cs-open")).toBe(true);
+    expect(toolbar.dataset.side).toBe("left");
+    (toolbar.querySelector(".cs-side") as HTMLButtonElement).click();
+    expect(toolbar.dataset.side).toBe("right");
+    expect(dom.window.localStorage.getItem("chordshift-side")).toBe("right");
     expect(root.textContent).toContain("החלה הפלישה");
     expect(root.querySelectorAll(".lyric")).toHaveLength(3);
     (toolbar.querySelector(".cs-seven") as HTMLButtonElement).click();

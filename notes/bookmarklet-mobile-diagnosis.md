@@ -25,3 +25,13 @@ On 2026-08-15 the published bookmarklet was re-tested on a newly opened Tab4U pa
 ## Compact control verification
 
 The compact control was verified on the mobile harness. The initial state renders only a 52px circular music button in the upper-left corner. Tapping it opens a compact panel with the existing controls; `+7` changed the sample chords from `Am Gm Am Fmaj7 / Dmaj7 / Em7` to `Em Dm Em Cmaj7 / Amaj7 / Bm7` while all lyric rows remained in place.
+
+## Public compact control verification
+
+The published 1.1.0 Userscript was loaded on a fresh live Tab4U page. It created the toolbar in a closed state with a launcher present, `top: 12px`, `left: 12px`, and `width: 52px`, confirming that only the small circular control is shown by default.
+
+## Side selection verification
+
+The compact harness opened on the left by default. The new `העבר לימין` action moved the open panel to the upper-right corner and changed its action text to `העבר לשמאל`; the runtime unit test also verified the saved `chordshift-side=right` preference.
+
+On a live browser harness with the right-side preference selected, the launcher rectangle ended 12px from the right viewport edge (`rightGap: 12`); `+7` changed the first chord from `Am` to `Em`, and `מקור` restored `Am` and step `0`.
