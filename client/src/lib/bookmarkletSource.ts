@@ -1,4 +1,4 @@
-(() => {
+export const BOOKMARKLET_SOURCE = String.raw`(() => {
   const existing = document.getElementById('chordshift-toolbar');
   if (existing) { existing.hidden = !existing.hidden; return; }
   const root = document.querySelector('#songContentTPL, #song, [id*="songContent"], .songContent');
@@ -67,4 +67,4 @@
   toolbar.querySelector('.cs-flats').onclick = (event) => { flats = !flats; event.currentTarget.textContent = flats ? '♭' : '♯'; render(); };
   toolbar.querySelector('.cs-close').onclick = () => { toolbar.hidden = true; };
   render();
-})();
+})();`;

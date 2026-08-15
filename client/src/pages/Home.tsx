@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Copy, ExternalLink, Loader2, Maximize2, Play, RotateCcw, Settings2, Sparkles, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { BOOKMARKLET_SOURCE } from "@/lib/bookmarkletSource";
 
 const sharpNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatNotes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
@@ -66,7 +67,7 @@ export default function Home() {
   useEffect(() => { if (!playing) return; const timer = window.setInterval(() => window.scrollBy({ top: 1, behavior: "auto" }), 55); return () => window.clearInterval(timer); }, [playing]);
   const toggleFullscreen = async () => { if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.(); else await document.exitFullscreen?.(); };
   const copySong = async () => { await navigator.clipboard?.writeText(activeSong.map((line) => `${line.chord}\n${line.lyric}`).join("\n")); };
-  const bookmarkletUrl = `javascript:(()=>{const s=document.createElement('script');s.src='${window.location.origin}/bookmarklet.js?v=1';document.documentElement.appendChild(s)})()`;
+  const bookmarkletUrl = `javascript:${encodeURIComponent(BOOKMARKLET_SOURCE.replace(/\s+/g, " "))}`;
   const copyBookmarklet = async () => { await navigator.clipboard?.writeText(bookmarkletUrl); setBookmarkCopied(true); window.setTimeout(() => setBookmarkCopied(false), 2400); };
 
   return <div dir="rtl" className="app-shell">
