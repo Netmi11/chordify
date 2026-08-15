@@ -21,3 +21,7 @@ After checkpoint 0c3b37c0, the public bookmarklet endpoint returned the new raw 
 ## Repeat end-to-end verification
 
 On 2026-08-15 the published bookmarklet was re-tested on a newly opened Tab4U page. It loaded successfully, created its toolbar, detected 43 chord nodes, changed the first chord from `Am` to `Em` with `+7`, and the `מקור` button restored both the original `Am` and step `0`.
+
+## Compact control verification
+
+The compact control was verified on the mobile harness. The initial state renders only a 52px circular music button in the upper-left corner. Tapping it opens a compact panel with the existing controls; `+7` changed the sample chords from `Am Gm Am Fmaj7 / Dmaj7 / Em7` to `Em Dm Em Cmaj7 / Amaj7 / Bm7` while all lyric rows remained in place.

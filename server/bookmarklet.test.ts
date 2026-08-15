@@ -25,6 +25,9 @@ describe("bookmarklet runtime", () => {
     const root = dom.window.document.querySelector("#songContentTPL")!;
     const toolbar = dom.window.document.querySelector("#chordshift-toolbar")!;
     expect(toolbar).toBeTruthy();
+    expect(toolbar.classList.contains("cs-open")).toBe(false);
+    (toolbar.querySelector(".cs-launcher") as HTMLButtonElement).click();
+    expect(toolbar.classList.contains("cs-open")).toBe(true);
     expect(root.textContent).toContain("החלה הפלישה");
     expect(root.querySelectorAll(".lyric")).toHaveLength(3);
     (toolbar.querySelector(".cs-seven") as HTMLButtonElement).click();
@@ -33,6 +36,8 @@ describe("bookmarklet runtime", () => {
     (toolbar.querySelector(".cs-reset") as HTMLButtonElement).click();
     expect(root.textContent).toContain("Am Gm Am Fmaj7");
     expect(toolbar.querySelector(".cs-step")?.textContent).toBe("0");
+    (toolbar.querySelector(".cs-close") as HTMLButtonElement).click();
+    expect(toolbar.classList.contains("cs-open")).toBe(false);
     dom.window.close();
   });
 });
