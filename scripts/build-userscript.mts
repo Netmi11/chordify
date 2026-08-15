@@ -4,7 +4,7 @@ import { BOOKMARKLET_SOURCE } from "../client/src/lib/bookmarkletSource";
 const metadata = `// ==UserScript==
 // @name         ChordShift for Tab4U
 // @namespace    https://tab4uchord-t2tntlcw.manus.space/
-// @version      1.4.0
+// @version      1.5.0
 // @description  Transpose chords directly on Tab4U while preserving lyrics.
 // @match        https://tab4u.com/tabs/songs/*
 // @match        https://www.tab4u.com/tabs/songs/*

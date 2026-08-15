@@ -41,3 +41,7 @@ On a live browser harness with the right-side preference selected, the launcher 
 Live checks confirmed song pages are served at `tab4u.com`, `www.tab4u.com`, `m.tab4u.com`, and `en.tab4u.com`, all with the expected `songContentTPL` region. The compact script body was loaded on `m.tab4u.com`, detected 43 chord nodes, and created the closed circular launcher successfully. Version 1.4.0 therefore lists those four exact song URL patterns rather than a broad external wildcard.
 
 The same direct runtime check on `en.tab4u.com` found `songContentTPL`, detected 43 chord nodes, and created the closed circular launcher successfully.
+
+## Half-size launcher verification
+
+The compact harness measured the closed launcher at 26px by 26px. Tapping it opened the 279px control panel, which retained all seven panel buttons.

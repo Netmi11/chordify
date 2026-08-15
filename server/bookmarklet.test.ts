@@ -16,6 +16,11 @@ describe("self-contained bookmarklet", () => {
     expect(BOOKMARKLET_SOURCE).toContain("cs-reset");
     expect(BOOKMARKLET_SOURCE).toContain("shift = 0");
   });
+
+  it("uses a compact 26px launcher while retaining the full control panel", () => {
+    expect(BOOKMARKLET_SOURCE).toContain("width:26px;height:26px");
+    expect(BOOKMARKLET_SOURCE).toContain(".cs-panel");
+  });
 });
 
 describe("bookmarklet runtime", () => {
