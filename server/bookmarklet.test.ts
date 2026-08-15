@@ -4,7 +4,7 @@ import { BOOKMARKLET_SOURCE } from "../client/src/lib/bookmarkletSource";
 
 describe("self-contained bookmarklet", () => {
   it("contains the Tab4U selectors and injected toolbar without external script loading", () => {
-    expect(BOOKMARKLET_SOURCE).toContain("#songContentTPL");
+    expect(BOOKMARKLET_SOURCE).toContain("songContentTPL");
     expect(BOOKMARKLET_SOURCE).toContain("chordshift-toolbar");
     expect(BOOKMARKLET_SOURCE).toContain("לא נמצא אזור השיר");
     expect(BOOKMARKLET_SOURCE).not.toContain("document.createElement('script')");

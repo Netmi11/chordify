@@ -1,22 +1,23 @@
 export const BOOKMARKLET_SOURCE = String.raw`(() => {
   const existing = document.getElementById('chordshift-toolbar');
   if (existing) { existing.hidden = !existing.hidden; return; }
-  const root = document.querySelector('#songContentTPL, #song, [id*="songContent"], .songContent');
+  const root = document.getElementById('songContentTPL') || document.getElementById('song') || document.querySelector('[id*="songContent"], .songContent');
   const notify = (message) => {
     const box = document.createElement('div');
     box.textContent = message;
-    box.style.cssText = 'position:fixed;z-index:2147483647;right:12px;bottom:12px;max-width:calc(100vw - 24px);padding:14px 16px;border-radius:12px;background:#101a28;color:#f5f7fb;border:1px solid #f4b448;font:700 14px system-ui,sans-serif;direction:rtl;box-shadow:0 10px 35px #0008';
+    box.style.cssText = 'position:fixed;z-index:2147483647;right:12px;bottom:12px;max-width:calc(100vw - 24px);padding:14px 16px;border-radius:12px;background:rgb(16,26,40);color:rgb(245,247,251);border:1px solid rgb(244,180,72);font:700 14px system-ui,sans-serif;direction:rtl;box-shadow:0 10px 35px rgba(0,0,0,.55)';
     document.body.appendChild(box);
     setTimeout(() => box.remove(), 5000);
   };
-  if (!root) { notify('ChordShift: לא נמצא אזור השיר בדף הזה. נסה לרענן את Tab4U.'); return; }
-  const sharp = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  if (!root) { notify('ChordShift: לא נמצא אזור השיר בדף הזה.'); return; }
+  const sharpSign = String.fromCharCode(35);
+  const sharp = ['C','C'+sharpSign,'D','D'+sharpSign,'E','F','F'+sharpSign,'G','G'+sharpSign,'A','A'+sharpSign,'B'];
   const flat = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-  const chordPattern = /^[A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add|M|7|9|11|13|6|\+|°|\([^)]*\))*?(?:\/[A-G](?:#|b)?)?$/;
+  const chordPattern = /^[A-G](?:\x23|b)?(?:m|maj|min|dim|aug|sus|add|M|7|9|11|13|6|\+|°|\([^)]*\))*?(?:\/[A-G](?:\x23|b)?)?$/;
   let shift = 0;
   let flats = false;
   const mod = (n) => (n % 12 + 12) % 12;
-  const transpose = (value) => value.replace(/^([A-G](?:#|b)?)(.*?)(?:\/([A-G](?:#|b)?))?$/, (_, rootNote, suffix, bass) => {
+  const transpose = (value) => value.replace(/^([A-G](?:\x23|b)?)(.*?)(?:\/([A-G](?:\x23|b)?))?$/, (_, rootNote, suffix, bass) => {
     const source = rootNote.includes('b') ? flat : sharp;
     const output = flats ? flat : sharp;
     const rootIndex = source.indexOf(rootNote);
@@ -27,7 +28,7 @@ export const BOOKMARKLET_SOURCE = String.raw`(() => {
   const isSequence = (text) => text.trim().split(/\s+/).filter(Boolean).length > 0 && text.trim().split(/\s+/).filter(Boolean).every((token) => chordPattern.test(token));
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode(node) {
     const parent = node.parentElement;
-    if (!parent || parent.closest('#chordshift-toolbar') || parent.classList.contains('chordshift-chord')) return NodeFilter.FILTER_REJECT;
+    if (!parent || parent.closest('[id="chordshift-toolbar"]') || parent.classList.contains('chordshift-chord')) return NodeFilter.FILTER_REJECT;
     return NodeFilter.FILTER_ACCEPT;
   }});
   const nodes = [];
@@ -50,10 +51,10 @@ export const BOOKMARKLET_SOURCE = String.raw`(() => {
     });
     node.parentNode && node.parentNode.replaceChild(fragment, node);
   });
-  if (!found) { notify('ChordShift: הדף נטען, אך לא נמצאו שורות אקורדים. נסה ללחוץ אחרי שהשיר סיים להיטען.'); return; }
+  if (!found) { notify('ChordShift: הדף נטען, אך לא נמצאו שורות אקורדים.'); return; }
   const style = document.createElement('style');
   style.id = 'chordshift-style';
-  style.textContent = '#chordshift-toolbar{position:fixed;z-index:2147483647;right:12px;bottom:12px;width:min(300px,calc(100vw - 24px));box-sizing:border-box;padding:12px;border:1px solid #526075;border-radius:14px;background:#101a28;color:#f5f7fb;box-shadow:0 10px 35px #0008;font:14px system-ui,sans-serif;direction:rtl}#chordshift-toolbar *{box-sizing:border-box}#chordshift-toolbar .cs-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}#chordshift-toolbar .cs-brand{font-weight:800;color:#f4b448}#chordshift-toolbar button{min-height:38px;border:1px solid #59667a;border-radius:9px;background:#1b2839;color:#f5f7fb;font:inherit;font-weight:700;cursor:pointer;padding:7px 10px}#chordshift-toolbar .cs-close{border:0;background:transparent;color:#b8c2d1;font-size:20px}#chordshift-toolbar .cs-row{display:flex;align-items:center;gap:7px}#chordshift-toolbar .cs-step{min-width:68px;text-align:center;color:#f4b448;font-size:18px}#chordshift-toolbar .cs-plus{background:#f4b448;color:#121a25;border-color:#f4b448}#chordshift-toolbar .cs-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}#chordshift-toolbar .cs-note{margin-top:8px;color:#aeb9c8;font-size:11px;text-align:center}.chordshift-chord{color:#c98523!important;font-weight:700!important}';
+  style.textContent = '[id="chordshift-toolbar"]{position:fixed;z-index:2147483647;right:12px;bottom:12px;width:min(300px,calc(100vw - 24px));box-sizing:border-box;padding:12px;border:1px solid rgb(82,96,117);border-radius:14px;background:rgb(16,26,40);color:rgb(245,247,251);box-shadow:0 10px 35px rgba(0,0,0,.55);font:14px system-ui,sans-serif;direction:rtl}[id="chordshift-toolbar"] *{box-sizing:border-box}[id="chordshift-toolbar"] .cs-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}[id="chordshift-toolbar"] .cs-brand{font-weight:800;color:rgb(244,180,72)}[id="chordshift-toolbar"] button{min-height:38px;border:1px solid rgb(89,102,122);border-radius:9px;background:rgb(27,40,57);color:rgb(245,247,251);font:inherit;font-weight:700;cursor:pointer;padding:7px 10px}[id="chordshift-toolbar"] .cs-close{border:0;background:transparent;color:rgb(184,194,209);font-size:20px}[id="chordshift-toolbar"] .cs-row{display:flex;align-items:center;gap:7px}[id="chordshift-toolbar"] .cs-step{min-width:68px;text-align:center;color:rgb(244,180,72);font-size:18px}[id="chordshift-toolbar"] .cs-plus{background:rgb(244,180,72);color:rgb(18,26,37);border-color:rgb(244,180,72)}[id="chordshift-toolbar"] .cs-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}[id="chordshift-toolbar"] .cs-note{margin-top:8px;color:rgb(174,185,200);font-size:11px;text-align:center}.chordshift-chord{color:rgb(201,133,35)!important;font-weight:700!important}';
   document.head.appendChild(style);
   const toolbar = document.createElement('aside');
   toolbar.id = 'chordshift-toolbar';

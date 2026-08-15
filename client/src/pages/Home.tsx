@@ -67,7 +67,7 @@ export default function Home() {
   useEffect(() => { if (!playing) return; const timer = window.setInterval(() => window.scrollBy({ top: 1, behavior: "auto" }), 55); return () => window.clearInterval(timer); }, [playing]);
   const toggleFullscreen = async () => { if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.(); else await document.exitFullscreen?.(); };
   const copySong = async () => { await navigator.clipboard?.writeText(activeSong.map((line) => `${line.chord}\n${line.lyric}`).join("\n")); };
-  const bookmarkletUrl = `javascript:${encodeURIComponent(BOOKMARKLET_SOURCE.replace(/\s+/g, " "))}`;
+  const bookmarkletUrl = `javascript:${BOOKMARKLET_SOURCE.replace(/\s+/g, " ")}`;
   const copyBookmarklet = async () => { await navigator.clipboard?.writeText(bookmarkletUrl); setBookmarkCopied(true); window.setTimeout(() => setBookmarkCopied(false), 2400); };
 
   return <div dir="rtl" className="app-shell">
