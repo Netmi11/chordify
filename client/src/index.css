@@ -238,6 +238,8 @@ button:active { transform: scale(.97); }
   cursor: pointer;
 }
 .bookmarklet-card button:active { transform: scale(0.98); }
+.userscript-link { min-height: 2.4rem; border: 1px solid rgba(244, 180, 72, 0.45); border-radius: 0.5rem; background: rgba(244, 180, 72, 0.12); color: var(--foreground, #f5f7fb); font-size: 0.78rem; font-weight: 700; display: grid; place-items: center; text-decoration: none; }
+.userscript-link:active { transform: scale(0.98); }
 
 .bookmarklet-help {
   border-top: 1px solid rgba(174, 185, 200, 0.18);
