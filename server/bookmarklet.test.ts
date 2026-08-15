@@ -49,4 +49,34 @@ describe("bookmarklet runtime", () => {
     expect(toolbar.classList.contains("cs-open")).toBe(false);
     dom.window.close();
   });
+
+  it("keeps tablature opt-in, shifts valid fret numbers, preserves line widths, and resets safely", () => {
+    const originalTab = "e|-9---|\nB|-0-2-10-|";
+    const dom = new JSDOM(`<!doctype html><body><div id="songContentTPL"><div class="chords">Am</div><table><tbody><tr><td class="tabs">e|-9---|</td></tr><tr><td class="tabs">B|-0-2-10-|</td></tr></tbody></table><div class="lyric">מילים נשארות</div></div></body>`, { runScripts: "outside-only", url: "https://www.tab4u.com/tabs/songs/tab-test.html" });
+    dom.window.eval(BOOKMARKLET_SOURCE);
+
+    const root = dom.window.document.querySelector("#songContentTPL")!;
+    const toolbar = dom.window.document.querySelector("#chordshift-toolbar")!;
+    const tabCells = [...root.querySelectorAll<HTMLTableCellElement>("td.tabs")];
+    const tabButton = toolbar.querySelector<HTMLButtonElement>(".cs-tabs")!;
+
+    expect(tabButton.textContent).toBe("טאבים: כבוי");
+    (toolbar.querySelector(".cs-seven") as HTMLButtonElement).click();
+    expect(tabCells.map(cell => cell.textContent).join("\n")).toBe(originalTab);
+
+    tabButton.click();
+    expect(tabButton.textContent).toBe("טאבים: פעיל");
+    expect(tabCells[0]?.textContent).toBe("e|-16--|");
+    expect(tabCells[0]?.textContent).toHaveLength("e|-9---|".length);
+    expect(tabCells[1]?.textContent).toBe("B|-7-9-17-|");
+    expect(root.textContent).toContain("מילים נשארות");
+
+    (toolbar.querySelector(".cs-reset") as HTMLButtonElement).click();
+    expect(tabCells.map(cell => cell.textContent).join("\n")).toBe(originalTab);
+
+    (toolbar.querySelector(".cs-minus") as HTMLButtonElement).click();
+    expect(tabCells[1]?.textContent).toContain("B|-0-1-9");
+    expect(tabCells[1]?.textContent).not.toContain("B|--1");
+    dom.window.close();
+  });
 });

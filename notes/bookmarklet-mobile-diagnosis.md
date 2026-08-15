@@ -45,3 +45,11 @@ The same direct runtime check on `en.tab4u.com` found `songContentTPL`, detected
 ## Half-size launcher verification
 
 The compact harness measured the closed launcher at 26px by 26px. Tapping it opened the 279px control panel, which retained all seven panel buttons.
+
+## Tab structure research
+
+The live Tab4U Hotel California page contains complete guitar tablature. Each tab block is an aligned table whose six rows use `td.tabs` cells (for example `e|-9---|`, `B|-7---|`), while chords appear in separate `td.chords_en` cells. Tab playback anchors such as `pTabI0` are separate controls. This structure permits targeting only `td.tabs` cells without changing song lyrics or chord names.
+
+## Live tab transposition verification
+
+On the live Hotel California page, ChordShift identified 234 `td.tabs` rows and 118 chord nodes. After +7 while the tabs control was off, the first tab line remained exactly original. Enabling `טאבים: פעיל` changed `e|-9---|` to `e|-16--|` while retaining the same line length. `מקור` restored the exact original text and width, with the transposition step back at 0.
