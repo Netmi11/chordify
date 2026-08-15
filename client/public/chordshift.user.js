@@ -1,9 +1,12 @@
 // ==UserScript==
 // @name         ChordShift for Tab4U
 // @namespace    https://tab4uchord-t2tntlcw.manus.space/
-// @version      1.2.0
+// @version      1.4.0
 // @description  Transpose chords directly on Tab4U while preserving lyrics.
+// @match        https://tab4u.com/tabs/songs/*
 // @match        https://www.tab4u.com/tabs/songs/*
+// @match        https://m.tab4u.com/tabs/songs/*
+// @match        https://en.tab4u.com/tabs/songs/*
 // @updateURL    https://tab4uchord-t2tntlcw.manus.space/chordshift.user.js
 // @downloadURL  https://tab4uchord-t2tntlcw.manus.space/chordshift.user.js
 // @run-at       document-idle

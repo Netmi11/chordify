@@ -35,3 +35,9 @@ The published 1.1.0 Userscript was loaded on a fresh live Tab4U page. It created
 The compact harness opened on the left by default. The new `העבר לימין` action moved the open panel to the upper-right corner and changed its action text to `העבר לשמאל`; the runtime unit test also verified the saved `chordshift-side=right` preference.
 
 On a live browser harness with the right-side preference selected, the launcher rectangle ended 12px from the right viewport edge (`rightGap: 12`); `+7` changed the first chord from `Am` to `Em`, and `מקור` restored `Am` and step `0`.
+
+## Tab4U host coverage
+
+Live checks confirmed song pages are served at `tab4u.com`, `www.tab4u.com`, `m.tab4u.com`, and `en.tab4u.com`, all with the expected `songContentTPL` region. The compact script body was loaded on `m.tab4u.com`, detected 43 chord nodes, and created the closed circular launcher successfully. Version 1.4.0 therefore lists those four exact song URL patterns rather than a broad external wildcard.
+
+The same direct runtime check on `en.tab4u.com` found `songContentTPL`, detected 43 chord nodes, and created the closed circular launcher successfully.
