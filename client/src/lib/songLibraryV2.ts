@@ -102,6 +102,20 @@ export function readSongLibrary(storage: Pick<Storage, "getItem" | "setItem">): 
   return songs;
 }
 
+export function serializeSongLibrary(songs: SavedSong[]): string {
+  return JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), songs }, null, 2);
+}
+
+export function parseSongLibraryBackup(raw: string): SavedSong[] {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    const candidate = Array.isArray(parsed) ? parsed : parsed && typeof parsed === "object" && "songs" in parsed ? (parsed as { songs?: unknown }).songs : null;
+    return Array.isArray(candidate) ? candidate.filter(isSavedSong).map(normalizeSavedSong) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function writeSongLibrary(storage: Pick<Storage, "setItem">, songs: SavedSong[]): SavedSong[] {
   const sorted = sortSongsByAddedAt(songs.map(normalizeSavedSong));
   storage.setItem(SONG_LIBRARY_STORAGE_KEY, JSON.stringify(sorted));

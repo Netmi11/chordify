@@ -435,3 +435,58 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
 @media (max-width: 640px) {
   .control-rail { border-bottom-color: var(--neo-line); }
 }
+
+.library-backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.library-backup-actions button,
+.library-backup-actions label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--border-subtle, rgba(129, 233, 255, 0.28));
+  border-radius: 0.7rem;
+  background: var(--surface-soft, rgba(255, 255, 255, 0.04));
+  color: var(--text-secondary, inherit);
+  font: inherit;
+  cursor: pointer;
+}
+
+.library-backup-actions button:hover,
+.library-backup-actions label:hover {
+  border-color: var(--accent-cyan, #5cecff);
+  color: var(--accent-cyan, #5cecff);
+}
+
+.library-backup-actions input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .library-backup-actions > * {
+    flex: 1 1 10rem;
+  }
+}
+
+.install-app-button {
+  min-height: 2.15rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--accent-cyan, #5cecff);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-cyan, #5cecff) 14%, transparent);
+  color: var(--accent-cyan, #5cecff);
+  font: inherit;
+  cursor: pointer;
+}

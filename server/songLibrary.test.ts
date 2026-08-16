@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeSavedSong, normalizeSongMetadata, parseSongBatchImport, parseSongImport, parseSongLibrary, readSongLibrary, removeSong, sortSongsForLibrary, sortSongsByAddedAt, type SavedSong, type LibrarySort, upsertSong, updateSongNote } from "../client/src/lib/songLibraryV2";
+import { makeSavedSong, normalizeSongMetadata, parseSongBatchImport, parseSongImport, parseSongLibrary, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, sortSongsForLibrary, sortSongsByAddedAt, type SavedSong, type LibrarySort, upsertSong, updateSongNote } from "../client/src/lib/songLibraryV2";
 
 class MemoryStorage {
   private values = new Map<string, string>();
@@ -61,6 +61,15 @@ describe("song library persistence", () => {
     const second = { ...song, title: "סופי", sourceUrl: "https://www.tab4u.com/tabs/songs/4640_song.html" };
     expect(parseSongBatchImport(JSON.stringify({ type: "chordshift-import-batch-v1", songs: [song, second] }))?.songs).toHaveLength(2);
     expect(parseSongBatchImport(JSON.stringify({ type: "chordshift-import-batch-v1", songs: Array.from({ length: 11 }, (_, index) => ({ ...song, sourceUrl: `https://www.tab4u.com/tabs/songs/${index}.html` })) }))).toBeNull();
+  });
+
+  it("round-trips a local library backup and ignores invalid records", () => {
+    const songs = [makeSavedSong({ id: "backup-1", addedAt: 10, title: "להתאפק", artist: "מרסדס בנד", sourceUrl: "https://www.tab4u.com/tabs/songs/75402_song.html", lines: [{ chord: "Am", lyric: "מילים", tab: "e|-0-|" }] })];
+    const restored = parseSongLibraryBackup(serializeSongLibrary(songs));
+    expect(restored).toHaveLength(1);
+    expect(restored[0]).toMatchObject({ title: "להתאפק", artist: "מרסדס בנד", sourceUrl: songs[0].sourceUrl });
+    expect(restored[0].lines[0]?.tab).toBe("e|-0-|");
+    expect(parseSongLibraryBackup(JSON.stringify({ songs: [{ title: "חסר שדות" }] }))).toEqual([]);
   });
 
   it("accepts imports only from known Tab4U song URLs and preserves tab rows", () => {
