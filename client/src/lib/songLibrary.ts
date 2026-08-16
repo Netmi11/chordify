@@ -29,11 +29,45 @@ function isSavedSong(value: unknown): value is SavedSong {
   return typeof song.id === "string" && typeof song.title === "string" && typeof song.artist === "string" && typeof song.sourceUrl === "string" && Array.isArray(song.lines) && song.lines.every(isSongLine) && typeof song.addedAt === "number" && typeof song.note === "string";
 }
 
+function decodeBasicEntities(value: string): string {
+  return value.replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'").replace(/&amp;/gi, "&").replace(/&nbsp;/gi, " ");
+}
+
+function cleanText(value: string): string {
+  return decodeBasicEntities(value.replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
+}
+
+function extractMetaTitle(value: string): string | null {
+  const match = value.match(/<meta\b[^>]*\bcontent\s*=\s*["']([^"']+)["'][^>]*>/i);
+  return match?.[1] ? cleanText(match[1]) : null;
+}
+
+export function normalizeSongMetadata(rawTitle: string, rawArtist: string): { title: string; artist: string } {
+  const rawTitleMeta = extractMetaTitle(rawTitle);
+  const rawArtistMeta = extractMetaTitle(rawArtist);
+  let artist = cleanText(rawArtistMeta ?? rawArtist);
+  let title = cleanText(rawTitleMeta ?? rawTitle);
+
+  // Some Tab4U mobile DOM variants prepend unrelated text before the meta tag;
+  // when a meta title exists, its content is the authoritative value.
+
+  title = title.replace(/^אקורדים\s+לשיר\s*/i, "").trim();
+  if (artist && artist !== "Tab4U") {
+    const suffix = new RegExp(`\\s+של\\s+${artist.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*$`);
+    title = title.replace(suffix, "").trim();
+  }
+  return { title: title || "שיר", artist: artist || "Tab4U" };
+}
+
+function normalizeSavedSong(song: SavedSong): SavedSong {
+  return { ...song, ...normalizeSongMetadata(song.title, song.artist), lines: song.lines.map((line) => ({ ...line })) };
+}
+
 export function parseSongLibrary(raw: string | null): SavedSong[] {
   if (!raw) return [];
   try {
     const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter(isSavedSong) : [];
+    return Array.isArray(parsed) ? parsed.filter(isSavedSong).map(normalizeSavedSong) : [];
   } catch {
     return [];
   }
@@ -46,6 +80,7 @@ export function sortSongsByAddedAt(songs: SavedSong[]): SavedSong[] {
 export function makeSavedSong(input: Omit<SavedSong, "id" | "addedAt" | "note"> & { id?: string; addedAt?: number; note?: string }): SavedSong {
   return {
     ...input,
+    ...normalizeSongMetadata(input.title, input.artist),
     id: input.id ?? `song-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     addedAt: input.addedAt ?? Date.now(),
     note: input.note ?? "",
@@ -53,12 +88,16 @@ export function makeSavedSong(input: Omit<SavedSong, "id" | "addedAt" | "note"> 
   };
 }
 
-export function readSongLibrary(storage: Pick<Storage, "getItem">): SavedSong[] {
-  return sortSongsByAddedAt(parseSongLibrary(storage.getItem(SONG_LIBRARY_STORAGE_KEY)));
+export function readSongLibrary(storage: Pick<Storage, "getItem" | "setItem">): SavedSong[] {
+  const songs = sortSongsByAddedAt(parseSongLibrary(storage.getItem(SONG_LIBRARY_STORAGE_KEY)));
+  // Persist the cleaned metadata so an already-saved song is fixed permanently.
+  const raw = JSON.stringify(songs);
+  if (storage.getItem(SONG_LIBRARY_STORAGE_KEY) !== raw) storage.setItem(SONG_LIBRARY_STORAGE_KEY, raw);
+  return songs;
 }
 
 export function writeSongLibrary(storage: Pick<Storage, "setItem">, songs: SavedSong[]): SavedSong[] {
-  const sorted = sortSongsByAddedAt(songs);
+  const sorted = sortSongsByAddedAt(songs.map(normalizeSavedSong));
   storage.setItem(SONG_LIBRARY_STORAGE_KEY, JSON.stringify(sorted));
   return sorted;
 }
@@ -97,7 +136,8 @@ export function parseSongImport(raw: string): SongImportPayload | null {
     const url = new URL(song.sourceUrl ?? "");
     const tab4uHost = url.hostname === "tab4u.com" || url.hostname === "www.tab4u.com" || url.hostname === "m.tab4u.com" || url.hostname === "en.tab4u.com";
     if (!tab4uHost || !url.pathname.startsWith("/tabs/songs/") || typeof song.title !== "string" || typeof song.artist !== "string" || !Array.isArray(song.lines) || !song.lines.every(isSongLine)) return null;
-    return { type: "chordshift-import-v1", song: { title: song.title, artist: song.artist, sourceUrl: url.toString(), lines: song.lines.map((line) => ({ ...line })) } };
+    const metadata = normalizeSongMetadata(song.title, song.artist);
+    return { type: "chordshift-import-v1", song: { ...metadata, sourceUrl: url.toString(), lines: song.lines.map((line) => ({ ...line })) } };
   } catch {
     return null;
   }

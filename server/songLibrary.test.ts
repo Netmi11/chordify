@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeSavedSong, parseSongImport, parseSongLibrary, readSongLibrary, removeSong, upsertSong, updateSongNote } from "../client/src/lib/songLibrary";
+import { makeSavedSong, normalizeSongMetadata, parseSongImport, parseSongLibrary, readSongLibrary, removeSong, upsertSong, updateSongNote } from "../client/src/lib/songLibrary";
 
 class MemoryStorage {
   private values = new Map<string, string>();
@@ -27,6 +27,22 @@ describe("song library persistence", () => {
   it("ignores corrupt values in local storage", () => {
     expect(parseSongLibrary("not-json")).toEqual([]);
     expect(parseSongLibrary(JSON.stringify([{ title: "חסר שדות" }]))).toEqual([]);
+  });
+
+  it("cleans leaked Tab4U meta markup from imported metadata", () => {
+    expect(normalizeSongMetadata('מרסדס בנד | <meta name="title" content="אקורדים לשיר להתאפק של מרסדס בנד">', '<meta name="title" content="מרסדס בנד">')).toEqual({ title: "להתאפק", artist: "מרסדס בנד" });
+
+    const payload = JSON.stringify({ type: "chordshift-import-v1", song: { title: 'מרסדס בנד | <meta name="title" content="אקורדים לשיר להתאפק של מרסדס בנד">', artist: '<meta name="title" content="מרסדס בנד">', sourceUrl: "https://www.tab4u.com/tabs/songs/75402_song.html", lines: [{ chord: "Am", lyric: "מילים" }] } });
+    expect(parseSongImport(payload)?.song.title).toBe("להתאפק");
+    expect(parseSongImport(payload)?.song.artist).toBe("מרסדס בנד");
+  });
+
+  it("repairs legacy metadata when reading local storage", () => {
+    const storage = new MemoryStorage();
+    const legacy = { id: "legacy", title: 'מרסדס בנד | <meta name="title" content="אקורדים לשיר להתאפק של מרסדס בנד">', artist: '<meta name="title" content="מרסדס בנד">', sourceUrl: "https://www.tab4u.com/tabs/songs/75402_song.html", lines: [{ chord: "Am", lyric: "מילים" }], addedAt: 1, note: "" };
+    storage.setItem("chordshift-song-library-v1", JSON.stringify([legacy]));
+    expect(readSongLibrary(storage)[0]).toMatchObject({ title: "להתאפק", artist: "מרסדס בנד" });
+    expect(storage.getItem("chordshift-song-library-v1")).not.toContain("meta name");
   });
 
   it("accepts imports only from known Tab4U song URLs and preserves tab rows", () => {
