@@ -9,6 +9,77 @@
     document.body.appendChild(box);
     setTimeout(() => box.remove(), 5000);
   };
+  const extractSongFromDocument = (doc, sourceUrl) => {
+    const songRoot = doc.getElementById('songContentTPL') || doc.getElementById('song') || doc.querySelector('[id*="songContent"], .songContent');
+    if (!songRoot) return null;
+    const lines = [];
+    const rows = [...songRoot.querySelectorAll('tr')].filter((row) => !row.querySelector('tr'));
+    rows.forEach((row) => {
+      const cells = [...row.children].filter((cell) => /^(TD|TH)$/.test(cell.tagName));
+      if (!cells.length) return;
+      if (cells.length === 1) {
+        const cell = cells[0];
+        if (cell.classList.contains('tabs')) { lines.push({ chord: '', lyric: '', tab: (cell.textContent || '').trimEnd() }); return; }
+        const section = cell.querySelector('.titLine');
+        if (section) { lines.push({ label: (section.textContent || '').trim().replace(/:$/, ''), chord: '', lyric: '' }); return; }
+        const text = (cell.textContent || '').replace(/\r/g, '');
+        if (!text.trim()) return;
+        const isChord = cell.classList.contains('chords_en') || !!cell.querySelector('.c_C') || /chord/i.test(cell.className || '');
+        lines.push(isChord ? { chord: text, lyric: '' } : { chord: '', lyric: text.trim() });
+        return;
+      }
+      const first = (cells[0].textContent || '').trim();
+      const second = (cells[1].textContent || '').trim();
+      const label = first.endsWith(':') ? first.slice(0, -1) : '';
+      lines.push(label ? { label, chord: second, lyric: '' } : { chord: first, lyric: second });
+    });
+    if (!lines.length) lines.push(...(songRoot.innerText || '').split(/\n+/).map((lyric) => ({ chord: '', lyric: lyric.trim() })).filter((line) => line.lyric));
+    const artist = (doc.querySelector('.artistTitle')?.textContent || doc.querySelector('#artOnTop')?.textContent || '').trim() || 'Tab4U';
+    const heading = (doc.querySelector('h1')?.textContent || doc.title || 'שיר').trim().replace(/^אקורדים לשיר\s*/i, '');
+    const title = artist !== 'Tab4U' && heading.endsWith(' של ' + artist) ? heading.slice(0, -(' של ' + artist).length).trim() : heading;
+    return { title, artist, sourceUrl, lines };
+  };
+  const popularMercedesTitles = ['הבלדה למחלקה להלבשה תחתונה', "בואי ונביא לך ת'Fאנק", 'מלאך', 'את ואני', 'סופי', 'תגידי לי את', 'זהות', 'אור', 'דאווינים', 'אני משוגע'];
+  const isMercedesArtistPage = /\/tabs\/artists\/154_/.test(location.pathname);
+  if (isMercedesArtistPage) {
+    const toolbar = document.createElement('aside');
+    toolbar.id = 'chordshift-toolbar';
+    toolbar.innerHTML = '<button type="button" aria-label="הוסף 10 שירי מרסדס בנד לספרייה">10</button>';
+    const style = document.createElement('style');
+    style.id = 'chordshift-style';
+    style.textContent = '[id="chordshift-toolbar"]{position:fixed;z-index:2147483647;top:12px;left:12px;direction:rtl}[id="chordshift-toolbar"] button{width:26px;height:26px;padding:0;border:1px solid rgb(244,180,72);border-radius:50%;background:rgb(16,26,40);color:rgb(244,180,72);box-shadow:0 5px 16px rgba(0,0,0,.48);font:800 10px system-ui,sans-serif;cursor:pointer}[id="chordshift-toolbar"] button:disabled{opacity:.55}';
+    document.head.appendChild(style);
+    document.body.appendChild(toolbar);
+    const batchButton = toolbar.querySelector('button');
+    batchButton.onclick = async () => {
+      const popup = window.open('about:blank', '_blank');
+      if (!popup) { notify('לא ניתן לפתוח את הספרייה. אפשר חלון קופץ ונסה שוב.'); return; }
+      const links = [...document.querySelectorAll('a.searchLink[href*="/songs/"]')].map((link) => ({ title: (link.querySelector('.songNameInArtList')?.textContent || link.textContent || '').trim(), href: new URL(link.getAttribute('href'), location.href).href }));
+      const selected = popularMercedesTitles.map((title) => links.find((link) => link.title === title)).filter(Boolean);
+      if (selected.length !== popularMercedesTitles.length) { popup.close(); notify('לא נמצאו כל עשרת השירים בעמוד. נסה לרענן את העמוד.'); return; }
+      batchButton.disabled = true;
+      batchButton.textContent = '…';
+      try {
+        const songs = [];
+        for (const link of selected) {
+          const response = await fetch(link.href, { credentials: 'same-origin' });
+          if (!response.ok) continue;
+          const song = extractSongFromDocument(new DOMParser().parseFromString(await response.text(), 'text/html'), link.href);
+          if (song) songs.push(song);
+        }
+        if (!songs.length) { popup.close(); notify('לא הצלחתי לקרוא את השירים. נסה שוב עם חיבור יציב.'); return; }
+        popup.name = JSON.stringify({ type: 'chordshift-import-batch-v1', songs });
+        popup.location.replace('https://tab4uchord-t2tntlcw.manus.space/?import=1');
+      } catch (_) {
+        popup.close();
+        notify('הייבוא נעצר. נסה שוב עם חיבור יציב.');
+      } finally {
+        batchButton.disabled = false;
+        batchButton.textContent = '10';
+      }
+    };
+    return;
+  }
   if (!root) { notify('ChordShift: לא נמצא אזור השיר בדף הזה.'); return; }
   const sharpSign = String.fromCharCode(35);
   const sharp = ['C','C'+sharpSign,'D','D'+sharpSign,'E','F','F'+sharpSign,'G','G'+sharpSign,'A','A'+sharpSign,'B'];

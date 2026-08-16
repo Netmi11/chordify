@@ -21,6 +21,12 @@ describe("self-contained bookmarklet", () => {
     expect(BOOKMARKLET_SOURCE).toContain("width:26px;height:26px");
     expect(BOOKMARKLET_SOURCE).toContain(".cs-panel");
   });
+
+  it("includes the confirmed Mercedes Band batch import route", () => {
+    expect(BOOKMARKLET_SOURCE).toContain("popularMercedesTitles");
+    expect(BOOKMARKLET_SOURCE).toContain("chordshift-import-batch-v1");
+    expect(BOOKMARKLET_SOURCE).toContain("הבלדה למחלקה להלבשה תחתונה");
+  });
 });
 
 describe("bookmarklet runtime", () => {
@@ -77,6 +83,14 @@ describe("bookmarklet runtime", () => {
     (toolbar.querySelector(".cs-minus") as HTMLButtonElement).click();
     expect(tabCells[1]?.textContent).toContain("B|-0-1-9");
     expect(tabCells[1]?.textContent).not.toContain("B|--1");
+    dom.window.close();
+  });
+
+  it("shows the compact import launcher on the Mercedes Band artist page", () => {
+    const dom = new JSDOM(`<!doctype html><body><a class="searchLink" href="../songs/3851_song.html"><span class="songNameInArtList">מלאך</span></a></body>`, { runScripts: "outside-only", url: "https://www.tab4u.com/tabs/artists/154_mercedes.html" });
+    dom.window.eval(BOOKMARKLET_SOURCE);
+    expect(dom.window.document.querySelector("#chordshift-toolbar button")?.textContent).toBe("10");
+    expect(dom.window.document.querySelector("#songContentTPL")).toBeNull();
     dom.window.close();
   });
 });

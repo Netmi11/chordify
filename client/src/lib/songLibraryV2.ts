@@ -132,18 +132,44 @@ export type SongImportPayload = {
   };
 };
 
+export type SongBatchImportPayload = {
+  type: "chordshift-import-batch-v1";
+  songs: SongImportPayload["song"][];
+};
+
+function parseImportedSong(value: unknown): SongImportPayload["song"] | null {
+  if (!value || typeof value !== "object") return null;
+  const song = value as Partial<SongImportPayload["song"]>;
+  const url = new URL(song.sourceUrl ?? "");
+  const tab4uHost = url.hostname === "tab4u.com" || url.hostname === "www.tab4u.com" || url.hostname === "m.tab4u.com" || url.hostname === "en.tab4u.com";
+  if (!tab4uHost || !url.pathname.startsWith("/tabs/songs/") || typeof song.title !== "string" || typeof song.artist !== "string" || !Array.isArray(song.lines) || !song.lines.every(isSongLine)) return null;
+  const metadata = normalizeSongMetadata(song.title, song.artist);
+  return { ...metadata, sourceUrl: url.toString(), lines: song.lines.map((line) => ({ ...line })) };
+}
+
 export function parseSongImport(raw: string): SongImportPayload | null {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return null;
     const payload = parsed as Partial<SongImportPayload>;
     if (payload.type !== "chordshift-import-v1" || !payload.song || typeof payload.song !== "object") return null;
-    const song = payload.song as Partial<SongImportPayload["song"]>;
-    const url = new URL(song.sourceUrl ?? "");
-    const tab4uHost = url.hostname === "tab4u.com" || url.hostname === "www.tab4u.com" || url.hostname === "m.tab4u.com" || url.hostname === "en.tab4u.com";
-    if (!tab4uHost || !url.pathname.startsWith("/tabs/songs/") || typeof song.title !== "string" || typeof song.artist !== "string" || !Array.isArray(song.lines) || !song.lines.every(isSongLine)) return null;
-    const metadata = normalizeSongMetadata(song.title, song.artist);
-    return { type: "chordshift-import-v1", song: { ...metadata, sourceUrl: url.toString(), lines: song.lines.map((line) => ({ ...line })) } };
+    const song = parseImportedSong(payload.song);
+    return song ? { type: "chordshift-import-v1", song } : null;
+  } catch {
+    return null;
+  }
+}
+
+export function parseSongBatchImport(raw: string): SongBatchImportPayload | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    const payload = parsed as Partial<SongBatchImportPayload>;
+    if (payload.type !== "chordshift-import-batch-v1" || !Array.isArray(payload.songs) || payload.songs.length < 1 || payload.songs.length > 10) return null;
+    const songs = payload.songs.map(parseImportedSong);
+    if (songs.some((song) => !song)) return null;
+    const unique = new Set(songs.map((song) => song!.sourceUrl));
+    return unique.size === songs.length ? { type: "chordshift-import-batch-v1", songs: songs as SongImportPayload["song"][] } : null;
   } catch {
     return null;
   }

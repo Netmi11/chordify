@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronRight, Copy, ExternalLink, LibraryBig, Loader2, Maximize2, Music2, Play, RotateCcw, Search, Settings2, Sparkles, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronRight, Copy, Download, ExternalLink, LibraryBig, Loader2, Maximize2, Moon, Music2, Play, RotateCcw, Search, Sparkles, Sun, Trash2, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { BOOKMARKLET_SOURCE } from "@/lib/bookmarkletSource";
-import { makeSavedSong, parseSongImport, readSongLibrary, removeSong, sortSongsForLibrary, type LibrarySort, type SavedSong, type SongLine, updateSongNote, upsertSong } from "@/lib/songLibrary";
+import { makeSavedSong, parseSongBatchImport, parseSongImport, readSongLibrary, removeSong, sortSongsForLibrary, type LibrarySort, type SavedSong, type SongLine, updateSongNote, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
+import { useTheme } from "@/contexts/ThemeContext";
+import { exportSongToPdf } from "@/lib/songPdf";
 
 const sharpNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatNotes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
@@ -50,11 +52,15 @@ function ChordLine({ chord, shift, flats }: { chord: string; shift: number; flat
   </div>;
 }
 
+function transposeChordLine(chord: string, shift: number, flats: boolean): string {
+  return chord.split(/(\s+)/).map((part) => /[A-G](?:#|b)?/.test(part) ? transposeChord(part, shift, flats) : part).join("");
+}
+
 function formatAddedAt(timestamp: number) {
   return new Intl.DateTimeFormat("he-IL", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(timestamp));
 }
 
-function LibraryView({ songs, onOpen, onDelete, onReturn }: { songs: SavedSong[]; onOpen: (song: SavedSong) => void; onDelete: (id: string) => void; onReturn: () => void }) {
+function LibraryView({ songs, onOpen, onExport, onDelete, onReturn }: { songs: SavedSong[]; onOpen: (song: SavedSong) => void; onExport: (song: SavedSong) => void; onDelete: (id: string) => void; onReturn: () => void }) {
   const [query, setQuery] = useState("");
   const [artist, setArtist] = useState("הכול");
   const [sortBy, setSortBy] = useState<LibrarySort>("addedAt");
@@ -78,7 +84,7 @@ function LibraryView({ songs, onOpen, onDelete, onReturn }: { songs: SavedSong[]
         <div className="song-card-top"><span>מקור</span><button className="delete-song" aria-label={`מחק את ${song.title}`} onClick={() => onDelete(song.id)}><Trash2 size={15} /></button></div>
         <h2>{song.title}</h2><p className="song-card-artist">{song.artist || "אמן לא צוין"}</p>
         {song.note && <p className="song-card-note">{song.note}</p>}
-        <footer><time>{formatAddedAt(song.addedAt)}</time><button onClick={() => onOpen(song)}>פתח לנגינה <ChevronRight size={15} /></button></footer>
+        <footer><time>{formatAddedAt(song.addedAt)}</time><div className="song-card-actions"><button className="song-pdf-button" onClick={() => onExport(song)} aria-label={`הורד PDF של ${song.title}`}><Download size={14} /> PDF</button><button onClick={() => onOpen(song)}>פתח לנגינה <ChevronRight size={15} /></button></div></footer>
       </article>)}
       {!filtered.length && <div className="library-empty"><Music2 size={26} /><h2>{songs.length ? "לא נמצאו שירים מתאימים" : "הספרייה עדיין ריקה"}</h2><p>{songs.length ? "נסה לחפש בשם אחר או לבחור אמן אחר." : "טען שיר מקישור Tab4U ולחץ על שמור בספרייה."}</p><button onClick={onReturn}>עבור לטעינת שיר</button></div>}
     </section>
@@ -86,6 +92,7 @@ function LibraryView({ songs, onOpen, onDelete, onReturn }: { songs: SavedSong[]
 }
 
 export default function Home() {
+  const { theme, toggleTheme } = useTheme();
   const [shift, setShift] = useState(0);
   const [flats, setFlats] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -101,8 +108,24 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      const imported = parseSongImport(window.name);
       const currentLibrary = readSongLibrary(window.localStorage);
+      const batch = parseSongBatchImport(window.name);
+      if (batch) {
+        window.name = "";
+        const importedSongs = batch.songs.map((imported) => {
+          const existing = currentLibrary.find((song) => song.sourceUrl === imported.sourceUrl);
+          return makeSavedSong({ id: existing?.id, addedAt: existing?.addedAt, note: existing?.note, ...imported });
+        });
+        const next = writeSongLibrary(window.localStorage, [...importedSongs, ...currentLibrary.filter((song) => !importedSongs.some((imported) => imported.sourceUrl === song.sourceUrl))]);
+        setLibrary(next);
+        setSavedSong(importedSongs[0] ?? null);
+        setNoteDraft(importedSongs[0]?.note ?? "");
+        setUrl(importedSongs[0]?.sourceUrl ?? "");
+        setSaveNotice(true);
+        window.setTimeout(() => setSaveNotice(false), 2200);
+        return;
+      }
+      const imported = parseSongImport(window.name);
       if (!imported) { setLibrary(currentLibrary); return; }
       window.name = "";
       const existing = currentLibrary.find((song) => song.sourceUrl === imported.song.sourceUrl);
@@ -129,6 +152,11 @@ export default function Home() {
   const resetTranspose = () => { setShift(0); setFlats(false); };
   const toggleFullscreen = async () => { if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.(); else await document.exitFullscreen?.(); };
   const copySong = async () => { await navigator.clipboard?.writeText(activeSong.map((line) => `${line.chord}\n${line.lyric}`).join("\n")); };
+  const exportPdf = (song: { title: string; artist: string; lines: SongLine[] }, exportShift = 0) => {
+    const opened = exportSongToPdf({ ...song, lines: song.lines.map((line) => ({ ...line, chord: transposeChordLine(line.chord, exportShift, flats) })) });
+    if (!opened) window.alert("הדפדפן חסם פתיחת חלון ל־PDF. אפשר חלונות קופצים ונסה שוב.");
+  };
+  const exportCurrentSongPdf = () => exportPdf({ title: activeTitle, artist: activeArtist, lines: activeSong }, shift);
   const bookmarkletUrl = `javascript:${BOOKMARKLET_SOURCE.replace(/\s+/g, " ")}`;
   const copyBookmarklet = async () => { await navigator.clipboard?.writeText(bookmarkletUrl); };
 
@@ -148,17 +176,17 @@ export default function Home() {
   const loadFromUrl = () => { setSavedSong(null); resetTranspose(); setCleared(false); void fetchSong.refetch(); };
 
   return <div dir="rtl" className={`app-shell ${readingMode ? "is-reading" : ""}`}>
-    <header className="topbar"><div className="brand-lockup"><img src="/manus-storage/stage-slate-pick-mark_6b2a5d37.png" alt="" className="brand-mark" /><div><div className="brand-name">ChordShift</div><div className="brand-caption">הספרייה הפרטית שלך</div></div></div><div className="topbar-actions"><span className="status-dot"><span /> נשמר בטלפון</span><button className="top-library-button" onClick={() => { setReadingMode(false); setScreen(screen === "library" ? "player" : "library"); }}><LibraryBig size={17} /> {screen === "library" ? "שיר נוכחי" : "הספרייה"}</button><button className="icon-button" aria-label="הגדרות"><Settings2 size={18} /></button></div></header>
-    {screen === "library" ? <LibraryView songs={library} onOpen={openSavedSong} onDelete={deleteSavedSong} onReturn={() => setScreen("player")} /> : <main className="workspace">
+    <header className="topbar"><div className="brand-lockup"><img src="/manus-storage/stage-slate-pick-mark_6b2a5d37.png" alt="" className="brand-mark" /><div><div className="brand-name">ChordShift</div><div className="brand-caption">הספרייה הפרטית שלך</div></div></div><div className="topbar-actions"><span className="status-dot"><span /> נשמר בטלפון</span><button className="top-library-button" onClick={() => { setReadingMode(false); setScreen(screen === "library" ? "player" : "library"); }}><LibraryBig size={17} /> {screen === "library" ? "שיר נוכחי" : "הספרייה"}</button><button className="theme-toggle" onClick={toggleTheme} aria-label={theme === "dark" ? "עבור למצב יום" : "עבור למצב לילה"} title={theme === "dark" ? "מצב יום" : "מצב לילה"}>{theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}</button></div></header>
+    {screen === "library" ? <LibraryView songs={library} onOpen={openSavedSong} onExport={(song) => exportPdf(song)} onDelete={deleteSavedSong} onReturn={() => setScreen("player")} /> : <main className="workspace">
       <section className="control-rail"><div className="rail-copy"><p className="eyebrow"><Sparkles size={14} /> אוסף אישי</p><h1>שמור. ארגן.<br /><em>נגן.</em></h1><p className="intro">טען שיר מ־Tab4U, שמור את גרסת המקור שלו, וחזור אליו בכל זמן גם ללא חיבור.</p></div>
         <div className="url-entry"><label htmlFor="song-url">קישור לשיר</label><div className="url-row"><input id="song-url" value={url} onChange={(event) => setUrl(event.target.value)} dir="ltr" /><button className="clear-url-button" onClick={() => { setUrl(""); setCleared(true); setSavedSong(null); resetTranspose(); }} aria-label="נקה קישור"><X size={16} /></button><button className="load-button" onClick={loadFromUrl} disabled={fetchSong.isFetching} aria-busy={fetchSong.isFetching}><span className={fetchSong.isFetching ? "loading-icon is-spinning" : "loading-icon"}>{fetchSong.isFetching ? <Loader2 size={16} /> : <ExternalLink size={16} />}</span> {fetchSong.isFetching ? "טוען…" : "טען"}</button></div><p className="field-note" aria-live="polite">{fetchSong.isFetching ? "קורא את השיר ושומר את מיקום האקורדים והמילים…" : fetchSong.error ? "Tab4U חסם טעינה ישירה. פתח את השיר ב־Edge ולחץ בסרגל ChordShift על שמור בספרייה." : fetchSong.data ? "השיר נטען. אפשר לשמור את גרסת המקור בספרייה." : "הדרך היציבה: פתח שיר ב־Edge ולחץ בסרגל ChordShift על שמור בספרייה."}</p><button className={saveNotice ? "save-song-button saved" : "save-song-button"} onClick={persistCurrentSong} disabled={!canSave}><BookmarkPlus size={16} /> {saveNotice ? "נשמר בספרייה" : "שמור בספרייה"}</button><div className="bookmarklet-card"><strong>הפעלה ישירה בתוך Tab4U</strong><span>ב־Edge עם Tampermonkey, ChordShift מופיע אוטומטית בתוך דף השיר.</span><a className="userscript-link" href="/chordshift.user.js">התקן ChordShift ב־Tampermonkey</a></div></div>
         <div className="shift-panel"><div className="panel-heading"><span>שינוי סולם זמני</span><strong>{shift > 0 ? `+${shift}` : shift} <small>חצאי טון</small></strong></div><div className="shift-controls"><button className="shift-button" onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="key-display"><span>אקורד פתיחה</span><b>{keyLabel}</b></div><button className="shift-button" onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button></div><div className="quick-shifts">{[-3, -2, -1, 0, 1, 2, 3].map((value) => <button key={value} className={shift === value ? "quick active" : "quick"} onClick={() => setShift(value)}>{value > 0 ? `+${value}` : value}</button>)}</div><div className="shortcut-row"><button className={shift === 7 ? "shortcut-button active" : "shortcut-button"} onClick={() => setShift(7)}>+7</button><button className={shift === 0 ? "shortcut-button active" : "shortcut-button"} onClick={resetTranspose}><RotateCcw size={14} /> מקור</button></div><div className="notation-row"><span>כתיבת אקורדים</span><button onClick={() => setFlats((value) => !value)} className="notation-toggle">{flats ? "♭ במולים" : "♯ דיאזים"}</button></div></div>
         <div className="rail-footer"><button className="reset-button" onClick={resetTranspose}><RotateCcw size={14} /> חזור למקור</button><span>{library.length} שירים בספרייה</span></div>
       </section>
-      <section className="song-stage"><div className="song-toolbar"><div className="song-meta"><span className="live-tag">{savedSong ? "LIBRARY" : "LIVE VIEW"}</span><div><h2>{activeTitle}</h2><p>{activeArtist} · {savedSong ? `נשמר ${formatAddedAt(savedSong.addedAt)}` : "Tab4U"}</p></div></div><div className="song-tools"><button onClick={() => setReadingMode((value) => !value)} className={readingMode ? "tool active-tool" : "tool"}><Music2 size={15} /> {readingMode ? "יציאה מנגינה" : "מצב נגינה"}</button><button onClick={() => setPlaying((value) => !value)} className={playing ? "tool active-tool" : "tool"}><Play size={15} fill={playing ? "currentColor" : "none"} /> {playing ? "עצור" : "גלילה"}</button><button onClick={toggleFullscreen} className="tool"><Maximize2 size={15} /> מסך מלא</button><button onClick={copySong} className="tool"><Copy size={15} /> העתק</button></div></div>
+      <section className="song-stage"><div className="song-toolbar"><div className="song-meta"><span className="live-tag">{savedSong ? "LIBRARY" : "LIVE VIEW"}</span><div><h2>{activeTitle}</h2><p>{activeArtist} · {savedSong ? `נשמר ${formatAddedAt(savedSong.addedAt)}` : "Tab4U"}</p></div></div><div className="song-tools"><button onClick={() => setReadingMode((value) => !value)} className={readingMode ? "tool active-tool" : "tool"}><Music2 size={15} /> {readingMode ? "יציאה מנגינה" : "מצב נגינה"}</button><button onClick={() => setPlaying((value) => !value)} className={playing ? "tool active-tool" : "tool"}><Play size={15} fill={playing ? "currentColor" : "none"} /> {playing ? "עצור" : "גלילה"}</button><button onClick={toggleFullscreen} className="tool"><Maximize2 size={15} /> מסך מלא</button><button onClick={copySong} className="tool"><Copy size={15} /> העתק</button><button onClick={exportCurrentSongPdf} className="tool song-pdf-tool"><Download size={15} /> PDF</button></div></div>
         <div className="song-paper"><div className="paper-topline"><span>אקורדים לשיר</span><span className="position-note">{shift === 0 ? "גרסת מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`}</span></div><article className="song-content"><div className="reading-guide" aria-hidden="true" /><div className="song-title">{activeTitle}</div><div className="song-artist">{activeArtist}</div>{savedSong && <label className="personal-note"><span>הערה אישית</span><textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} onBlur={saveNote} placeholder="לדוגמה: קאפו 2, פתיחה שקטה…" rows={2} /></label>}<div className="rule" />{activeSong.map((line, index) => <div className={`song-row ${line.label ? "section-row" : ""}`} key={`${line.lyric}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}<ChordLine chord={line.chord} shift={shift} flats={flats} />{line.tab && <pre className="saved-tab-line">{line.tab}</pre>}<div className="lyric-line">{line.lyric || "\u00A0"}</div></div>)}<div className="end-marker">— סוף —</div></article></div>
       </section>
     </main>}
-    {screen === "player" && <nav className="mobile-dock" aria-label="פקדי נגינה בנייד"><button onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="mobile-key"><small>פתיחה</small><strong>{keyLabel}</strong></div><button onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button><button onClick={() => setShift(7)} aria-label="טרנספוזיציה פלוס שבע"><span>+7</span></button><button onClick={resetTranspose} aria-label="חזרה למקור"><RotateCcw size={17} /><span>מקור</span></button><button onClick={() => setPlaying((value) => !value)} className={playing ? "dock-active" : ""} aria-label="גלילה"><Play size={17} fill={playing ? "currentColor" : "none"} /><span>{playing ? "עצור" : "גלול"}</span></button></nav>}
+    {screen === "player" && <nav className="mobile-dock" aria-label="פקדי נגינה בנייד"><button onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="mobile-key"><small>פתיחה</small><strong>{keyLabel}</strong></div><button onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button><button onClick={() => setShift(7)} aria-label="טרנספוזיציה פלוס שבע"><span>+7</span></button><button onClick={resetTranspose} aria-label="חזרה למקור"><RotateCcw size={17} /><span>מקור</span></button><button onClick={exportCurrentSongPdf} aria-label="הורד את השיר כ־PDF"><Download size={17} /><span>PDF</span></button><button onClick={() => setPlaying((value) => !value)} className={playing ? "dock-active" : ""} aria-label="גלילה"><Play size={17} fill={playing ? "currentColor" : "none"} /><span>{playing ? "עצור" : "גלול"}</span></button></nav>}
   </div>;
 }

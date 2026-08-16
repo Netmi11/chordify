@@ -1,4 +1,4 @@
-const CACHE_NAME = "chordshift-shell-v2";
+const CACHE_NAME = "chordshift-shell-v3";
 const APP_SHELL = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -24,11 +24,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(caches.match(request).then((cached) => cached || fetch(request).then((response) => {
+  event.respondWith(fetch(request).then((response) => {
     if (response.ok) {
       const copy = response.clone();
       void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
     }
     return response;
-  })));
+  }).catch(async () => (await caches.match(request)) || Response.error()));
 });

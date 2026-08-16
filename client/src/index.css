@@ -146,7 +146,7 @@ button:active { transform: scale(.97); }
   .lyric-line { font-size: clamp(14px, 4.5vw, 17px); min-height: 27px; }
   .saved-tab-line { font-size: clamp(11px, 3.2vw, 13px); }
   .reading-guide { right: 8px; top: 89px; bottom: 39px; }
-  .mobile-dock { position: fixed; z-index: 30; display: grid; grid-template-columns: repeat(6, 1fr); align-items: center; left: 8px; right: 8px; bottom: 8px; min-height: 62px; padding: 6px 4px; direction: ltr; background: rgba(16,25,35,.97); border: 1px solid rgba(243,165,74,.3); border-radius: 15px; box-shadow: 0 14px 35px rgba(0,0,0,.4); backdrop-filter: blur(18px); }
+  .mobile-dock { position: fixed; z-index: 30; display: grid; grid-template-columns: repeat(7, 1fr); align-items: center; left: 8px; right: 8px; bottom: 8px; min-height: 62px; padding: 6px 4px; direction: ltr; background: rgba(16,25,35,.97); border: 1px solid rgba(243,165,74,.3); border-radius: 15px; box-shadow: 0 14px 35px rgba(0,0,0,.4); backdrop-filter: blur(18px); }
   .mobile-dock button { min-height: 50px; border: 0; border-radius: 10px; background: transparent; color: #9dafb3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 9px; }
   .mobile-dock button:active, .mobile-dock .dock-active { color: #f3a54a; background: rgba(243,165,74,.11); }
   .mobile-key { direction: rtl; text-align: center; color: #f3a54a; }
@@ -306,6 +306,9 @@ button:active { transform: scale(.97); }
 .song-card footer { margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(183, 199, 202, .1); }
 .song-card time { color: #70838d; font-size: 10px; }
 .song-card footer button { display: inline-flex; align-items: center; gap: 3px; border: 0; background: transparent; color: #f4b448; font: inherit; font-size: 11px; font-weight: 700; padding: 0; }
+.song-card-actions { display: inline-flex; align-items: center; gap: 12px; }
+.song-card footer .song-pdf-button, .song-pdf-tool { color: var(--neo-purple, #6644e8); }
+.song-card footer .song-pdf-button:hover, .song-pdf-tool:hover { color: var(--neo-pink, #d92e90); }
 .library-empty { grid-column: 1 / -1; min-height: 260px; display: grid; place-items: center; align-content: center; gap: 10px; border: 1px dashed rgba(183, 199, 202, .24); border-radius: 14px; color: #84979f; text-align: center; }
 .library-empty svg { color: #f4b448; }
 .library-empty h2 { margin: 5px 0 0; color: #e9f0e9; font-size: 19px; }
@@ -355,4 +358,80 @@ button:active { transform: scale(.97); }
   .app-shell.is-reading .song-content { padding: 24px 18px 50px; }
   .app-shell.is-reading .chord-line, .app-shell.is-reading .lyric-line { font-size: clamp(18px, 5.5vw, 25px); }
   .app-shell.is-reading .song-row { min-height: 68px; }
+}
+
+/* Neon Tokyo: a crisp electric day palette and a deep after-hours night palette. */
+:root {
+  --neo-bg: #f4f7ff;
+  --neo-surface: rgba(255, 255, 255, .86);
+  --neo-surface-strong: #ffffff;
+  --neo-ink: #16213a;
+  --neo-muted: #566681;
+  --neo-line: rgba(43, 63, 104, .18);
+  --neo-cyan: #008eb1;
+  --neo-pink: #d92e90;
+  --neo-purple: #6644e8;
+  --neo-glow: rgba(0, 174, 211, .18);
+  --background: oklch(.97 .015 260);
+  --foreground: oklch(.24 .04 265);
+  --card: oklch(.99 .008 260);
+  --card-foreground: oklch(.24 .04 265);
+  --primary: oklch(.64 .22 340);
+  --primary-foreground: oklch(.99 .006 260);
+  --border: oklch(.83 .04 260);
+  --input: oklch(.99 .008 260);
+  --ring: oklch(.68 .19 215);
+}
+
+.dark {
+  --neo-bg: #090a1d;
+  --neo-surface: rgba(18, 17, 52, .88);
+  --neo-surface-strong: #151634;
+  --neo-ink: #eff5ff;
+  --neo-muted: #a8b7d0;
+  --neo-line: rgba(119, 101, 255, .28);
+  --neo-cyan: #48f3ff;
+  --neo-pink: #ff5bc3;
+  --neo-purple: #9b78ff;
+  --neo-glow: rgba(72, 243, 255, .18);
+  --background: oklch(.14 .045 280);
+  --foreground: oklch(.95 .02 260);
+  --card: oklch(.18 .055 280);
+  --card-foreground: oklch(.95 .02 260);
+  --primary: oklch(.78 .18 205);
+  --primary-foreground: oklch(.15 .04 280);
+  --border: oklch(.33 .09 280);
+  --input: oklch(.19 .05 280);
+  --ring: oklch(.79 .18 205);
+}
+
+html, body { background: var(--neo-bg); color: var(--neo-ink); }
+.app-shell { background: radial-gradient(circle at 12% -15%, var(--neo-glow), transparent 29%), radial-gradient(circle at 88% 5%, color-mix(in srgb, var(--neo-pink) 14%, transparent), transparent 24%), var(--neo-bg); color: var(--neo-ink); }
+.topbar { border-bottom-color: var(--neo-line); background: color-mix(in srgb, var(--neo-bg) 78%, transparent); box-shadow: 0 2px 24px color-mix(in srgb, var(--neo-purple) 8%, transparent); }
+.brand-caption, .status-dot, .intro, .field-note, .song-meta p, .song-artist, .library-hero p:not(.eyebrow), .song-card-artist, .song-card time, .library-sort span { color: var(--neo-muted); }
+.status-dot span { background: var(--neo-cyan); box-shadow: 0 0 13px var(--neo-cyan); }
+.theme-toggle { width: 34px; height: 34px; display: inline-grid; place-items: center; border: 1px solid color-mix(in srgb, var(--neo-cyan) 48%, var(--neo-line)); border-radius: 10px; color: var(--neo-cyan); background: color-mix(in srgb, var(--neo-cyan) 8%, transparent); box-shadow: 0 0 18px color-mix(in srgb, var(--neo-cyan) 16%, transparent); transition: color 160ms ease-out, background 160ms ease-out, transform 160ms ease-out; }
+.theme-toggle:hover { color: var(--neo-pink); border-color: var(--neo-pink); background: color-mix(in srgb, var(--neo-pink) 12%, transparent); }
+.control-rail { border-left-color: var(--neo-line); background: linear-gradient(150deg, color-mix(in srgb, var(--neo-surface) 94%, transparent), color-mix(in srgb, var(--neo-bg) 84%, transparent)); }
+.song-stage { background-image: linear-gradient(color-mix(in srgb, var(--neo-bg) 89%, transparent), color-mix(in srgb, var(--neo-bg) 96%, transparent)), url('/manus-storage/stage-slate-subtle-pattern_085c9fe1.png'); }
+.song-paper, .song-card { background: var(--neo-surface); border-color: var(--neo-line); box-shadow: 0 22px 60px color-mix(in srgb, var(--neo-purple) 12%, transparent); }
+.song-paper { backdrop-filter: blur(14px); }
+.url-row input, .library-search, .library-sort, .clear-url-button, .shift-button, .notation-toggle { border-color: var(--neo-line); background: var(--neo-surface-strong); color: var(--neo-ink); }
+.url-row input:focus, .library-search:focus-within { border-color: var(--neo-cyan); box-shadow: 0 0 0 3px var(--neo-glow); }
+.load-button { background: linear-gradient(115deg, var(--neo-cyan), var(--neo-purple)); color: #06121f; box-shadow: 0 5px 18px color-mix(in srgb, var(--neo-cyan) 30%, transparent); }
+.eyebrow, .panel-heading strong, .key-display b, .live-tag, .active-tool, .section-label, .chord-line, .bookmarklet-card strong, .shortcut-button, .top-library-button, .save-song-button, .library-hero h1 em, .library-sort { color: var(--neo-cyan); }
+.quick:hover, .quick.active, .shortcut-button, .bookmarklet-card, .live-tag, .top-library-button, .save-song-button { border-color: color-mix(in srgb, var(--neo-cyan) 55%, var(--neo-line)); background: color-mix(in srgb, var(--neo-cyan) 9%, transparent); }
+.quick:hover, .quick.active, .shortcut-button:hover, .shortcut-button.active { color: var(--neo-pink); border-color: var(--neo-pink); background: color-mix(in srgb, var(--neo-pink) 12%, transparent); }
+.chord-mark { background: color-mix(in srgb, var(--neo-cyan) 11%, transparent); }
+.lyric-line, .song-title, .song-meta h2, .song-card h2, .library-empty h2, .rail-copy h1 { color: var(--neo-ink); }
+.rule, .paper-topline, .shift-panel, .song-card footer { border-color: var(--neo-line); }
+.reading-guide { background: linear-gradient(to bottom, color-mix(in srgb, var(--neo-cyan) 45%, transparent), transparent 28%, transparent 72%, color-mix(in srgb, var(--neo-pink) 35%, transparent)); }
+.saved-tab-line { color: var(--neo-purple); }
+.artist-filter.active, .artist-filter:hover { color: var(--neo-pink); border-color: var(--neo-pink); background: color-mix(in srgb, var(--neo-pink) 9%, transparent); }
+.mobile-dock { border-color: color-mix(in srgb, var(--neo-cyan) 42%, var(--neo-line)); background: color-mix(in srgb, var(--neo-surface-strong) 94%, transparent); box-shadow: 0 14px 35px color-mix(in srgb, var(--neo-purple) 26%, transparent); }
+.mobile-dock button:active, .mobile-dock .dock-active { color: var(--neo-cyan); background: color-mix(in srgb, var(--neo-cyan) 12%, transparent); }
+.mobile-key { color: var(--neo-pink); }
+
+@media (max-width: 640px) {
+  .control-rail { border-bottom-color: var(--neo-line); }
 }

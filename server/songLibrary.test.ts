@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeSavedSong, normalizeSongMetadata, parseSongImport, parseSongLibrary, readSongLibrary, removeSong, sortSongsForLibrary, sortSongsByAddedAt, type SavedSong, type LibrarySort, upsertSong, updateSongNote } from "../client/src/lib/songLibrary";
+import { makeSavedSong, normalizeSongMetadata, parseSongBatchImport, parseSongImport, parseSongLibrary, readSongLibrary, removeSong, sortSongsForLibrary, sortSongsByAddedAt, type SavedSong, type LibrarySort, upsertSong, updateSongNote } from "../client/src/lib/songLibraryV2";
 
 class MemoryStorage {
   private values = new Map<string, string>();
@@ -54,6 +54,13 @@ describe("song library persistence", () => {
     storage.setItem("chordshift-song-library-v1", JSON.stringify([legacy]));
     expect(readSongLibrary(storage)[0]).toMatchObject({ title: "להתאפק", artist: "מרסדס בנד" });
     expect(storage.getItem("chordshift-song-library-v1")).not.toContain("meta name");
+  });
+
+  it("accepts a unique batch of Tab4U song imports and rejects oversized batches", () => {
+    const song = { title: "מלאך", artist: "מרסדס בנד", sourceUrl: "https://www.tab4u.com/tabs/songs/3851_song.html", lines: [{ chord: "A", lyric: "מילים" }] };
+    const second = { ...song, title: "סופי", sourceUrl: "https://www.tab4u.com/tabs/songs/4640_song.html" };
+    expect(parseSongBatchImport(JSON.stringify({ type: "chordshift-import-batch-v1", songs: [song, second] }))?.songs).toHaveLength(2);
+    expect(parseSongBatchImport(JSON.stringify({ type: "chordshift-import-batch-v1", songs: Array.from({ length: 11 }, (_, index) => ({ ...song, sourceUrl: `https://www.tab4u.com/tabs/songs/${index}.html` })) }))).toBeNull();
   });
 
   it("accepts imports only from known Tab4U song URLs and preserves tab rows", () => {
