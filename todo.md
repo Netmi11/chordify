@@ -270,6 +270,7 @@
 - [x] לאחד טעינת React ו־tRPC ב־Vite כדי למנוע שגיאת hooks ותצוגה ריקה ב־preview
 - [x] לתקן את אתחול tRPC ואת סדר ה־providers כדי להחזיר את תצוגת ה־preview
 - [x] לעדכן את מטמון ה־PWA לרשת־תחילה כדי למנוע טעינת קבצי אפליקציה ישנים אחרי פרסום
+- [x] להסיר את Manus runtime וה־debug collector מ־production כדי לשמור על app shell עם #root
 
 ## ייצוא שיר ל־PDF
 
