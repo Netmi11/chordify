@@ -43,11 +43,17 @@ function extractMetaTitle(value: string): string | null {
   return match?.[1] ? cleanText(match[1]) : null;
 }
 
+function cleanMetadataField(value: string): string {
+  const meta = extractMetaTitle(value);
+  if (meta) return meta;
+  const beforeMarkup = value.split(/<meta\b/i)[0];
+  const beforePipe = beforeMarkup.split("|")[0];
+  return cleanText(beforePipe || value);
+}
+
 export function normalizeSongMetadata(rawTitle: string, rawArtist: string): { title: string; artist: string } {
-  const rawTitleMeta = extractMetaTitle(rawTitle);
-  const rawArtistMeta = extractMetaTitle(rawArtist);
-  let artist = cleanText(rawArtistMeta ?? rawArtist);
-  let title = cleanText(rawTitleMeta ?? rawTitle);
+  let artist = cleanMetadataField(rawArtist);
+  let title = cleanMetadataField(rawTitle);
 
   // Some Tab4U mobile DOM variants prepend unrelated text before the meta tag;
   // when a meta title exists, its content is the authoritative value.

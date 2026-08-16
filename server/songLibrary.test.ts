@@ -48,6 +48,10 @@ describe("song library persistence", () => {
     expect(parseSongImport(payload)?.song.artist).toBe("מרסדס בנד");
   });
 
+  it("cleans the truncated Tab4U metadata variant from the current device", () => {
+    expect(normalizeSongMetadata("להתאפק של מרסדס בנד", 'מרסדס בנד | אקורדים"=Tab4U<meta name="title" content |')).toEqual({ title: "להתאפק", artist: "מרסדס בנד" });
+  });
+
   it("repairs legacy metadata when reading local storage", () => {
     const storage = new MemoryStorage();
     const legacy = { id: "legacy", title: 'מרסדס בנד | <meta name="title" content="אקורדים לשיר להתאפק של מרסדס בנד">', artist: '<meta name="title" content="מרסדס בנד">', sourceUrl: "https://www.tab4u.com/tabs/songs/75402_song.html", lines: [{ chord: "Am", lyric: "מילים" }], addedAt: 1, note: "" };

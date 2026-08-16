@@ -490,3 +490,59 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
   font: inherit;
   cursor: pointer;
 }
+
+.library-backup-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--accent-pink, #ff65c3);
+  border-radius: 0.7rem;
+  color: var(--accent-pink, #ff65c3);
+  text-decoration: none;
+}
+
+.library-backup-note {
+  margin: 0.6rem 0 0;
+  color: var(--text-muted, #536070);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* Day mode readability: keep Neon Tokyo accents, but use dark ink for every text layer. */
+:root:not(.dark) body { color: #101828; }
+:root:not(.dark) .brand-caption,
+:root:not(.dark) .status-dot,
+:root:not(.dark) .intro,
+:root:not(.dark) .field-note,
+:root:not(.dark) .song-meta p,
+:root:not(.dark) .song-artist,
+:root:not(.dark) .library-hero p:not(.eyebrow),
+:root:not(.dark) .song-card-artist,
+:root:not(.dark) .song-card time,
+:root:not(.dark) .library-sort span,
+:root:not(.dark) .library-backup-note,
+:root:not(.dark) .bookmarklet-card span,
+:root:not(.dark) .bookmarklet-help,
+:root:not(.dark) .personal-note textarea::placeholder { color: #263449; }
+:root:not(.dark) .icon-button,
+:root:not(.dark) .tool,
+:root:not(.dark) .reset-button,
+:root:not(.dark) .panel-heading,
+:root:not(.dark) .key-display span,
+:root:not(.dark) .notation-row,
+:root:not(.dark) .artist-filter,
+:root:not(.dark) .library-empty,
+:root:not(.dark) .end-marker { color: #111827; }
+:root:not(.dark) .url-row input,
+:root:not(.dark) .library-search input,
+:root:not(.dark) .library-sort select,
+:root:not(.dark) .library-sort option,
+:root:not(.dark) .personal-note textarea { color: #101828; }
+:root:not(.dark) .url-row input::placeholder,
+:root:not(.dark) .library-search input::placeholder { color: #46566d; }
+:root:not(.dark) .top-library-button { color: #111827; }
+:root:not(.dark) .bookmarklet-card button,
+:root:not(.dark) .userscript-link { color: #111827; }
