@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeSavedSong, normalizeSongMetadata, parseSongImport, parseSongLibrary, readSongLibrary, removeSong, upsertSong, updateSongNote } from "../client/src/lib/songLibrary";
+import { makeSavedSong, normalizeSongMetadata, parseSongImport, parseSongLibrary, readSongLibrary, removeSong, sortSongsForLibrary, sortSongsByAddedAt, type SavedSong, type LibrarySort, upsertSong, updateSongNote } from "../client/src/lib/songLibrary";
 
 class MemoryStorage {
   private values = new Map<string, string>();
@@ -22,6 +22,17 @@ describe("song library persistence", () => {
     expect(readSongLibrary(storage).find((song) => song.id === "older")?.lines[0]?.chord).toBe("Am");
 
     expect(removeSong(storage, "newer").map((song) => song.id)).toEqual(["older"]);
+  });
+
+  it("sorts the library by date, artist, or title without mutating the source", () => {
+    const songs: SavedSong[] = [
+      makeSavedSong({ id: "z", addedAt: 1, title: "Bravo", artist: "Beta", sourceUrl: "https://www.tab4u.com/tabs/songs/11.html", lines: [] }),
+      makeSavedSong({ id: "a", addedAt: 3, title: "Alpha", artist: "Alpha", sourceUrl: "https://www.tab4u.com/tabs/songs/12.html", lines: [] }),
+      makeSavedSong({ id: "m", addedAt: 2, title: "Charlie", artist: "Beta", sourceUrl: "https://www.tab4u.com/tabs/songs/13.html", lines: [] }),
+    ];
+    const expected: Record<LibrarySort, string[]> = { addedAt: ["a", "m", "z"], artist: ["a", "z", "m"], title: ["a", "z", "m"] };
+    (Object.keys(expected) as LibrarySort[]).forEach((sortBy) => expect(sortSongsForLibrary(songs, sortBy).map((song) => song.id)).toEqual(expected[sortBy]));
+    expect(songs.map((song) => song.id)).toEqual(["z", "a", "m"]);
   });
 
   it("ignores corrupt values in local storage", () => {

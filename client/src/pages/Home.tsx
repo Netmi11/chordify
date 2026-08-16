@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, BookmarkPlus, ChevronRight, Copy, ExternalLink, LibraryBig, Loader2, Maximize2, Music2, Play, RotateCcw, Search, Settings2, Sparkles, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronRight, Copy, ExternalLink, LibraryBig, Loader2, Maximize2, Music2, Play, RotateCcw, Search, Settings2, Sparkles, Trash2, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { BOOKMARKLET_SOURCE } from "@/lib/bookmarkletSource";
-import { makeSavedSong, parseSongImport, readSongLibrary, removeSong, type SavedSong, type SongLine, updateSongNote, upsertSong } from "@/lib/songLibrary";
+import { makeSavedSong, parseSongImport, readSongLibrary, removeSong, sortSongsForLibrary, type LibrarySort, type SavedSong, type SongLine, updateSongNote, upsertSong } from "@/lib/songLibrary";
 
 const sharpNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatNotes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
@@ -57,16 +57,20 @@ function formatAddedAt(timestamp: number) {
 function LibraryView({ songs, onOpen, onDelete, onReturn }: { songs: SavedSong[]; onOpen: (song: SavedSong) => void; onDelete: (id: string) => void; onReturn: () => void }) {
   const [query, setQuery] = useState("");
   const [artist, setArtist] = useState("הכול");
+  const [sortBy, setSortBy] = useState<LibrarySort>("addedAt");
   const artists = useMemo(() => ["הכול", ...Array.from(new Set(songs.map((song) => song.artist).filter(Boolean))).sort((a, b) => a.localeCompare(b, "he"))], [songs]);
-  const filtered = useMemo(() => songs.filter((song) => (artist === "הכול" || song.artist === artist) && `${song.title} ${song.artist}`.toLowerCase().includes(query.trim().toLowerCase())), [artist, query, songs]);
+  const filtered = useMemo(() => {
+    const matching = songs.filter((song) => (artist === "הכול" || song.artist === artist) && `${song.title} ${song.artist}`.toLowerCase().includes(query.trim().toLowerCase()));
+    return sortSongsForLibrary(matching, sortBy);
+  }, [artist, query, sortBy, songs]);
 
   return <main className="library-page">
     <section className="library-hero">
       <div><p className="eyebrow"><LibraryBig size={14} /> הספרייה האישית</p><h1>כל השירים שלך.<br /><em>תמיד מוכנים לנגינה.</em></h1><p>השירים נשמרים בטלפון הזה בלבד, בגרסת המקור שלהם, וזמינים גם ללא חיבור לאחר פתיחת האפליקציה פעם אחת.</p></div>
       <button className="library-return" onClick={onReturn}><ChevronRight size={17} /> חזור לשיר</button>
     </section>
-    <section className="library-controls" aria-label="חיפוש וסינון ספרייה">
-      <label className="library-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שיר או אמן" /></label>
+    <section className="library-controls" aria-label="חיפוש, מיון וסינון ספרייה">
+      <div className="library-search-row"><label className="library-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שיר או אמן" /></label><label className="library-sort"><ArrowDownUp size={16} /><span>מיון</span><select value={sortBy} onChange={(event) => setSortBy(event.target.value as LibrarySort)} aria-label="מיין את השירים"><option value="addedAt">תאריך הוספה</option><option value="artist">שם האמן</option><option value="title">שם השיר</option></select></label></div>
       <div className="artist-filters">{artists.map((name) => <button key={name} className={artist === name ? "artist-filter active" : "artist-filter"} onClick={() => setArtist(name)}>{name}</button>)}</div>
     </section>
     <section className="library-grid" aria-live="polite">

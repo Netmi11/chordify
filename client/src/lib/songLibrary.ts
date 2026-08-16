@@ -16,6 +16,7 @@ export type SavedSong = {
 };
 
 export const SONG_LIBRARY_STORAGE_KEY = "chordshift-song-library-v1";
+export type LibrarySort = "addedAt" | "artist" | "title";
 
 function isSongLine(value: unknown): value is SongLine {
   if (!value || typeof value !== "object") return false;
@@ -75,6 +76,11 @@ export function parseSongLibrary(raw: string | null): SavedSong[] {
 
 export function sortSongsByAddedAt(songs: SavedSong[]): SavedSong[] {
   return [...songs].sort((a, b) => b.addedAt - a.addedAt);
+}
+
+export function sortSongsForLibrary(songs: SavedSong[], sortBy: LibrarySort): SavedSong[] {
+  const collator = new Intl.Collator("he", { sensitivity: "base", numeric: true });
+  return [...songs].sort((a, b) => sortBy === "addedAt" ? b.addedAt - a.addedAt : sortBy === "artist" ? collator.compare(a.artist, b.artist) || collator.compare(a.title, b.title) : collator.compare(a.title, b.title) || collator.compare(a.artist, b.artist));
 }
 
 export function makeSavedSong(input: Omit<SavedSong, "id" | "addedAt" | "note"> & { id?: string; addedAt?: number; note?: string }): SavedSong {

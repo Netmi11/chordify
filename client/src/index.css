@@ -281,6 +281,11 @@ button:active { transform: scale(.97); }
 .library-hero p:not(.eyebrow) { max-width: 520px; margin: 18px 0 0; color: #93a6ad; line-height: 1.7; font-size: 14px; }
 .library-return { flex: 0 0 auto; color: #e7eef0; }
 .library-controls { display: grid; grid-template-columns: minmax(240px, 360px) 1fr; gap: 18px; align-items: center; padding: 25px 0 22px; }
+.library-search-row { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.library-sort { display: inline-flex; align-items: center; gap: 6px; min-height: 46px; padding: 0 11px; border: 1px solid #344650; border-radius: 9px; background: #111c26; color: #f4b448; white-space: nowrap; }
+.library-sort span { color: #91a4ac; font-size: 11px; }
+.library-sort select { min-width: 88px; border: 0; outline: 0; background: transparent; color: #edf3f3; font: inherit; font-size: 11px; cursor: pointer; }
+.library-sort option { background: #111c26; color: #edf3f3; }
 .library-search { display: flex; align-items: center; gap: 9px; min-height: 46px; padding: 0 13px; color: #f4b448; border: 1px solid #344650; border-radius: 9px; background: #111c26; }
 .library-search:focus-within { border-color: #f4b448; box-shadow: 0 0 0 3px rgba(244, 180, 72, .09); }
 .library-search input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: #edf3f3; font: inherit; font-size: 13px; }
@@ -328,6 +333,11 @@ button:active { transform: scale(.97); }
   .library-hero p:not(.eyebrow) { margin-top: 13px; font-size: 12px; }
   .library-return { min-height: 2.2rem; }
   .library-controls { grid-template-columns: 1fr; gap: 12px; padding: 17px 0; }
+  .library-search-row { width: 100%; }
+  .library-search { flex: 1; min-width: 0; }
+  .library-sort { flex: 0 0 auto; padding-inline: 9px; }
+  .library-sort span { display: none; }
+  .library-sort select { min-width: 78px; }
   .artist-filters { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; scrollbar-width: none; }
   .artist-filters::-webkit-scrollbar { display: none; }
   .artist-filter { white-space: nowrap; }
