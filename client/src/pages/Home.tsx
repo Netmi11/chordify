@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronRight, Copy, Download, ExternalLink, LibraryBig, Loader2, Maximize2, Moon, Music2, Play, RotateCcw, Search, Sparkles, Sun, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronRight, CloudDownload, Copy, Download, ExternalLink, KeyRound, LibraryBig, Loader2, Maximize2, Moon, Music2, Play, RotateCcw, Search, Sparkles, Sun, Trash2, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { BOOKMARKLET_SOURCE } from "@/lib/bookmarkletSource";
 import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, sortSongsForLibrary, type LibrarySort, type SavedSong, type SongLine, updateSongNote, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
 import { useTheme } from "@/contexts/ThemeContext";
 import { exportSongToPdf } from "@/lib/songPdf";
+import { formatCloudRecoveryCode, getOrCreateCloudLibraryKey, parseCloudRecoveryCode, setCloudLibraryKey, type CloudLibraryKey } from "@/lib/libraryCloud";
 
 const sharpNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const flatNotes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
@@ -62,7 +63,7 @@ function formatAddedAt(timestamp: number) {
   return new Intl.DateTimeFormat("he-IL", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(timestamp));
 }
 
-function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBackup, onImportBackup }: { songs: SavedSong[]; onOpen: (song: SavedSong) => void; onExport: (song: SavedSong) => void; onDelete: (id: string) => void; onReturn: () => void; onExportBackup: () => void; onImportBackup: (file: File) => void }) {
+function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBackup, onImportBackup, onShowCloudCode, onRestoreCloud, cloudStatus }: { songs: SavedSong[]; onOpen: (song: SavedSong) => void; onExport: (song: SavedSong) => void; onDelete: (id: string) => void; onReturn: () => void; onExportBackup: () => void; onImportBackup: (file: File) => void; onShowCloudCode: () => void; onRestoreCloud: () => void; cloudStatus: string }) {
   const [query, setQuery] = useState("");
   const [artist, setArtist] = useState("הכול");
   const [sortBy, setSortBy] = useState<LibrarySort>("addedAt");
@@ -81,6 +82,7 @@ function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBack
       <div className="library-search-row"><label className="library-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שיר או אמן" /></label><label className="library-sort"><ArrowDownUp size={16} /><span>מיון</span><select value={sortBy} onChange={(event) => setSortBy(event.target.value as LibrarySort)} aria-label="מיין את השירים"><option value="addedAt">תאריך הוספה</option><option value="artist">שם האמן</option><option value="title">שם השיר</option></select></label></div>
       <div className="artist-filters">{artists.map((name) => <button key={name} className={artist === name ? "artist-filter active" : "artist-filter"} onClick={() => setArtist(name)}>{name}</button>)}</div>
       <div className="library-backup-actions"><button onClick={onExportBackup}><Download size={15} /> גיבוי לספרייה</button><label><ExternalLink size={15} /> שחזור מקובץ<input type="file" accept="application/json,.json" onChange={(event) => { const file = event.target.files?.[0]; if (file) onImportBackup(file); event.currentTarget.value = ""; }} /></label><a href="https://www.tab4u.com/tabs/artists/154_%D7%9E%D7%A8%D7%A1%D7%93%D7%A1_%D7%91%D7%A0%D7%93.html" target="_blank" rel="noreferrer"><Music2 size={15} /> ייבוא 10 מרסדס בנד</a></div><p className="library-backup-note">כדי להוסיף את עשרת השירים: פתח את עמוד האמן ב־Edge עם Tampermonkey מותקן ולחץ על העיגול „10”.</p>
+      <div className="library-backup-actions"><button onClick={onShowCloudCode}><KeyRound size={15} /> קוד שחזור ענן</button><button onClick={onRestoreCloud}><CloudDownload size={15} /> שחזר מהענן</button></div><p className="library-backup-note">{cloudStatus} · שמור את קוד השחזור במקום פרטי כדי שתוכל להחזיר את הספרייה לטלפון חדש.</p>
     </section>
     <section className="library-grid" aria-live="polite">
       {filtered.map((song) => <article className="song-card" key={song.id}>
@@ -108,7 +110,13 @@ export default function Home() {
   const [noteDraft, setNoteDraft] = useState("");
   const [saveNotice, setSaveNotice] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+  const [cloudKey, setCloudKey] = useState<CloudLibraryKey | null>(null);
+  const [cloudReady, setCloudReady] = useState(false);
+  const [cloudHydrated, setCloudHydrated] = useState(false);
+  const [cloudStatus, setCloudStatus] = useState("הספרייה נשמרת בטלפון");
   const fetchSong = trpc.tab4u.fetchSong.useQuery({ url }, { enabled: false, retry: false });
+  const cloudPush = trpc.librarySync.push.useMutation();
+  const trpcUtils = trpc.useUtils();
 
   useEffect(() => {
     try {
@@ -143,6 +151,25 @@ export default function Home() {
     } catch { setLibrary([]); }
   }, []);
   useEffect(() => { if (!playing) return; const timer = window.setInterval(() => window.scrollBy({ top: 1, behavior: "auto" }), 55); return () => window.clearInterval(timer); }, [playing]);
+  useEffect(() => { setCloudKey(getOrCreateCloudLibraryKey(window.localStorage)); setCloudReady(true); }, []);
+  useEffect(() => {
+    if (!cloudReady || !cloudKey) return;
+    void trpcUtils.librarySync.pull.fetch(cloudKey).then((cloudSongs) => {
+      if (cloudSongs.length && !library.length) {
+        const restored = writeSongLibrary(window.localStorage, cloudSongs.map((song) => makeSavedSong(song)));
+        setLibrary(restored);
+        setCloudStatus(`שוחזרו ${restored.length} שירים מהענן`);
+      }
+    }).catch(() => undefined).finally(() => setCloudHydrated(true));
+  }, [cloudKey, cloudReady]);
+  useEffect(() => {
+    if (!cloudReady || !cloudHydrated || !cloudKey || !navigator.onLine) return;
+    const timer = window.setTimeout(() => cloudPush.mutate({ libraryId: cloudKey.libraryId, secret: cloudKey.secret, songs: library }, {
+      onSuccess: () => setCloudStatus("מגובה בענן הפרטי שלך"),
+      onError: () => setCloudStatus("נשמר בטלפון — הסנכרון ינסה שוב כשיש חיבור"),
+    }), 450);
+    return () => window.clearTimeout(timer);
+  }, [cloudKey, cloudReady, cloudHydrated, library]);
   useEffect(() => {
     const onInstallAvailable = (event: Event) => { event.preventDefault(); setInstallPrompt(event as InstallPromptEvent); };
     const onInstalled = () => setInstallPrompt(null);
@@ -186,6 +213,27 @@ export default function Home() {
     setSavedSong(null);
     setScreen("library");
   };
+  const showCloudRecoveryCode = async () => {
+    if (!cloudKey) return;
+    await navigator.clipboard?.writeText(formatCloudRecoveryCode(cloudKey));
+    window.alert("קוד השחזור הועתק. שמור אותו ב־Notes או במנהל סיסמאות; בעזרתו אפשר לשחזר את הספרייה מהענן בטלפון חדש.");
+  };
+  const restoreFromCloud = async () => {
+    const raw = window.prompt("הדבק את קוד השחזור של הספרייה:");
+    if (!raw) return;
+    const key = parseCloudRecoveryCode(raw);
+    if (!key) { window.alert("קוד השחזור אינו תקין."); return; }
+    try {
+      const cloudSongs = await trpcUtils.librarySync.pull.fetch(key);
+      if (!cloudSongs.length) { window.alert("לא נמצאו שירים בספרייה הזו בענן."); return; }
+      const next = writeSongLibrary(window.localStorage, cloudSongs.map((song) => makeSavedSong(song)));
+      setCloudLibraryKey(window.localStorage, key);
+      setCloudKey(key);
+      setLibrary(next);
+      setCloudStatus(`שוחזרו ${next.length} שירים מהענן`);
+      window.alert(`שוחזרו ${next.length} שירים מהענן.`);
+    } catch { window.alert("לא הצלחתי לשחזר מהענן. בדוק את הקוד ואת החיבור לאינטרנט."); }
+  };
   const bookmarkletUrl = `javascript:${BOOKMARKLET_SOURCE.replace(/\s+/g, " ")}`;
   const copyBookmarklet = async () => { await navigator.clipboard?.writeText(bookmarkletUrl); };
   const installApp = async () => { if (!installPrompt) return; await installPrompt.prompt(); setInstallPrompt(null); };
@@ -207,7 +255,7 @@ export default function Home() {
 
   return <div dir="rtl" className={`app-shell ${readingMode ? "is-reading" : ""}`}>
     <header className="topbar"><div className="brand-lockup"><img src="/manus-storage/stage-slate-pick-mark_6b2a5d37.png" alt="" className="brand-mark" /><div><div className="brand-name">ChordShift</div><div className="brand-caption">הספרייה הפרטית שלך</div></div></div><div className="topbar-actions"><span className="status-dot"><span /> נשמר בטלפון</span>{installPrompt && <button className="install-app-button" onClick={() => void installApp()}>התקן כאפליקציה</button>}<button className="top-library-button" onClick={() => { setReadingMode(false); setScreen(screen === "library" ? "player" : "library"); }}><LibraryBig size={17} /> {screen === "library" ? "שיר נוכחי" : "הספרייה"}</button><button className="theme-toggle" onClick={toggleTheme} aria-label={theme === "dark" ? "עבור למצב יום" : "עבור למצב לילה"} title={theme === "dark" ? "מצב יום" : "מצב לילה"}>{theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}</button></div></header>
-    {screen === "library" ? <LibraryView songs={library} onOpen={openSavedSong} onExport={(song) => exportPdf(song)} onDelete={deleteSavedSong} onReturn={() => setScreen("player")} onExportBackup={exportLibraryBackup} onImportBackup={importLibraryBackup} /> : <main className="workspace">
+    {screen === "library" ? <LibraryView songs={library} onOpen={openSavedSong} onExport={(song) => exportPdf(song)} onDelete={deleteSavedSong} onReturn={() => setScreen("player")} onExportBackup={exportLibraryBackup} onImportBackup={importLibraryBackup} onShowCloudCode={() => void showCloudRecoveryCode()} onRestoreCloud={() => void restoreFromCloud()} cloudStatus={cloudStatus} /> : <main className="workspace">
       <section className="control-rail"><div className="rail-copy"><p className="eyebrow"><Sparkles size={14} /> אוסף אישי</p><h1>שמור. ארגן.<br /><em>נגן.</em></h1><p className="intro">טען שיר מ־Tab4U, שמור את גרסת המקור שלו, וחזור אליו בכל זמן גם ללא חיבור.</p></div>
         <div className="url-entry"><label htmlFor="song-url">קישור לשיר</label><div className="url-row"><input id="song-url" value={url} onChange={(event) => setUrl(event.target.value)} dir="ltr" /><button className="clear-url-button" onClick={() => { setUrl(""); setCleared(true); setSavedSong(null); resetTranspose(); }} aria-label="נקה קישור"><X size={16} /></button><button className="load-button" onClick={loadFromUrl} disabled={fetchSong.isFetching} aria-busy={fetchSong.isFetching}><span className={fetchSong.isFetching ? "loading-icon is-spinning" : "loading-icon"}>{fetchSong.isFetching ? <Loader2 size={16} /> : <ExternalLink size={16} />}</span> {fetchSong.isFetching ? "טוען…" : "טען"}</button></div><p className="field-note" aria-live="polite">{fetchSong.isFetching ? "קורא את השיר ושומר את מיקום האקורדים והמילים…" : fetchSong.error ? "Tab4U חסם טעינה ישירה. פתח את השיר ב־Edge ולחץ בסרגל ChordShift על שמור בספרייה." : fetchSong.data ? "השיר נטען. אפשר לשמור את גרסת המקור בספרייה." : "הדרך היציבה: פתח שיר ב־Edge ולחץ בסרגל ChordShift על שמור בספרייה."}</p><button className={saveNotice ? "save-song-button saved" : "save-song-button"} onClick={persistCurrentSong} disabled={!canSave}><BookmarkPlus size={16} /> {saveNotice ? "נשמר בספרייה" : "שמור בספרייה"}</button><div className="bookmarklet-card"><strong>הפעלה ישירה בתוך Tab4U</strong><span>ב־Edge עם Tampermonkey, ChordShift מופיע אוטומטית בתוך דף השיר.</span><a className="userscript-link" href="/chordshift.user.js">התקן ChordShift ב־Tampermonkey</a></div></div>
         <div className="shift-panel"><div className="panel-heading"><span>שינוי סולם זמני</span><strong>{shift > 0 ? `+${shift}` : shift} <small>חצאי טון</small></strong></div><div className="shift-controls"><button className="shift-button" onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="key-display"><span>אקורד פתיחה</span><b>{keyLabel}</b></div><button className="shift-button" onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button></div><div className="quick-shifts">{[-3, -2, -1, 0, 1, 2, 3].map((value) => <button key={value} className={shift === value ? "quick active" : "quick"} onClick={() => setShift(value)}>{value > 0 ? `+${value}` : value}</button>)}</div><div className="shortcut-row"><button className={shift === 7 ? "shortcut-button active" : "shortcut-button"} onClick={() => setShift(7)}>+7</button><button className={shift === 0 ? "shortcut-button active" : "shortcut-button"} onClick={resetTranspose}><RotateCcw size={14} /> מקור</button></div><div className="notation-row"><span>כתיבת אקורדים</span><button onClick={() => setFlats((value) => !value)} className="notation-toggle">{flats ? "♭ במולים" : "♯ דיאזים"}</button></div></div>
