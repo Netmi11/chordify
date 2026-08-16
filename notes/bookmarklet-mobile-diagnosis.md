@@ -53,3 +53,25 @@ The live Tab4U Hotel California page contains complete guitar tablature. Each ta
 ## Live tab transposition verification
 
 On the live Hotel California page, ChordShift identified 234 `td.tabs` rows and 118 chord nodes. After +7 while the tabs control was off, the first tab line remained exactly original. Enabling `טאבים: פעיל` changed `e|-9---|` to `e|-16--|` while retaining the same line length. `מקור` restored the exact original text and width, with the transposition step back at 0.
+
+## Personal library interface verification
+
+The browser check confirmed that the player view exposes the library button and the save action. The library view opens correctly with search, artist filter, an intentional empty state, and return actions to the song-loading workspace.
+
+The live import flow returns correctly from the library to the loader and switches the load action into an explicit `טוען…` state while the Tab4U request is in flight.
+
+## Direct library import bridge verification
+
+The live Hotel California page loaded the updated ChordShift toolbar and the new save action opened the local library target. The captured local payload contained 392 lines, including 234 original tab lines, with the expected title and source URL. The artist selector fell back to `Tab4U` in this runtime and needs an extraction fallback before release.
+
+The second live bridge run confirmed that all song and tab content still transfers, while the first matching artist selector can be an empty visual node. The extractor will therefore select the first candidate artist element with non-empty text.
+
+After synchronizing the Userscript, the live import bridge produced the expected `Hotel California` title and `Eagles` artist with 392 lines, including 234 tab rows. A representative payload was then prepared for the final in-app persistence check.
+
+The full local import test completed successfully: ChordShift opened with a saved `Hotel California` record, original `Bm9` chord and tab rows, note field, source URL, and a library count of one. The library rendered an Eagles filter plus a dated song card with a direct play action.
+
+The revised service worker is registered, active, and controlling the app. The active worker cache was initially empty because the browser had not yet navigated under the new cache version; a controlled reload is required to populate the shell cache.
+
+After a controlled reload, `chordshift-shell-v2` contained the app shell and manifest. The mobile control dock was also corrected to six grid cells so the temporary transposition, source reset, and scroll actions remain visible together.
+
+Final offline verification confirmed a cached app shell with HTTP 200, an active controlling service worker, and a persisted local library record for `Hotel California` after reloading the app.
