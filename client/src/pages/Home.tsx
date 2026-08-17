@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronRight, CloudDownload, Copy, Download, ExternalLink, KeyRound, LibraryBig, Loader2, Maximize2, Moon, Music2, Play, RotateCcw, Search, Sparkles, Sun, Trash2, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { BOOKMARKLET_SOURCE } from "@/lib/bookmarkletSource";
-import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, sortSongsForLibrary, type LibrarySort, type SavedSong, type SongLine, updateSongNote, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
+import { makeSavedSong, mergeCloudSongs, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, sortSongsForLibrary, type LibrarySort, type SavedSong, type SongLine, updateSongNote, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
 import { useTheme } from "@/contexts/ThemeContext";
 import { exportSongToPdf } from "@/lib/songPdf";
 import { formatCloudRecoveryCode, getOrCreateCloudLibraryKey, parseCloudRecoveryCode, setCloudLibraryKey, type CloudLibraryKey } from "@/lib/libraryCloud";
@@ -155,10 +155,14 @@ export default function Home() {
   useEffect(() => {
     if (!cloudReady || !cloudKey) return;
     void trpcUtils.librarySync.pull.fetch(cloudKey).then((cloudSongs) => {
-      if (cloudSongs.length && !library.length) {
-        const restored = writeSongLibrary(window.localStorage, cloudSongs.map((song) => makeSavedSong(song)));
-        setLibrary(restored);
-        setCloudStatus(`שוחזרו ${restored.length} שירים מהענן`);
+      if (cloudSongs.length) {
+        const cloudLibrary = cloudSongs.map((song) => makeSavedSong(song));
+        const merged = mergeCloudSongs(library, cloudLibrary);
+        if (merged.length !== library.length) {
+          const restored = writeSongLibrary(window.localStorage, merged);
+          setLibrary(restored);
+          setCloudStatus(`נוספו ${restored.length - library.length} שירים מהענן`);
+        }
       }
     }).catch(() => undefined).finally(() => setCloudHydrated(true));
   }, [cloudKey, cloudReady]);

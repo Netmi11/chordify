@@ -128,6 +128,11 @@ export function writeSongLibrary(storage: Pick<Storage, "setItem">, songs: Saved
   return sorted;
 }
 
+export function mergeCloudSongs(localSongs: SavedSong[], cloudSongs: SavedSong[]): SavedSong[] {
+  const localUrls = new Set(localSongs.map((song) => song.sourceUrl));
+  return sortSongsByAddedAt([...localSongs, ...cloudSongs.filter((song) => !localUrls.has(song.sourceUrl))]);
+}
+
 export function upsertSong(storage: Pick<Storage, "getItem" | "setItem">, song: SavedSong): SavedSong[] {
   const current = readSongLibrary(storage).filter((savedSong) => savedSong.id !== song.id && savedSong.sourceUrl !== song.sourceUrl);
   return writeSongLibrary(storage, [song, ...current]);

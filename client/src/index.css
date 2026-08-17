@@ -544,5 +544,6 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
 :root:not(.dark) .url-row input::placeholder,
 :root:not(.dark) .library-search input::placeholder { color: #46566d; }
 :root:not(.dark) .top-library-button { color: #111827; }
+:root:not(.dark) .library-return { color: #132238; border-color: rgba(19, 34, 56, .32); background: rgba(255, 255, 255, .82); }
 :root:not(.dark) .bookmarklet-card button,
 :root:not(.dark) .userscript-link { color: #111827; }

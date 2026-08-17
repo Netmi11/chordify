@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeSavedSong, normalizeSongMetadata, parseSongBatchImport, parseSongImport, parseSongLibrary, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, sortSongsForLibrary, sortSongsByAddedAt, type SavedSong, type LibrarySort, upsertSong, updateSongNote } from "../client/src/lib/songLibraryV2";
+import { makeSavedSong, mergeCloudSongs, normalizeSongMetadata, parseSongBatchImport, parseSongImport, parseSongLibrary, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, sortSongsForLibrary, sortSongsByAddedAt, type SavedSong, type LibrarySort, upsertSong, updateSongNote } from "../client/src/lib/songLibraryV2";
 
 class MemoryStorage {
   private values = new Map<string, string>();
@@ -81,5 +81,12 @@ describe("song library persistence", () => {
     expect(parseSongImport(payload)?.song.lines[1]?.tab).toBe("e|-9---|");
     expect(parseSongImport(payload)?.song.sourceUrl).toContain("en.tab4u.com");
     expect(parseSongImport(JSON.stringify({ type: "chordshift-import-v1", song: { title: "לא תקין", artist: "x", sourceUrl: "https://example.com/tabs/songs/1", lines: [] } }))).toBeNull();
+  });
+
+  it("merges a new cloud song without replacing a matching local song or its note", () => {
+    const local = makeSavedSong({ id: "local", addedAt: 2, title: "להתאפק", artist: "מרסדס בנד", sourceUrl: "https://www.tab4u.com/tabs/songs/local.html", note: "קאפו 2", lines: [] });
+    const cloudDuplicate = makeSavedSong({ id: "cloud-local", addedAt: 3, title: "להתאפק בענן", artist: "מרסדס בנד", sourceUrl: "https://www.tab4u.com/tabs/songs/local.html", lines: [] });
+    const cloudNew = makeSavedSong({ id: "cloud-new", addedAt: 4, title: "מלאך", artist: "מרסדס בנד", sourceUrl: "https://www.tab4u.com/tabs/songs/new.html", lines: [] });
+    expect(mergeCloudSongs([local], [cloudDuplicate, cloudNew])).toEqual([cloudNew, local]);
   });
 });
