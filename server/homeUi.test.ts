@@ -14,16 +14,21 @@ describe("song player mobile cleanup", () => {
   });
 
   it("keeps compact tab typography for narrow screens", () => {
-    expect(styles).toContain('font: 500 11px/1.25 "IBM Plex Mono"');
-    expect(styles).toContain("font-size: clamp(9px, 2.5vw, 11px)");
+    expect(styles).toContain('font: 500 9px/1.1 "IBM Plex Mono"');
+    expect(styles).toContain("font-size: clamp(7px, 2vw, 9px)");
+    expect(styles).toContain(".tab-card");
+    expect(homeSource).toContain("song-row tab-row");
   });
 
   it("opens the library first and groups songs by artist", () => {
     expect(homeSource).toContain('useState<"player" | "library">("library")');
     expect(homeSource).toContain("const groupedArtists = useMemo");
-    expect(homeSource).toContain("className=\"artist-group\"");
+    expect(homeSource).toContain("const [expandedArtist, setExpandedArtist]");
+    expect(homeSource).toContain('isExpanded ? "artist-group is-expanded" : "artist-group"');
     expect(homeSource).toContain("className=\"artist-avatar\"");
     expect(homeSource).toContain('artistInitials(artistName) || "♪"');
+    expect(homeSource).toContain('singleSong ? onOpen(artistSongs[0])');
+    expect(homeSource).toContain("!singleSong && isExpanded");
   });
 
   it("opens imported bridge songs in the player despite the library-first default", () => {

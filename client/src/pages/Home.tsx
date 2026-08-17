@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronRight, CloudDownload, Download, ExternalLink, KeyRound, LibraryBig, Loader2, Moon, Music2, Play, RotateCcw, Search, Sparkles, Sun, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronDown, ChevronRight, CloudDownload, Download, ExternalLink, KeyRound, LibraryBig, Loader2, Moon, Music2, Play, RotateCcw, Search, Sparkles, Sun, Trash2, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { BOOKMARKLET_SOURCE } from "@/lib/bookmarkletSource";
 import { makeSavedSong, mergeCloudSongs, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, sortSongsForLibrary, type LibrarySort, type SavedSong, type SongLine, updateSongNote, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
@@ -67,6 +67,7 @@ function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBack
   const [query, setQuery] = useState("");
   const [artist, setArtist] = useState("הכול");
   const [sortBy, setSortBy] = useState<LibrarySort>("addedAt");
+  const [expandedArtist, setExpandedArtist] = useState<string | null>(null);
   const artists = useMemo(() => ["הכול", ...Array.from(new Set(songs.map((song) => song.artist).filter(Boolean))).sort((a, b) => a.localeCompare(b, "he"))], [songs]);
   const filtered = useMemo(() => {
     const matching = songs.filter((song) => (artist === "הכול" || song.artist === artist) && `${song.title} ${song.artist}`.toLowerCase().includes(query.trim().toLowerCase()));
@@ -94,15 +95,21 @@ function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBack
       <div className="library-backup-actions"><button onClick={onShowCloudCode}><KeyRound size={15} /> קוד שחזור ענן</button><button onClick={onRestoreCloud}><CloudDownload size={15} /> שחזר מהענן</button></div><p className="library-backup-note">{cloudStatus} · שמור את קוד השחזור במקום פרטי כדי שתוכל להחזיר את הספרייה לטלפון חדש.</p>
     </section>
     <section className="library-grid" aria-live="polite">
-      {groupedArtists.map(([artistName, artistSongs]) => <section className="artist-group" key={artistName}>
-        <header className="artist-group-header"><div className="artist-avatar" aria-hidden="true">{artistInitials(artistName) || "♪"}</div><div><p className="artist-kicker">אמן</p><h2>{artistName}</h2><span>{artistSongs.length} {artistSongs.length === 1 ? "שיר" : "שירים"}</span></div></header>
-        <div className="artist-song-grid">{artistSongs.map((song) => <article className="song-card" key={song.id}>
+      {groupedArtists.map(([artistName, artistSongs]) => {
+        const singleSong = artistSongs.length === 1;
+        const isExpanded = expandedArtist === artistName;
+        return <section className={isExpanded ? "artist-group is-expanded" : "artist-group"} key={artistName}>
+          <button className="artist-group-header" onClick={() => singleSong ? onOpen(artistSongs[0]) : setExpandedArtist(isExpanded ? null : artistName)} aria-expanded={singleSong ? undefined : isExpanded} aria-label={singleSong ? `פתח את ${artistSongs[0].title}` : `${isExpanded ? "סגור" : "פתח"} את שירי ${artistName}`}>
+            <div className="artist-avatar" aria-hidden="true">{artistInitials(artistName) || "♪"}</div><div className="artist-group-copy"><p className="artist-kicker">אמן</p><h2>{artistName}</h2><span>{artistSongs.length} {singleSong ? "שיר — פתח לנגינה" : "שירים — לחץ להצגה"}</span></div><ChevronDown className={isExpanded ? "artist-chevron is-open" : "artist-chevron"} size={19} aria-hidden="true" />
+          </button>
+          {!singleSong && isExpanded && <div className="artist-song-grid">{artistSongs.map((song) => <article className="song-card" key={song.id}>
           <div className="song-card-top"><span>מקור</span><button className="delete-song" aria-label={`מחק את ${song.title}`} onClick={() => onDelete(song.id)}><Trash2 size={15} /></button></div>
           <h3>{song.title}</h3>
           {song.note && <p className="song-card-note">{song.note}</p>}
           <footer><time>{formatAddedAt(song.addedAt)}</time><div className="song-card-actions"><button className="song-pdf-button" onClick={() => onExport(song)} aria-label={`הורד PDF של ${song.title}`}><Download size={14} /> PDF</button><button onClick={() => onOpen(song)}>פתח לנגינה <ChevronRight size={15} /></button></div></footer>
-        </article>)}</div>
-      </section>)}
+          </article>)}</div>}
+        </section>;
+      })}
       {!filtered.length && <div className="library-empty"><Music2 size={26} /><h2>{songs.length ? "לא נמצאו שירים מתאימים" : "הספרייה עדיין ריקה"}</h2><p>{songs.length ? "נסה לחפש בשם אחר או לבחור אמן אחר." : "טען שיר מקישור Tab4U ולחץ על שמור בספרייה."}</p><button onClick={onReturn}>עבור לטעינת שיר</button></div>}
     </section>
   </main>;
@@ -278,7 +285,7 @@ export default function Home() {
         <div className="rail-footer"><button className="reset-button" onClick={resetTranspose}><RotateCcw size={14} /> חזור למקור</button><span>{library.length} שירים בספרייה</span></div>
       </section>
       <section className="song-stage"><div className="song-toolbar"><div className="song-meta"><span className="live-tag">{savedSong ? "LIBRARY" : "LIVE VIEW"}</span><div><h2>{activeTitle}</h2><p>{activeArtist} · {savedSong ? `נשמר ${formatAddedAt(savedSong.addedAt)}` : "Tab4U"}</p></div></div></div>
-        <div className="song-paper"><div className="paper-topline"><span>אקורדים לשיר</span><span className="position-note">{shift === 0 ? "גרסת מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`}</span></div><article className="song-content"><div className="reading-guide" aria-hidden="true" /><div className="song-title">{activeTitle}</div><div className="song-artist">{activeArtist}</div>{savedSong && <label className="personal-note"><span>הערה אישית</span><textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} onBlur={saveNote} placeholder="לדוגמה: קאפו 2, פתיחה שקטה…" rows={2} /></label>}<div className="rule" />{activeSong.map((line, index) => <div className={`song-row ${line.label ? "section-row" : ""}`} key={`${line.lyric}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}<ChordLine chord={line.chord} shift={shift} flats={flats} />{line.tab && <pre className="saved-tab-line">{line.tab}</pre>}<div className="lyric-line">{line.lyric || "\u00A0"}</div></div>)}<div className="end-marker">— סוף —</div></article></div>
+        <div className="song-paper"><div className="paper-topline"><span>אקורדים לשיר</span><span className="position-note">{shift === 0 ? "גרסת מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`}</span></div><article className="song-content"><div className="reading-guide" aria-hidden="true" /><div className="song-title">{activeTitle}</div><div className="song-artist">{activeArtist}</div>{savedSong && <label className="personal-note"><span>הערה אישית</span><textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} onBlur={saveNote} placeholder="לדוגמה: קאפו 2, פתיחה שקטה…" rows={2} /></label>}<div className="rule" />{activeSong.map((line, index) => line.tab ? <div className={`song-row tab-row ${line.label ? "section-row" : ""}`} key={`${line.tab}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}{line.chord && <ChordLine chord={line.chord} shift={shift} flats={flats} />}<div className="tab-card"><pre className="saved-tab-line">{line.tab}</pre></div>{line.lyric && <div className="lyric-line tab-lyric">{line.lyric}</div>}</div> : <div className={`song-row ${line.label ? "section-row" : ""}`} key={`${line.lyric}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}<ChordLine chord={line.chord} shift={shift} flats={flats} /><div className="lyric-line">{line.lyric || "\u00A0"}</div></div>)}<div className="end-marker">— סוף —</div></article></div>
       </section>
     </main>}
     {screen === "player" && <nav className="mobile-dock" aria-label="פקדי נגינה בנייד"><button onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="mobile-key"><small>פתיחה</small><strong>{keyLabel}</strong></div><button onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button><button onClick={() => setShift(7)} aria-label="טרנספוזיציה פלוס שבע"><span>+7</span></button><button onClick={resetTranspose} aria-label="חזרה למקור"><RotateCcw size={17} /><span>מקור</span></button><button onClick={exportCurrentSongPdf} aria-label="הורד את השיר כ־PDF"><Download size={17} /><span>PDF</span></button><button onClick={() => setPlaying((value) => !value)} className={playing ? "dock-active" : ""} aria-label="גלילה"><Play size={17} fill={playing ? "currentColor" : "none"} /><span>{playing ? "עצור" : "גלול"}</span></button></nav>}
