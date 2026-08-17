@@ -95,14 +95,15 @@ button:active { transform: scale(.97); }
 .chord-line { min-height: 24px; color: #f3a54a; font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 500; white-space: pre; direction: ltr; text-align: right; letter-spacing: .015em; }
 .chord-mark { display: inline-block; background: rgba(243,165,74,.08); border-radius: 3px; padding: 0 2px; transition: color 160ms ease, background 160ms ease; }
 .lyric-line { color: #d2dada; font-size: 17px; min-height: 26px; white-space: pre-wrap; }
-.tab-row { min-height: 0; margin: 2px 0 0; line-height: 1; }
-.song-row.tab-row + .song-row.tab-row { margin-top: 0; }
-.song-row.tab-row.section-row { margin-top: 9px; }
-.tab-card { display: block; width: fit-content; max-width: 100%; overflow-x: auto; padding: 0; border: 0; border-radius: 0; background: transparent; direction: ltr; scrollbar-width: thin; }
-.tab-card::-webkit-scrollbar { height: 3px; }
-.tab-card::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--neo-cyan) 35%, transparent); border-radius: 99px; }
-.saved-tab-line { min-width: max-content; margin: 0; color: var(--neo-ink); direction: ltr; text-align: left; font: 500 11px/1 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0; white-space: pre; }
-.tab-lyric { margin-top: 4px; }
+.tab-block { position: relative; width: fit-content; max-width: 100%; margin: 14px 0 18px; direction: ltr; }
+.tab-block.section-row { margin-top: 23px; }
+.tab-section-label { margin: 0 0 5px; color: #f3a54a; font-size: 11px; font-weight: 600; text-align: right; }
+.tab-chord-line { width: max-content; min-width: 100%; min-height: 20px; margin: 0 0 3px; color: #a99fff; font-size: 12px; line-height: 1; text-align: left; letter-spacing: 0; }
+.tab-chord-line .chord-mark { padding: 1px 2px; border-radius: 4px; background: #6e5de9; color: #fff; }
+.tab-sheet { display: block; width: fit-content; max-width: 100%; overflow-x: auto; padding: 0; direction: ltr; scrollbar-width: thin; }
+.tab-sheet::-webkit-scrollbar { height: 3px; }
+.tab-sheet::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--neo-cyan) 35%, transparent); border-radius: 99px; }
+.saved-tab-line { min-width: max-content; margin: 0; color: var(--neo-ink); direction: ltr; text-align: left; font: 500 11px/1.2 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0; white-space: pre; }
 .end-marker { color: #60747d; font-size: 11px; text-align: center; padding-top: 25px; }
 @media (max-width: 850px) { .workspace { grid-template-columns: 1fr; } .control-rail { order: 0; padding: 25px 20px 23px; gap: 24px; border-left: 0; border-bottom: 1px solid rgba(183,199,202,.12); } .rail-copy h1 br { display: none; } .intro { max-width: 550px; } .rail-footer { margin-top: 0; } .song-stage { padding: 22px 12px 50px; } .song-toolbar { align-items: flex-start; flex-direction: column; } .song-tools { width: 100%; justify-content: space-between; } .song-paper { border-radius: 8px; } }
 @media (max-width: 520px) { .topbar { height: 62px; padding: 0 15px; } .status-dot { display: none; } .song-content { padding: 36px 20px 48px; } .chord-line, .lyric-line { font-size: 15px; } .saved-tab-line { font-size: 12px; } .song-title { font-size: 25px; } .url-row { align-items: stretch; } .load-button { padding: 0 10px; } }
@@ -154,11 +155,11 @@ button:active { transform: scale(.97); }
   .chord-line { font-size: clamp(14px, 4.5vw, 18px); min-height: 25px; overflow-x: auto; scrollbar-width: none; }
   .chord-line::-webkit-scrollbar { display: none; }
   .lyric-line { font-size: clamp(14px, 4.5vw, 17px); min-height: 27px; }
-  .tab-row { margin-top: 1px; }
-  .song-row.tab-row + .song-row.tab-row { margin-top: 0; }
-  .song-row.tab-row.section-row { margin-top: 6px; }
-  .tab-card { padding: 0; }
-  .saved-tab-line { font-size: clamp(9px, 2.2vw, 11px); line-height: 1; }
+  .tab-block { margin: 12px 0 16px; }
+  .tab-block.section-row { margin-top: 18px; }
+  .tab-section-label { margin-bottom: 4px; font-size: 10px; }
+  .tab-chord-line { min-height: 19px; margin-bottom: 2px; font-size: clamp(10px, 2.7vw, 12px); }
+  .saved-tab-line { font-size: clamp(9px, 2.45vw, 11px); line-height: 1.2; }
   .reading-guide { right: 8px; top: 89px; bottom: 39px; }
   .song-pdf-float { position: fixed; z-index: 29; display: inline-flex; align-items: center; gap: 5px; left: 16px; bottom: 82px; min-height: 33px; padding: 0 10px; border: 1px solid rgba(98, 78, 220, .48); border-radius: 999px; background: rgba(16,25,35,.94); color: #b7a7ff; font: 700 10px "Rubik", sans-serif; box-shadow: 0 8px 22px rgba(0,0,0,.22); }
   .mobile-dock { position: fixed; z-index: 30; display: grid; grid-template-columns: repeat(6, 1fr); align-items: center; left: 8px; right: 8px; bottom: 8px; min-height: 62px; padding: 6px 4px; direction: ltr; background: rgba(16,25,35,.97); border: 1px solid rgba(243,165,74,.3); border-radius: 15px; box-shadow: 0 14px 35px rgba(0,0,0,.4); backdrop-filter: blur(18px); }

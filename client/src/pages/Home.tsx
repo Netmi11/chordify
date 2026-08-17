@@ -40,6 +40,56 @@ export function combineSongLines(lines: SongLine[]) {
   return combined;
 }
 
+const TAB_STRING_PATTERN = /^[eBGDAE]\|/;
+
+type SongRenderBlock =
+  | { kind: "line"; line: SongLine }
+  | { kind: "tab"; label: string; chord: string; tabs: string[] };
+
+/**
+ * Older cloud imports stored Tab4U string lines in `lyric`; newer imports use
+ * `tab`. Normalize both formats, then keep each consecutive string group as
+ * one six-string reading block instead of rendering six unrelated song rows.
+ */
+export function buildSongRenderBlocks(lines: SongLine[]): SongRenderBlock[] {
+  const normalized = lines.map((line) => {
+    const legacyTab = !line.tab && TAB_STRING_PATTERN.test(line.lyric.trimStart());
+    return legacyTab ? { ...line, lyric: "", tab: line.lyric.trimEnd() } : line;
+  });
+  const blocks: SongRenderBlock[] = [];
+
+  for (let index = 0; index < normalized.length; index += 1) {
+    const line = normalized[index];
+    if (!line.tab) {
+      blocks.push({ kind: "line", line });
+      continue;
+    }
+
+    let label = line.label ?? "";
+    let chord = line.chord;
+    const previous = blocks[blocks.length - 1];
+    if (previous?.kind === "line" && previous.line.chord && !previous.line.lyric && !previous.line.tab) {
+      chord ||= previous.line.chord;
+      label ||= previous.line.label ?? "";
+      blocks.pop();
+    }
+    const section = blocks[blocks.length - 1];
+    if (!label && section?.kind === "line" && section.line.label && !section.line.chord && !section.line.lyric) {
+      label = section.line.label;
+      blocks.pop();
+    }
+
+    const tabs = [line.tab];
+    while (index + 1 < normalized.length && normalized[index + 1].tab) {
+      index += 1;
+      tabs.push(normalized[index].tab!);
+    }
+    blocks.push({ kind: "tab", label, chord, tabs });
+  }
+
+  return blocks;
+}
+
 export function getStartingKey(lines: Array<{ chord: string }>) {
   const firstChord = lines.flatMap((line) => line.chord.match(/[A-G](?:#|b)?[^\s]*/g) ?? [])[0];
   if (!firstChord) return "D";
@@ -47,8 +97,8 @@ export function getStartingKey(lines: Array<{ chord: string }>) {
   return match ? `${match[1]}${match[2] ?? ""}` : firstChord;
 }
 
-function ChordLine({ chord, shift, flats }: { chord: string; shift: number; flats: boolean }) {
-  return <div className="chord-line" aria-label={`אקורדים אחרי שינוי של ${shift} חצאי טונים`}>
+function ChordLine({ chord, shift, flats, className = "" }: { chord: string; shift: number; flats: boolean; className?: string }) {
+  return <div className={`chord-line ${className}`.trim()} aria-label={`אקורדים אחרי שינוי של ${shift} חצאי טונים`}>
     {chord.split(/(\s+)/).map((part, index) => /[A-G](?:#|b)?/.test(part) ? <span className="chord-mark" key={`${part}-${index}`}>{transposeChord(part, shift, flats)}</span> : <span key={`${part}-${index}`}>{part}</span>)}
   </div>;
 }
@@ -218,6 +268,7 @@ export default function Home() {
   const fetchedLines: SongLine[] = fetchSong.data?.lines?.map((line) => ({ label: line.section ?? "", chord: line.chord, lyric: line.lyric })) ?? [];
   const sourceLines = savedSong?.lines ?? (!cleared && fetchedLines.length ? fetchedLines : demoSong);
   const activeSong = useMemo(() => combineSongLines(sourceLines), [sourceLines]);
+  const songBlocks = useMemo(() => buildSongRenderBlocks(activeSong), [activeSong]);
   const originalRoot = useMemo(() => getStartingKey(activeSong), [activeSong]);
   const keyLabel = useMemo(() => transposeChord(originalRoot, shift, flats), [originalRoot, shift, flats]);
   const activeTitle = savedSong?.title ?? (!cleared && fetchSong.data?.title ? fetchSong.data.title.replace(/^אקורדים לשיר\s*/i, "") : "להתאפק");
@@ -299,7 +350,7 @@ export default function Home() {
         <div className="rail-footer"><button className="reset-button" onClick={resetTranspose}><RotateCcw size={14} /> חזור למקור</button><span>{library.length} שירים בספרייה</span></div>
       </section>
       <section className="song-stage"><div className="song-toolbar"><div className="song-meta"><span className="live-tag">{savedSong ? "LIBRARY" : "LIVE VIEW"}</span><div><h2>{activeTitle}</h2><p>{activeArtist} · {savedSong ? `נשמר ${formatAddedAt(savedSong.addedAt)}` : "Tab4U"}</p></div></div></div>
-        <div className="song-paper"><div className="paper-topline"><span>אקורדים לשיר</span><span className="position-note">{shift === 0 ? "גרסת מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`}</span></div><article className="song-content"><div className="reading-guide" aria-hidden="true" /><div className="song-title">{activeTitle}</div><div className="song-artist">{activeArtist}</div>{savedSong && <label className="personal-note"><span>הערה אישית</span><textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} onBlur={saveNote} placeholder="לדוגמה: קאפו 2, פתיחה שקטה…" rows={2} /></label>}<div className="rule" />{activeSong.map((line, index) => line.tab ? <div className={`song-row tab-row ${line.label ? "section-row" : ""}`} key={`${line.tab}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}{line.chord && <ChordLine chord={line.chord} shift={shift} flats={flats} />}<div className="tab-card"><pre className="saved-tab-line">{line.tab}</pre></div>{line.lyric && <div className="lyric-line tab-lyric">{line.lyric}</div>}</div> : <div className={`song-row ${line.label ? "section-row" : ""}`} key={`${line.lyric}-${index}`}>{line.label && <div className="section-label">{line.label}:</div>}<ChordLine chord={line.chord} shift={shift} flats={flats} /><div className="lyric-line">{line.lyric || "\u00A0"}</div></div>)}<div className="end-marker">— סוף —</div></article></div><button className="song-pdf-float" onClick={exportCurrentSongPdf} aria-label="הורד את השיר כ־PDF"><Download size={16} /> PDF</button>
+        <div className="song-paper"><div className="paper-topline"><span>אקורדים לשיר</span><span className="position-note">{shift === 0 ? "גרסת מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`}</span></div><article className="song-content"><div className="reading-guide" aria-hidden="true" /><div className="song-title">{activeTitle}</div><div className="song-artist">{activeArtist}</div>{savedSong && <label className="personal-note"><span>הערה אישית</span><textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} onBlur={saveNote} placeholder="לדוגמה: קאפו 2, פתיחה שקטה…" rows={2} /></label>}<div className="rule" />{songBlocks.map((block, index) => block.kind === "tab" ? <section className={`tab-block ${block.label ? "section-row" : ""}`} key={`${block.tabs[0]}-${index}`} dir="ltr">{block.label && <div className="tab-section-label" dir="rtl">{block.label}:</div>}{block.chord && <ChordLine chord={block.chord} shift={shift} flats={flats} className="tab-chord-line" />}<div className="tab-sheet"><pre className="saved-tab-line">{block.tabs.join("\n")}</pre></div></section> : <div className={`song-row ${block.line.label ? "section-row" : ""}`} key={`${block.line.lyric}-${index}`}>{block.line.label && <div className="section-label">{block.line.label}:</div>}<ChordLine chord={block.line.chord} shift={shift} flats={flats} /><div className="lyric-line">{block.line.lyric || "\u00A0"}</div></div>)}<div className="end-marker">— סוף —</div></article></div><button className="song-pdf-float" onClick={exportCurrentSongPdf} aria-label="הורד את השיר כ־PDF"><Download size={16} /> PDF</button>
       </section>
     </main>}
     {screen === "player" && <nav className="mobile-dock" aria-label="פקדי נגינה בנייד"><button onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="mobile-key"><small>פתיחה</small><strong>{keyLabel}</strong></div><button onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button><button onClick={() => setShift(7)} aria-label="טרנספוזיציה פלוס שבע"><span>+7</span></button><button onClick={resetTranspose} aria-label="חזרה למקור"><RotateCcw size={17} /><span>מקור</span></button><button onClick={() => setPlaying((value) => !value)} className={playing ? "dock-active" : ""} aria-label="גלילה"><Play size={17} fill={playing ? "currentColor" : "none"} /><span>{playing ? "עצור" : "גלול"}</span></button></nav>}

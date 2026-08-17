@@ -14,13 +14,13 @@ describe("song player mobile cleanup", () => {
   });
 
   it("keeps compact tab typography for narrow screens", () => {
-    expect(styles).toContain('font: 500 11px/1 "IBM Plex Mono"');
-    expect(styles).toContain("font-size: clamp(9px, 2.2vw, 11px)");
-    expect(styles).toContain("background: transparent");
-    expect(styles).toContain("border: 0");
+    expect(styles).toContain('font: 500 11px/1.2 "IBM Plex Mono"');
+    expect(styles).toContain("font-size: clamp(9px, 2.45vw, 11px)");
+    expect(styles).toContain(".tab-block");
+    expect(styles).toContain(".tab-sheet");
     expect(styles).toContain("white-space: pre");
-    expect(styles).toContain(".tab-card");
-    expect(homeSource).toContain("song-row tab-row");
+    expect(homeSource).toContain("buildSongRenderBlocks");
+    expect(homeSource).toContain("tab-block");
   });
 
   it("opens the library first and groups songs by artist", () => {
