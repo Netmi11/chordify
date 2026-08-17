@@ -70,6 +70,8 @@ button:active { transform: scale(.97); }
 .rail-footer { margin-top: auto; justify-content: space-between; color: #5e7079; font-size: 10px; gap: 10px; }
 .reset-button { font-size: 11px; padding: 0; }
 .song-stage { padding: clamp(22px, 4vw, 56px) clamp(18px, 5vw, 82px); background-image: linear-gradient(rgba(16,25,35,.91), rgba(16,25,35,.91)), url('/manus-storage/stage-slate-subtle-pattern_085c9fe1.png'); background-size: cover; }
+.workspace-song-only { display: block; }
+.song-loaded-rail { display: none; }
 .song-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 850px; margin: 0 auto 22px; }
 .song-meta { gap: 12px; }
 .live-tag { color: #f3a54a; border: 1px solid rgba(243,165,74,.4); border-radius: 4px; font-size: 9px; letter-spacing: .08em; padding: 4px 6px; }
@@ -92,7 +94,7 @@ button:active { transform: scale(.97); }
 .chord-line { min-height: 24px; color: #f3a54a; font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 500; white-space: pre; direction: ltr; text-align: right; letter-spacing: .015em; }
 .chord-mark { display: inline-block; background: rgba(243,165,74,.08); border-radius: 3px; padding: 0 2px; transition: color 160ms ease, background 160ms ease; }
 .lyric-line { color: #d2dada; font-size: 17px; min-height: 26px; white-space: pre-wrap; }
-.saved-tab-line { margin: 0 0 6px; overflow-x: auto; color: #efd28f; direction: ltr; text-align: left; font: 500 14px/1.45 "IBM Plex Mono", ui-monospace, monospace; white-space: pre; }
+.saved-tab-line { margin: 1px 0 5px; max-width: 100%; overflow-x: auto; color: #d7bd7d; direction: ltr; text-align: left; font: 500 11px/1.25 "IBM Plex Mono", ui-monospace, monospace; white-space: pre; scrollbar-width: thin; }
 .end-marker { color: #60747d; font-size: 11px; text-align: center; padding-top: 25px; }
 @media (max-width: 850px) { .workspace { grid-template-columns: 1fr; } .control-rail { order: 0; padding: 25px 20px 23px; gap: 24px; border-left: 0; border-bottom: 1px solid rgba(183,199,202,.12); } .rail-copy h1 br { display: none; } .intro { max-width: 550px; } .rail-footer { margin-top: 0; } .song-stage { padding: 22px 12px 50px; } .song-toolbar { align-items: flex-start; flex-direction: column; } .song-tools { width: 100%; justify-content: space-between; } .song-paper { border-radius: 8px; } }
 @media (max-width: 520px) { .topbar { height: 62px; padding: 0 15px; } .status-dot { display: none; } .song-content { padding: 36px 20px 48px; } .chord-line, .lyric-line { font-size: 15px; } .saved-tab-line { font-size: 12px; } .song-title { font-size: 25px; } .url-row { align-items: stretch; } .load-button { padding: 0 10px; } }
@@ -144,7 +146,7 @@ button:active { transform: scale(.97); }
   .chord-line { font-size: clamp(14px, 4.5vw, 18px); min-height: 25px; overflow-x: auto; scrollbar-width: none; }
   .chord-line::-webkit-scrollbar { display: none; }
   .lyric-line { font-size: clamp(14px, 4.5vw, 17px); min-height: 27px; }
-  .saved-tab-line { font-size: clamp(11px, 3.2vw, 13px); }
+  .saved-tab-line { font-size: clamp(9px, 2.5vw, 11px); line-height: 1.2; }
   .reading-guide { right: 8px; top: 89px; bottom: 39px; }
   .mobile-dock { position: fixed; z-index: 30; display: grid; grid-template-columns: repeat(7, 1fr); align-items: center; left: 8px; right: 8px; bottom: 8px; min-height: 62px; padding: 6px 4px; direction: ltr; background: rgba(16,25,35,.97); border: 1px solid rgba(243,165,74,.3); border-radius: 15px; box-shadow: 0 14px 35px rgba(0,0,0,.4); backdrop-filter: blur(18px); }
   .mobile-dock button { min-height: 50px; border: 0; border-radius: 10px; background: transparent; color: #9dafb3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 9px; }
