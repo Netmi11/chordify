@@ -95,7 +95,9 @@ button:active { transform: scale(.97); }
 .chord-line { min-height: 24px; color: #f3a54a; font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 500; white-space: pre; direction: ltr; text-align: right; letter-spacing: .015em; }
 .chord-mark { display: inline-block; background: rgba(243,165,74,.08); border-radius: 3px; padding: 0 2px; transition: color 160ms ease, background 160ms ease; }
 .lyric-line { color: #d2dada; font-size: 17px; min-height: 26px; white-space: pre-wrap; }
-.tab-row { min-height: 0; margin: 5px 0 0; }
+.tab-row { min-height: 0; margin: 2px 0 0; line-height: 1; }
+.song-row.tab-row + .song-row.tab-row { margin-top: 1px; }
+.song-row.tab-row.section-row { margin-top: 10px; }
 .tab-card { display: block; width: fit-content; max-width: 100%; overflow-x: auto; padding: 3px 0 3px 8px; border: 0; border-left: 2px solid color-mix(in srgb, var(--neo-cyan) 42%, transparent); border-radius: 0; background: transparent; direction: ltr; scrollbar-width: thin; }
 .tab-card::-webkit-scrollbar { height: 3px; }
 .tab-card::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--neo-cyan) 42%, transparent); border-radius: 99px; }
@@ -152,9 +154,11 @@ button:active { transform: scale(.97); }
   .chord-line { font-size: clamp(14px, 4.5vw, 18px); min-height: 25px; overflow-x: auto; scrollbar-width: none; }
   .chord-line::-webkit-scrollbar { display: none; }
   .lyric-line { font-size: clamp(14px, 4.5vw, 17px); min-height: 27px; }
-  .tab-row { margin-top: 4px; }
-  .tab-card { padding: 2px 0 2px 7px; border-left-width: 1px; }
-  .saved-tab-line { font-size: clamp(6.5px, 1.65vw, 7.2px); line-height: 1.04; }
+  .tab-row { margin-top: 1px; }
+  .song-row.tab-row + .song-row.tab-row { margin-top: 0; }
+  .song-row.tab-row.section-row { margin-top: 7px; }
+  .tab-card { padding: 1px 0 1px 7px; border-left-width: 1px; }
+  .saved-tab-line { font-size: clamp(6.5px, 1.65vw, 7.2px); line-height: 1; }
   .reading-guide { right: 8px; top: 89px; bottom: 39px; }
   .song-pdf-float { position: fixed; z-index: 29; display: inline-flex; align-items: center; gap: 5px; left: 16px; bottom: 82px; min-height: 33px; padding: 0 10px; border: 1px solid rgba(98, 78, 220, .48); border-radius: 999px; background: rgba(16,25,35,.94); color: #b7a7ff; font: 700 10px "Rubik", sans-serif; box-shadow: 0 8px 22px rgba(0,0,0,.22); }
   .mobile-dock { position: fixed; z-index: 30; display: grid; grid-template-columns: repeat(6, 1fr); align-items: center; left: 8px; right: 8px; bottom: 8px; min-height: 62px; padding: 6px 4px; direction: ltr; background: rgba(16,25,35,.97); border: 1px solid rgba(243,165,74,.3); border-radius: 15px; box-shadow: 0 14px 35px rgba(0,0,0,.4); backdrop-filter: blur(18px); }
