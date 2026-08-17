@@ -2,6 +2,7 @@ export type Tab4uSongLine = {
   section?: string;
   chord: string;
   lyric: string;
+  tab?: string;
 };
 
 export type Tab4uSong = {
@@ -47,6 +48,10 @@ function parseTableRows(fragment: string): Tab4uSongLine[] {
       const trimmed = text.trim();
       if (!trimmed) {
         lines.push({ chord: "", lyric: "" });
+        continue;
+      }
+      if (/(?:^|\s)tabs?(?:\s|$)/i.test(cell.match(/class=["']([^"']*)["']/i)?.[1] ?? "")) {
+        lines.push({ chord: "", lyric: "", tab: text.trimEnd() });
         continue;
       }
       const isChordCell = /class=["'][^"']*chords?[^"']*["']/i.test(cell) || /class=["'][^"']*c_C[^"']*["']/i.test(cell);

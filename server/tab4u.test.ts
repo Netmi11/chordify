@@ -53,6 +53,16 @@ describe("Tab4U parser", () => {
     ]);
   });
 
+  it("keeps a Tab4U tabs row as a tab without treating it as lyrics", () => {
+    const html = `
+      <h1>אקורדים לשיר בדיקת טאבים</h1>
+      <div id="songContentTPL"><table>
+        <tr><td class="tabs">e|--3--5--\nB|--------</td></tr>
+      </table></div>`;
+    const song = parseTab4uHtml(html, "https://www.tab4u.com/tabs/songs/tabs-fixture.html");
+    expect(song.lines).toEqual([{ chord: "", lyric: "", tab: "e|--3--5--\nB|--------" }]);
+  });
+
   it("rejects non-Tab4U hosts", () => {
     expect(() => assertTab4uUrl("https://example.com/song.html")).toThrow();
     expect(() => assertTab4uUrl("http://www.tab4u.com/song.html")).toThrow();
