@@ -63,7 +63,7 @@ function formatAddedAt(timestamp: number) {
   return new Intl.DateTimeFormat("he-IL", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(timestamp));
 }
 
-function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBackup, onImportBackup, onShowCloudCode, onRestoreCloud, cloudStatus }: { songs: SavedSong[]; onOpen: (song: SavedSong) => void; onExport: (song: SavedSong) => void; onDelete: (id: string) => void; onReturn: () => void; onExportBackup: () => void; onImportBackup: (file: File) => void; onShowCloudCode: () => void; onRestoreCloud: () => void; cloudStatus: string }) {
+function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBackup, onImportBackup, onShowCloudCode, onRestoreCloud, cloudStatus, showReturn }: { songs: SavedSong[]; onOpen: (song: SavedSong) => void; onExport: (song: SavedSong) => void; onDelete: (id: string) => void; onReturn: () => void; onExportBackup: () => void; onImportBackup: (file: File) => void; onShowCloudCode: () => void; onRestoreCloud: () => void; cloudStatus: string; showReturn: boolean }) {
   const [query, setQuery] = useState("");
   const [artist, setArtist] = useState("הכול");
   const [sortBy, setSortBy] = useState<LibrarySort>("addedAt");
@@ -72,11 +72,20 @@ function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBack
     const matching = songs.filter((song) => (artist === "הכול" || song.artist === artist) && `${song.title} ${song.artist}`.toLowerCase().includes(query.trim().toLowerCase()));
     return sortSongsForLibrary(matching, sortBy);
   }, [artist, query, sortBy, songs]);
+  const groupedArtists = useMemo(() => {
+    const groups = new Map<string, SavedSong[]>();
+    for (const song of filtered) {
+      const name = song.artist || "אמן לא צוין";
+      groups.set(name, [...(groups.get(name) ?? []), song]);
+    }
+    return Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b, "he"));
+  }, [filtered]);
+  const artistInitials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 
   return <main className="library-page">
     <section className="library-hero">
       <div><p className="eyebrow"><LibraryBig size={14} /> הספרייה האישית</p><h1>כל השירים שלך.<br /><em>תמיד מוכנים לנגינה.</em></h1><p>השירים נשמרים בטלפון הזה בלבד, בגרסת המקור שלהם, וזמינים גם ללא חיבור לאחר פתיחת האפליקציה פעם אחת.</p></div>
-      <button className="library-return" onClick={onReturn}><ChevronRight size={17} /> חזור לשיר</button>
+      {showReturn && <button className="library-return" onClick={onReturn}><ChevronRight size={17} /> חזור לשיר</button>}
     </section>
     <section className="library-controls" aria-label="חיפוש, מיון וסינון ספרייה">
       <div className="library-search-row"><label className="library-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שיר או אמן" /></label><label className="library-sort"><ArrowDownUp size={16} /><span>מיון</span><select value={sortBy} onChange={(event) => setSortBy(event.target.value as LibrarySort)} aria-label="מיין את השירים"><option value="addedAt">תאריך הוספה</option><option value="artist">שם האמן</option><option value="title">שם השיר</option></select></label></div>
@@ -85,12 +94,15 @@ function LibraryView({ songs, onOpen, onExport, onDelete, onReturn, onExportBack
       <div className="library-backup-actions"><button onClick={onShowCloudCode}><KeyRound size={15} /> קוד שחזור ענן</button><button onClick={onRestoreCloud}><CloudDownload size={15} /> שחזר מהענן</button></div><p className="library-backup-note">{cloudStatus} · שמור את קוד השחזור במקום פרטי כדי שתוכל להחזיר את הספרייה לטלפון חדש.</p>
     </section>
     <section className="library-grid" aria-live="polite">
-      {filtered.map((song) => <article className="song-card" key={song.id}>
-        <div className="song-card-top"><span>מקור</span><button className="delete-song" aria-label={`מחק את ${song.title}`} onClick={() => onDelete(song.id)}><Trash2 size={15} /></button></div>
-        <h2>{song.title}</h2><p className="song-card-artist">{song.artist || "אמן לא צוין"}</p>
-        {song.note && <p className="song-card-note">{song.note}</p>}
-        <footer><time>{formatAddedAt(song.addedAt)}</time><div className="song-card-actions"><button className="song-pdf-button" onClick={() => onExport(song)} aria-label={`הורד PDF של ${song.title}`}><Download size={14} /> PDF</button><button onClick={() => onOpen(song)}>פתח לנגינה <ChevronRight size={15} /></button></div></footer>
-      </article>)}
+      {groupedArtists.map(([artistName, artistSongs]) => <section className="artist-group" key={artistName}>
+        <header className="artist-group-header"><div className="artist-avatar" aria-hidden="true">{artistInitials(artistName) || "♪"}</div><div><p className="artist-kicker">אמן</p><h2>{artistName}</h2><span>{artistSongs.length} {artistSongs.length === 1 ? "שיר" : "שירים"}</span></div></header>
+        <div className="artist-song-grid">{artistSongs.map((song) => <article className="song-card" key={song.id}>
+          <div className="song-card-top"><span>מקור</span><button className="delete-song" aria-label={`מחק את ${song.title}`} onClick={() => onDelete(song.id)}><Trash2 size={15} /></button></div>
+          <h3>{song.title}</h3>
+          {song.note && <p className="song-card-note">{song.note}</p>}
+          <footer><time>{formatAddedAt(song.addedAt)}</time><div className="song-card-actions"><button className="song-pdf-button" onClick={() => onExport(song)} aria-label={`הורד PDF של ${song.title}`}><Download size={14} /> PDF</button><button onClick={() => onOpen(song)}>פתח לנגינה <ChevronRight size={15} /></button></div></footer>
+        </article>)}</div>
+      </section>)}
       {!filtered.length && <div className="library-empty"><Music2 size={26} /><h2>{songs.length ? "לא נמצאו שירים מתאימים" : "הספרייה עדיין ריקה"}</h2><p>{songs.length ? "נסה לחפש בשם אחר או לבחור אמן אחר." : "טען שיר מקישור Tab4U ולחץ על שמור בספרייה."}</p><button onClick={onReturn}>עבור לטעינת שיר</button></div>}
     </section>
   </main>;
@@ -101,7 +113,7 @@ export default function Home() {
   const [shift, setShift] = useState(0);
   const [flats, setFlats] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [screen, setScreen] = useState<"player" | "library">("player");
+  const [screen, setScreen] = useState<"player" | "library">("library");
   const [url, setUrl] = useState("https://www.tab4u.com/tabs/songs/75402_%D7%9E%D7%A8%D7%A1%D7%93%D7%A1_%D7%91%D7%A0%D7%93_-_%D7%9C%D7%94%D7%AA%D7%90%D7%A4%D7%A7.html");
   const [cleared, setCleared] = useState(false);
   const [library, setLibrary] = useState<SavedSong[]>([]);
@@ -130,6 +142,7 @@ export default function Home() {
         const next = writeSongLibrary(window.localStorage, [...importedSongs, ...currentLibrary.filter((song) => !importedSongs.some((imported) => imported.sourceUrl === song.sourceUrl))]);
         setLibrary(next);
         setSavedSong(importedSongs[0] ?? null);
+        setScreen("player");
         setNoteDraft(importedSongs[0]?.note ?? "");
         setUrl(importedSongs[0]?.sourceUrl ?? "");
         setSaveNotice(true);
@@ -143,6 +156,7 @@ export default function Home() {
       const song = makeSavedSong({ id: existing?.id, addedAt: existing?.addedAt, note: existing?.note, ...imported.song });
       setLibrary(upsertSong(window.localStorage, song));
       setSavedSong(song);
+      setScreen("player");
       setNoteDraft(song.note);
       setUrl(song.sourceUrl);
       setSaveNotice(true);
@@ -257,7 +271,7 @@ export default function Home() {
 
   return <div dir="rtl" className="app-shell">
     <header className="topbar"><div className="brand-lockup"><img src="/manus-storage/stage-slate-pick-mark_6b2a5d37.png" alt="" className="brand-mark" /><div><div className="brand-name">ChordShift</div><div className="brand-caption">הספרייה הפרטית שלך</div></div></div><div className="topbar-actions"><span className="status-dot"><span /> נשמר בטלפון</span>{installPrompt && <button className="install-app-button" onClick={() => void installApp()}>התקן כאפליקציה</button>}<button className="top-library-button" onClick={() => setScreen(screen === "library" ? "player" : "library")} aria-label={screen === "library" ? "חזור לשיר הנוכחי" : "חזור לספרייה"}><LibraryBig size={17} /> {screen === "library" ? "שיר נוכחי" : savedSong ? "חזור לספרייה" : "הספרייה"}</button><button className="theme-toggle" onClick={toggleTheme} aria-label={theme === "dark" ? "עבור למצב יום" : "עבור למצב לילה"} title={theme === "dark" ? "מצב יום" : "מצב לילה"}>{theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}</button></div></header>
-    {screen === "library" ? <LibraryView songs={library} onOpen={openSavedSong} onExport={(song) => exportPdf(song)} onDelete={deleteSavedSong} onReturn={() => setScreen("player")} onExportBackup={exportLibraryBackup} onImportBackup={importLibraryBackup} onShowCloudCode={() => void showCloudRecoveryCode()} onRestoreCloud={() => void restoreFromCloud()} cloudStatus={cloudStatus} /> : <main className={`workspace ${savedSong ? "workspace-song-only" : ""}`}>
+    {screen === "library" ? <LibraryView songs={library} onOpen={openSavedSong} onExport={(song) => exportPdf(song)} onDelete={deleteSavedSong} onReturn={() => setScreen("player")} onExportBackup={exportLibraryBackup} onImportBackup={importLibraryBackup} onShowCloudCode={() => void showCloudRecoveryCode()} onRestoreCloud={() => void restoreFromCloud()} cloudStatus={cloudStatus} showReturn={Boolean(savedSong)} /> : <main className={`workspace ${savedSong ? "workspace-song-only" : ""}`}>
       <section className={`control-rail ${savedSong ? "song-loaded-rail" : ""}`}><div className="rail-copy"><p className="eyebrow"><Sparkles size={14} /> אוסף אישי</p><h1>שמור. ארגן.<br /><em>נגן.</em></h1><p className="intro">טען שיר מ־Tab4U, שמור את גרסת המקור שלו, וחזור אליו בכל זמן גם ללא חיבור.</p></div>
         <div className="url-entry"><label htmlFor="song-url">קישור לשיר</label><div className="url-row"><input id="song-url" value={url} onChange={(event) => setUrl(event.target.value)} dir="ltr" /><button className="clear-url-button" onClick={() => { setUrl(""); setCleared(true); setSavedSong(null); resetTranspose(); }} aria-label="נקה קישור"><X size={16} /></button><button className="load-button" onClick={loadFromUrl} disabled={fetchSong.isFetching} aria-busy={fetchSong.isFetching}><span className={fetchSong.isFetching ? "loading-icon is-spinning" : "loading-icon"}>{fetchSong.isFetching ? <Loader2 size={16} /> : <ExternalLink size={16} />}</span> {fetchSong.isFetching ? "טוען…" : "טען"}</button></div><p className="field-note" aria-live="polite">{fetchSong.isFetching ? "קורא את השיר ושומר את מיקום האקורדים והמילים…" : fetchSong.error ? "Tab4U חסם טעינה ישירה. פתח את השיר ב־Edge ולחץ בסרגל ChordShift על שמור בספרייה." : fetchSong.data ? "השיר נטען. אפשר לשמור את גרסת המקור בספרייה." : "הדרך היציבה: פתח שיר ב־Edge ולחץ בסרגל ChordShift על שמור בספרייה."}</p><button className={saveNotice ? "save-song-button saved" : "save-song-button"} onClick={persistCurrentSong} disabled={!canSave}><BookmarkPlus size={16} /> {saveNotice ? "נשמר בספרייה" : "שמור בספרייה"}</button><div className="bookmarklet-card"><strong>הפעלה ישירה בתוך Tab4U</strong><span>ב־Edge עם Tampermonkey, ChordShift מופיע אוטומטית בתוך דף השיר.</span><a className="userscript-link" href="/chordshift.user.js">התקן ChordShift ב־Tampermonkey</a></div></div>
         <div className="shift-panel"><div className="panel-heading"><span>שינוי סולם זמני</span><strong>{shift > 0 ? `+${shift}` : shift} <small>חצאי טון</small></strong></div><div className="shift-controls"><button className="shift-button" onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="key-display"><span>אקורד פתיחה</span><b>{keyLabel}</b></div><button className="shift-button" onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button></div><div className="quick-shifts">{[-3, -2, -1, 0, 1, 2, 3].map((value) => <button key={value} className={shift === value ? "quick active" : "quick"} onClick={() => setShift(value)}>{value > 0 ? `+${value}` : value}</button>)}</div><div className="shortcut-row"><button className={shift === 7 ? "shortcut-button active" : "shortcut-button"} onClick={() => setShift(7)}>+7</button><button className={shift === 0 ? "shortcut-button active" : "shortcut-button"} onClick={resetTranspose}><RotateCcw size={14} /> מקור</button></div><div className="notation-row"><span>כתיבת אקורדים</span><button onClick={() => setFlats((value) => !value)} className="notation-toggle">{flats ? "♭ במולים" : "♯ דיאזים"}</button></div></div>

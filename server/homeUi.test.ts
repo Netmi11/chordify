@@ -18,6 +18,19 @@ describe("song player mobile cleanup", () => {
     expect(styles).toContain("font-size: clamp(9px, 2.5vw, 11px)");
   });
 
+  it("opens the library first and groups songs by artist", () => {
+    expect(homeSource).toContain('useState<"player" | "library">("library")');
+    expect(homeSource).toContain("const groupedArtists = useMemo");
+    expect(homeSource).toContain("className=\"artist-group\"");
+    expect(homeSource).toContain("className=\"artist-avatar\"");
+    expect(homeSource).toContain('artistInitials(artistName) || "♪"');
+  });
+
+  it("opens imported bridge songs in the player despite the library-first default", () => {
+    expect(homeSource).toContain('setSavedSong(importedSongs[0] ?? null);\n        setScreen("player");');
+    expect(homeSource).toContain('setSavedSong(song);\n      setScreen("player");');
+  });
+
   it("returns from a saved song to the library", () => {
     expect(homeSource).toContain('savedSong ? "חזור לספרייה" : "הספרייה"');
     expect(homeSource).toContain('aria-label={screen === "library" ? "חזור לשיר הנוכחי" : "חזור לספרייה"}');
