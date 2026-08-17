@@ -14,8 +14,10 @@ describe("song player mobile cleanup", () => {
   });
 
   it("keeps compact tab typography for narrow screens", () => {
-    expect(styles).toContain('font: 500 8px/1.08 "IBM Plex Mono"');
-    expect(styles).toContain("font-size: clamp(7px, 1.8vw, 8px)");
+    expect(styles).toContain('font: 500 7px/1.05 "IBM Plex Mono"');
+    expect(styles).toContain("font-size: clamp(6.5px, 1.65vw, 7.2px)");
+    expect(styles).toContain("background: transparent");
+    expect(styles).toContain("border-left-width: 1px");
     expect(styles).toContain(".tab-card");
     expect(homeSource).toContain("song-row tab-row");
   });
