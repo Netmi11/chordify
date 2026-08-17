@@ -88,6 +88,17 @@ button:active { transform: scale(.97); }
 .reading-guide { position: absolute; top: 98px; bottom: 52px; right: clamp(14px, 3vw, 42px); width: 1px; background: linear-gradient(to bottom, rgba(243,165,74,.24), transparent 28%, transparent 72%, rgba(243,165,74,.12)); pointer-events: none; }
 .song-title { font-size: 26px; font-weight: 650; letter-spacing: -.04em; }
 .song-artist { color: #7d9297; font-size: 13px; margin-top: 6px; }
+.personal-note { margin: 18px 0 0; border: 1px solid rgba(183,199,202,.14); border-radius: 8px; background: rgba(6,13,21,.16); overflow: hidden; }
+.personal-note summary { min-height: 35px; padding: 0 11px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: #aab9bc; font-size: 11px; font-weight: 600; list-style: none; }
+.personal-note summary::-webkit-details-marker { display: none; }
+.personal-note summary::after { content: "⌄"; order: -1; color: #66868e; font-size: 14px; line-height: 1; transition: transform 160ms cubic-bezier(.23, 1, .32, 1); }
+.personal-note[open] summary::after { transform: rotate(180deg); }
+.personal-note.has-note { border-color: rgba(169,159,255,.33); }
+.note-state { color: #71848c; font-size: 9px; font-weight: 500; }
+.personal-note.has-note .note-state { color: #aaa1ff; }
+.note-editor { border-top: 1px solid rgba(183,199,202,.1); padding: 8px; }
+.note-editor textarea { display: block; width: 100%; min-height: 58px; resize: vertical; border: 0; outline: 0; background: transparent; color: #d7e1e2; font: 400 12px/1.55 "Rubik", sans-serif; }
+.note-editor textarea::placeholder { color: #687b82; }
 .rule { height: 1px; background: rgba(183,199,202,.14); margin: 28px 0 29px; }
 .song-row { min-height: 48px; position: relative; line-height: 1.55; }
 .song-row.section-row { margin-top: 21px; }
@@ -148,6 +159,10 @@ button:active { transform: scale(.97); }
   .song-content { padding: 29px 15px 45px; }
   .song-title { font-size: 23px; }
   .song-artist { font-size: 11px; }
+  .personal-note { margin-top: 15px; border-radius: 7px; }
+  .personal-note summary { min-height: 32px; padding: 0 9px; font-size: 10px; }
+  .note-editor { padding: 7px; }
+  .note-editor textarea { min-height: 50px; font-size: 11px; }
   .rule { margin: 22px 0 26px; }
   .song-row { min-height: 51px; }
   .song-row.section-row { margin-top: 23px; }

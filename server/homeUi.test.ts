@@ -60,4 +60,12 @@ describe("song player mobile cleanup", () => {
     expect(homeSource).toContain('className="song-pdf-float"');
     expect(styles).toContain("grid-template-columns: repeat(6, 1fr)");
   });
+
+  it("keeps a personal note available without permanently taking space from the song", () => {
+    expect(homeSource).toContain('<details className={`personal-note');
+    expect(homeSource).toContain('onBlur={saveNote}');
+    expect(homeSource).toContain("הערה אישית");
+    expect(styles).toContain(".personal-note summary");
+    expect(styles).toContain(".note-editor textarea");
+  });
 });
