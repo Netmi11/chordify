@@ -27,18 +27,23 @@ describe("song player mobile cleanup", () => {
     expect(homeSource).toContain('isExpanded ? "artist-group is-expanded" : "artist-group"');
     expect(homeSource).toContain("className=\"artist-avatar\"");
     expect(homeSource).toContain('artistInitials(artistName) || "♪"');
-    expect(homeSource).toContain('singleSong ? onOpen(artistSongs[0])');
-    expect(homeSource).toContain("!singleSong && isExpanded");
+    expect(homeSource).not.toContain('singleSong ? onOpen(artistSongs[0])');
+    expect(homeSource).toContain('onClick={() => setExpandedArtist(isExpanded ? null : artistName)}');
+    expect(homeSource).toContain("{isExpanded && <div className=\"artist-song-grid\">");
   });
 
   it("opens imported bridge songs in the player despite the library-first default", () => {
-    expect(homeSource).toContain('setSavedSong(importedSongs[0] ?? null);\n        setScreen("player");');
-    expect(homeSource).toContain('setSavedSong(song);\n      setScreen("player");');
+    expect(homeSource).toContain('setSavedSong(importedSongs[0] ?? null);');
+    expect(homeSource).toContain('setSavedSong(song);');
+    expect(homeSource).toContain('window.history.pushState({ chordshiftScreen: "player" }, "", "#song");');
   });
 
   it("returns from a saved song to the library", () => {
     expect(homeSource).toContain('savedSong ? "חזור לספרייה" : "הספרייה"');
     expect(homeSource).toContain('screen === "library" ? savedSong ? "חזור לשיר הנוכחי" : "עבור לטעינת שיר" : "חזור לספרייה"');
+    expect(homeSource).toContain('window.addEventListener("popstate", onPopState)');
+    expect(homeSource).toContain('setScreen("library")');
+    expect(homeSource).toContain('window.history.pushState({ chordshiftScreen: "player" }, "", "#song")');
   });
 
   it("does not render the removed duplicate toolbar actions", () => {
