@@ -18,6 +18,11 @@ describe("song player mobile cleanup", () => {
     expect(styles).toContain("font-size: clamp(9px, 2.5vw, 11px)");
   });
 
+  it("returns from a saved song to the library", () => {
+    expect(homeSource).toContain('savedSong ? "חזור לספרייה" : "הספרייה"');
+    expect(homeSource).toContain('aria-label={screen === "library" ? "חזור לשיר הנוכחי" : "חזור לספרייה"}');
+  });
+
   it("does not render the removed duplicate toolbar actions", () => {
     expect(homeSource).not.toContain("העתק</button>");
     expect(homeSource).not.toContain("מסך מלא</button>");
