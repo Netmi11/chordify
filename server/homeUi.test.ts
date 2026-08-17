@@ -14,8 +14,8 @@ describe("song player mobile cleanup", () => {
   });
 
   it("keeps compact tab typography for narrow screens", () => {
-    expect(styles).toContain('font: 500 9px/1.1 "IBM Plex Mono"');
-    expect(styles).toContain("font-size: clamp(7px, 2vw, 9px)");
+    expect(styles).toContain('font: 500 8px/1.08 "IBM Plex Mono"');
+    expect(styles).toContain("font-size: clamp(7px, 1.8vw, 8px)");
     expect(styles).toContain(".tab-card");
     expect(homeSource).toContain("song-row tab-row");
   });
@@ -38,11 +38,18 @@ describe("song player mobile cleanup", () => {
 
   it("returns from a saved song to the library", () => {
     expect(homeSource).toContain('savedSong ? "חזור לספרייה" : "הספרייה"');
-    expect(homeSource).toContain('aria-label={screen === "library" ? "חזור לשיר הנוכחי" : "חזור לספרייה"}');
+    expect(homeSource).toContain('screen === "library" ? savedSong ? "חזור לשיר הנוכחי" : "עבור לטעינת שיר" : "חזור לספרייה"');
   });
 
   it("does not render the removed duplicate toolbar actions", () => {
     expect(homeSource).not.toContain("העתק</button>");
     expect(homeSource).not.toContain("מסך מלא</button>");
+  });
+
+  it("keeps maintenance tools secondary and the mobile player controls compact", () => {
+    expect(homeSource).toContain('className="library-utilities"');
+    expect(homeSource).toContain("גיבוי וסנכרון");
+    expect(homeSource).toContain('className="song-pdf-float"');
+    expect(styles).toContain("grid-template-columns: repeat(6, 1fr)");
   });
 });
