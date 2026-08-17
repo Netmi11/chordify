@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSongRenderBlocks } from "../client/src/pages/Home";
+import { buildSongRenderBlocks, replaceChordToken } from "../client/src/pages/Home";
 
 describe("buildSongRenderBlocks", () => {
   it("joins legacy Tab4U string lines into one continuous six-string block", () => {
@@ -45,5 +45,10 @@ describe("buildSongRenderBlocks", () => {
       chord: "Cm",
       tabs: ["e|--8--8-----------------8--------|", "B|-8--8-8---10-11-10-------8------|"],
     });
+  });
+
+  it("replaces exactly one original chord while preserving spacing and neighboring chords", () => {
+    expect(replaceChordToken("Gm        Cm      D7", 1, "C#m")).toBe("Gm        C#m      D7");
+    expect(replaceChordToken("Gm        Cm      D7", 0, "Am")).toBe("Am        Cm      D7");
   });
 });

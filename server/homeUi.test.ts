@@ -68,4 +68,14 @@ describe("song player mobile cleanup", () => {
     expect(styles).toContain(".personal-note summary");
     expect(styles).toContain(".note-editor textarea");
   });
+
+  it("offers private single-chord editing and a lyrics-only reading mode", () => {
+    expect(homeSource).toContain('const [showChords, setShowChords] = useState(true)');
+    expect(homeSource).toContain('מילים בלבד');
+    expect(homeSource).toContain('ערוך אקורד');
+    expect(homeSource).toContain('replaceChordToken(line.chord, chordIndex, nextChord)');
+    expect(homeSource).toContain('התיקון נשמר רק בספרייה שלך');
+    expect(styles).toContain('.lyrics-only .lyric-line');
+    expect(styles).toContain('.chord-editable');
+  });
 });

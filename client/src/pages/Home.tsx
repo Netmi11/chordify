@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronDown, ChevronRight, CloudDownload, Download, ExternalLink, KeyRound, LibraryBig, Loader2, Moon, Music2, Play, RotateCcw, Search, Sparkles, Sun, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowDownUp, BookmarkPlus, ChevronDown, ChevronRight, CloudDownload, Download, ExternalLink, Eye, EyeOff, KeyRound, LibraryBig, Loader2, Moon, Music2, Pencil, Play, RotateCcw, Search, Sparkles, Sun, Trash2, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { BOOKMARKLET_SOURCE } from "@/lib/bookmarkletSource";
 import { makeSavedSong, mergeCloudSongs, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, sortSongsForLibrary, type LibrarySort, type SavedSong, type SongLine, updateSongNote, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
@@ -43,8 +43,8 @@ export function combineSongLines(lines: SongLine[]) {
 const TAB_STRING_PATTERN = /^[eBGDAE]\|/;
 
 type SongRenderBlock =
-  | { kind: "line"; line: SongLine }
-  | { kind: "tab"; label: string; chord: string; tabs: string[] };
+  | { kind: "line"; line: SongLine; sourceIndex: number }
+  | { kind: "tab"; label: string; chord: string; chordSourceIndex: number | null; tabs: string[] };
 
 /**
  * Older cloud imports stored Tab4U string lines in `lyric`; newer imports use
@@ -52,24 +52,32 @@ type SongRenderBlock =
  * one six-string reading block instead of rendering six unrelated song rows.
  */
 export function buildSongRenderBlocks(lines: SongLine[]): SongRenderBlock[] {
-  const normalized = lines.map((line) => {
+  const normalized = lines.map((line, sourceIndex) => {
     const legacyTab = !line.tab && TAB_STRING_PATTERN.test(line.lyric.trimStart());
-    return legacyTab ? { ...line, lyric: "", tab: line.lyric.trimEnd() } : line;
+    return { ...(legacyTab ? { ...line, lyric: "", tab: line.lyric.trimEnd() } : line), sourceIndex };
   });
+  const combined: Array<SongLine & { sourceIndex: number }> = [];
+  for (const line of normalized) {
+    const previous = combined[combined.length - 1];
+    if (previous && !previous.lyric && previous.chord && !line.chord && line.lyric && !line.label && !line.tab) previous.lyric = line.lyric;
+    else combined.push({ ...line });
+  }
   const blocks: SongRenderBlock[] = [];
 
-  for (let index = 0; index < normalized.length; index += 1) {
-    const line = normalized[index];
+  for (let index = 0; index < combined.length; index += 1) {
+    const line = combined[index];
     if (!line.tab) {
-      blocks.push({ kind: "line", line });
+      blocks.push({ kind: "line", line, sourceIndex: line.sourceIndex });
       continue;
     }
 
     let label = line.label ?? "";
     let chord = line.chord;
+    let chordSourceIndex: number | null = line.chord ? line.sourceIndex : null;
     const previous = blocks[blocks.length - 1];
     if (previous?.kind === "line" && previous.line.chord && !previous.line.lyric && !previous.line.tab) {
       chord ||= previous.line.chord;
+      chordSourceIndex ??= previous.sourceIndex;
       label ||= previous.line.label ?? "";
       blocks.pop();
     }
@@ -80,11 +88,11 @@ export function buildSongRenderBlocks(lines: SongLine[]): SongRenderBlock[] {
     }
 
     const tabs = [line.tab];
-    while (index + 1 < normalized.length && normalized[index + 1].tab) {
+    while (index + 1 < combined.length && combined[index + 1].tab) {
       index += 1;
-      tabs.push(normalized[index].tab!);
+      tabs.push(combined[index].tab!);
     }
-    blocks.push({ kind: "tab", label, chord, tabs });
+    blocks.push({ kind: "tab", label, chord, chordSourceIndex, tabs });
   }
 
   return blocks;
@@ -97,9 +105,26 @@ export function getStartingKey(lines: Array<{ chord: string }>) {
   return match ? `${match[1]}${match[2] ?? ""}` : firstChord;
 }
 
-function ChordLine({ chord, shift, flats, className = "" }: { chord: string; shift: number; flats: boolean; className?: string }) {
+export function replaceChordToken(chordLine: string, targetIndex: number, replacement: string): string {
+  let chordIndex = 0;
+  return chordLine.replace(/\S+/g, (token) => {
+    if (!/^[A-G](?:#|b)?/.test(token)) return token;
+    const currentIndex = chordIndex;
+    chordIndex += 1;
+    return currentIndex === targetIndex ? replacement : token;
+  });
+}
+
+function ChordLine({ chord, shift, flats, className = "", onEditChord }: { chord: string; shift: number; flats: boolean; className?: string; onEditChord?: (chordIndex: number, originalChord: string) => void }) {
+  let chordIndex = 0;
   return <div className={`chord-line ${className}`.trim()} aria-label={`אקורדים אחרי שינוי של ${shift} חצאי טונים`}>
-    {chord.split(/(\s+)/).map((part, index) => /[A-G](?:#|b)?/.test(part) ? <span className="chord-mark" key={`${part}-${index}`}>{transposeChord(part, shift, flats)}</span> : <span key={`${part}-${index}`}>{part}</span>)}
+    {chord.split(/(\s+)/).map((part, index) => {
+      if (!/^[A-G](?:#|b)?/.test(part)) return <span key={`${part}-${index}`}>{part}</span>;
+      const currentIndex = chordIndex;
+      chordIndex += 1;
+      const displayed = transposeChord(part, shift, flats);
+      return onEditChord ? <button type="button" className="chord-mark chord-editable" key={`${part}-${index}`} onClick={() => onEditChord(currentIndex, part)} aria-label={`ערוך את האקורד ${displayed}`}>{displayed}</button> : <span className="chord-mark" key={`${part}-${index}`}>{displayed}</span>;
+    })}
   </div>;
 }
 
@@ -175,6 +200,8 @@ export default function Home() {
   const [savedSong, setSavedSong] = useState<SavedSong | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
   const [saveNotice, setSaveNotice] = useState(false);
+  const [showChords, setShowChords] = useState(true);
+  const [editingChords, setEditingChords] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
   const [cloudKey, setCloudKey] = useState<CloudLibraryKey | null>(null);
   const [cloudReady, setCloudReady] = useState(false);
@@ -268,7 +295,7 @@ export default function Home() {
   const fetchedLines: SongLine[] = fetchSong.data?.lines?.map((line) => ({ label: line.section ?? "", chord: line.chord, lyric: line.lyric })) ?? [];
   const sourceLines = savedSong?.lines ?? (!cleared && fetchedLines.length ? fetchedLines : demoSong);
   const activeSong = useMemo(() => combineSongLines(sourceLines), [sourceLines]);
-  const songBlocks = useMemo(() => buildSongRenderBlocks(activeSong), [activeSong]);
+  const songBlocks = useMemo(() => buildSongRenderBlocks(sourceLines), [sourceLines]);
   const originalRoot = useMemo(() => getStartingKey(activeSong), [activeSong]);
   const keyLabel = useMemo(() => transposeChord(originalRoot, shift, flats), [originalRoot, shift, flats]);
   const activeTitle = savedSong?.title ?? (!cleared && fetchSong.data?.title ? fetchSong.data.title.replace(/^אקורדים לשיר\s*/i, "") : "להתאפק");
@@ -334,10 +361,24 @@ export default function Home() {
       setLibrary(next); setSavedSong(song); setNoteDraft(song.note); setSaveNotice(true); window.setTimeout(() => setSaveNotice(false), 2200);
     } catch { window.alert("לא ניתן לשמור כרגע בטלפון הזה."); }
   };
-  const openSavedSong = (song: SavedSong) => { setSavedSong(song); setNoteDraft(song.note); setUrl(song.sourceUrl); resetTranspose(); setPlaying(false); window.history.pushState({ chordshiftScreen: "player" }, "", "#song"); setHistoryVersion((value) => value + 1); setScreen("player"); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const openSavedSong = (song: SavedSong) => { setSavedSong(song); setNoteDraft(song.note); setUrl(song.sourceUrl); resetTranspose(); setShowChords(true); setEditingChords(false); setPlaying(false); window.history.pushState({ chordshiftScreen: "player" }, "", "#song"); setHistoryVersion((value) => value + 1); setScreen("player"); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const returnToLibrary = () => { if (window.history.state?.chordshiftScreen === "player") window.history.back(); else { setScreen("library"); setPlaying(false); } };
   const deleteSavedSong = (id: string) => { if (!window.confirm("למחוק את השיר מהספרייה בטלפון הזה?")) return; try { const next = removeSong(window.localStorage, id); setLibrary(next); if (savedSong?.id === id) setSavedSong(null); } catch { window.alert("לא ניתן למחוק כרגע."); } };
   const saveNote = () => { if (!savedSong) return; try { const next = updateSongNote(window.localStorage, savedSong.id, noteDraft); setLibrary(next); setSavedSong(next.find((song) => song.id === savedSong.id) ?? savedSong); } catch { window.alert("לא ניתן לשמור את ההערה כרגע."); } };
+  const editChordAt = (lineIndex: number, chordIndex: number, originalChord: string) => {
+    if (!savedSong) return;
+    const replacement = window.prompt(`החלף את ${originalChord} באקורד המקור הרצוי. התיקון נשמר רק בספרייה שלך.`, originalChord);
+    if (replacement === null) return;
+    const nextChord = replacement.trim();
+    if (!nextChord || /\s/.test(nextChord) || !/^[A-G](?:#|b)?/.test(nextChord)) { window.alert("הזן אקורד אחד תקין, לדוגמה: C#m או Bbmaj7."); return; }
+    const nextLines = savedSong.lines.map((line, index) => index === lineIndex ? { ...line, chord: replaceChordToken(line.chord, chordIndex, nextChord) } : { ...line });
+    const nextSong = { ...savedSong, lines: nextLines };
+    try {
+      const nextLibrary = upsertSong(window.localStorage, nextSong);
+      setLibrary(nextLibrary);
+      setSavedSong(nextSong);
+    } catch { window.alert("לא ניתן לשמור את תיקון האקורד כרגע."); }
+  };
 
   const loadFromUrl = () => { setSavedSong(null); resetTranspose(); setCleared(false); void fetchSong.refetch(); };
 
@@ -349,8 +390,8 @@ export default function Home() {
         <div className="shift-panel"><div className="panel-heading"><span>שינוי סולם זמני</span><strong>{shift > 0 ? `+${shift}` : shift} <small>חצאי טון</small></strong></div><div className="shift-controls"><button className="shift-button" onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="key-display"><span>אקורד פתיחה</span><b>{keyLabel}</b></div><button className="shift-button" onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button></div><div className="quick-shifts">{[-3, -2, -1, 0, 1, 2, 3].map((value) => <button key={value} className={shift === value ? "quick active" : "quick"} onClick={() => setShift(value)}>{value > 0 ? `+${value}` : value}</button>)}</div><div className="shortcut-row"><button className={shift === 7 ? "shortcut-button active" : "shortcut-button"} onClick={() => setShift(7)}>+7</button><button className={shift === 0 ? "shortcut-button active" : "shortcut-button"} onClick={resetTranspose}><RotateCcw size={14} /> מקור</button></div><div className="notation-row"><span>כתיבת אקורדים</span><button onClick={() => setFlats((value) => !value)} className="notation-toggle">{flats ? "♭ במולים" : "♯ דיאזים"}</button></div></div>
         <div className="rail-footer"><button className="reset-button" onClick={resetTranspose}><RotateCcw size={14} /> חזור למקור</button><span>{library.length} שירים בספרייה</span></div>
       </section>
-      <section className="song-stage"><div className="song-toolbar"><div className="song-meta"><span className="live-tag">{savedSong ? "LIBRARY" : "LIVE VIEW"}</span><div><h2>{activeTitle}</h2><p>{activeArtist} · {savedSong ? `נשמר ${formatAddedAt(savedSong.addedAt)}` : "Tab4U"}</p></div></div></div>
-        <div className="song-paper"><div className="paper-topline"><span>אקורדים לשיר</span><span className="position-note">{shift === 0 ? "גרסת מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`}</span></div><article className="song-content"><div className="reading-guide" aria-hidden="true" /><div className="song-title">{activeTitle}</div><div className="song-artist">{activeArtist}</div>{savedSong && <details className={`personal-note ${noteDraft.trim() ? "has-note" : ""}`}><summary><span>הערה אישית</span><span className="note-state">{noteDraft.trim() ? "נשמרה" : "הוספה"}</span></summary><div className="note-editor"><textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} onBlur={saveNote} placeholder="לדוגמה: קאפו 2, פתיחה שקטה…" rows={3} /></div></details>}<div className="rule" />{songBlocks.map((block, index) => block.kind === "tab" ? <section className={`tab-block ${block.label ? "section-row" : ""}`} key={`${block.tabs[0]}-${index}`} dir="ltr">{block.label && <div className="tab-section-label" dir="rtl">{block.label}:</div>}{block.chord && <ChordLine chord={block.chord} shift={shift} flats={flats} className="tab-chord-line" />}<div className="tab-sheet"><pre className="saved-tab-line">{block.tabs.join("\n")}</pre></div></section> : <div className={`song-row ${block.line.label ? "section-row" : ""}`} key={`${block.line.lyric}-${index}`}>{block.line.label && <div className="section-label">{block.line.label}:</div>}<ChordLine chord={block.line.chord} shift={shift} flats={flats} /><div className="lyric-line">{block.line.lyric || "\u00A0"}</div></div>)}<div className="end-marker">— סוף —</div></article></div><button className="song-pdf-float" onClick={exportCurrentSongPdf} aria-label="הורד את השיר כ־PDF"><Download size={16} /> PDF</button>
+      <section className="song-stage"><div className="song-toolbar"><div className="song-meta"><span className="live-tag">{savedSong ? "LIBRARY" : "LIVE VIEW"}</span><div><h2>{activeTitle}</h2><p>{activeArtist} · {savedSong ? `נשמר ${formatAddedAt(savedSong.addedAt)}` : "Tab4U"}</p></div></div><div className="song-view-actions"><button className={showChords ? "song-view-toggle" : "song-view-toggle active"} onClick={() => { setShowChords((value) => !value); setEditingChords(false); }} aria-pressed={!showChords}>{showChords ? <EyeOff size={15} /> : <Eye size={15} />}{showChords ? "מילים בלבד" : "אקורדים"}</button>{savedSong && showChords && <button className={editingChords ? "song-edit-toggle active" : "song-edit-toggle"} onClick={() => setEditingChords((value) => !value)} aria-pressed={editingChords}><Pencil size={14} />{editingChords ? "סיום עריכה" : "ערוך אקורד"}</button>}</div></div>
+        <div className="song-paper"><div className="paper-topline"><span>{showChords ? "אקורדים לשיר" : "מילים בלבד"}</span><span className="position-note">{showChords ? (shift === 0 ? "גרסת מקור" : `טרנספוזיציה ${shift > 0 ? "+" : ""}${shift}`) : "מצב קריאה"}</span></div><article className={showChords ? "song-content" : "song-content lyrics-only"}><div className="reading-guide" aria-hidden="true" /><div className="song-title">{activeTitle}</div><div className="song-artist">{activeArtist}</div>{savedSong && <details className={`personal-note ${noteDraft.trim() ? "has-note" : ""}`}><summary><span>הערה אישית</span><span className="note-state">{noteDraft.trim() ? "נשמרה" : "הוספה"}</span></summary><div className="note-editor"><textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} onBlur={saveNote} placeholder="לדוגמה: קאפו 2, פתיחה שקטה…" rows={3} /></div></details>}<div className="rule" />{songBlocks.map((block, index) => block.kind === "tab" ? showChords ? <section className={`tab-block ${block.label ? "section-row" : ""}`} key={`${block.tabs[0]}-${index}`} dir="ltr">{block.label && <div className="tab-section-label" dir="rtl">{block.label}:</div>}{block.chord && <ChordLine chord={block.chord} shift={shift} flats={flats} className="tab-chord-line" onEditChord={editingChords && block.chordSourceIndex !== null ? (chordIndex) => editChordAt(block.chordSourceIndex!, chordIndex, block.chord) : undefined} />}<div className="tab-sheet"><pre className="saved-tab-line">{block.tabs.join("\n")}</pre></div></section> : null : block.line.lyric ? <div className={`song-row ${block.line.label ? "section-row" : ""}`} key={`${block.line.lyric}-${index}`}>{block.line.label && <div className="section-label">{block.line.label}:</div>}{showChords && <ChordLine chord={block.line.chord} shift={shift} flats={flats} onEditChord={editingChords && savedSong ? (chordIndex, originalChord) => editChordAt(block.sourceIndex, chordIndex, originalChord) : undefined} />}<div className="lyric-line">{block.line.lyric}</div></div> : null)}<div className="end-marker">— סוף —</div></article></div><button className="song-pdf-float" onClick={exportCurrentSongPdf} aria-label="הורד את השיר כ־PDF"><Download size={16} /> PDF</button>
       </section>
     </main>}
     {screen === "player" && <nav className="mobile-dock" aria-label="פקדי נגינה בנייד"><button onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="mobile-key"><small>פתיחה</small><strong>{keyLabel}</strong></div><button onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button><button onClick={() => setShift(7)} aria-label="טרנספוזיציה פלוס שבע"><span>+7</span></button><button onClick={resetTranspose} aria-label="חזרה למקור"><RotateCcw size={17} /><span>מקור</span></button><button onClick={() => setPlaying((value) => !value)} className={playing ? "dock-active" : ""} aria-label="גלילה"><Play size={17} fill={playing ? "currentColor" : "none"} /><span>{playing ? "עצור" : "גלול"}</span></button></nav>}

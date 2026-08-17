@@ -75,6 +75,10 @@ button:active { transform: scale(.97); }
 .song-loaded-rail { display: none; }
 .song-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 850px; margin: 0 auto 22px; }
 .song-meta { gap: 12px; }
+.song-view-actions { display: inline-flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.song-view-toggle, .song-edit-toggle { min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 9px; border: 1px solid rgba(183,199,202,.22); border-radius: 7px; background: rgba(7,15,23,.42); color: #aebfc1; font: 600 10px "Rubik", sans-serif; transition: border-color 160ms ease-out, background 160ms ease-out, color 160ms ease-out, transform 160ms ease-out; }
+.song-view-toggle:hover, .song-view-toggle.active { color: #f3a54a; border-color: rgba(243,165,74,.56); background: rgba(243,165,74,.1); }
+.song-edit-toggle:hover, .song-edit-toggle.active { color: #a99fff; border-color: rgba(169,159,255,.58); background: rgba(169,159,255,.11); }
 .live-tag { color: #f3a54a; border: 1px solid rgba(243,165,74,.4); border-radius: 4px; font-size: 9px; letter-spacing: .08em; padding: 4px 6px; }
 .song-meta h2 { margin: 0; font-size: 18px; font-weight: 600; }
 .song-meta p { margin: 3px 0 0; color: #71848c; font-size: 11px; }
@@ -105,7 +109,13 @@ button:active { transform: scale(.97); }
 .section-label { position: absolute; right: -18px; top: -22px; color: #f3a54a; font-size: 11px; font-weight: 600; }
 .chord-line { min-height: 24px; color: #f3a54a; font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 500; white-space: pre; direction: ltr; text-align: right; letter-spacing: .015em; }
 .chord-mark { display: inline-block; background: rgba(243,165,74,.08); border-radius: 3px; padding: 0 2px; transition: color 160ms ease, background 160ms ease; }
+.chord-editable { border: 1px dashed rgba(169,159,255,.56); color: inherit; font: inherit; line-height: inherit; cursor: pointer; }
+.chord-editable:hover, .chord-editable:focus-visible { background: rgba(169,159,255,.2); border-color: #c3bbff; outline: 0; }
 .lyric-line { color: #d2dada; font-size: 17px; min-height: 26px; white-space: pre-wrap; }
+.lyrics-only .reading-guide { opacity: .35; }
+.lyrics-only .song-row { min-height: 35px; }
+.lyrics-only .song-row.section-row { margin-top: 28px; }
+.lyrics-only .lyric-line { color: #e4ebea; font-size: clamp(17px, 2.2vw, 20px); line-height: 1.75; }
 .tab-block { position: relative; width: fit-content; max-width: 100%; margin: 14px 0 18px; direction: ltr; }
 .tab-block.section-row { margin-top: 23px; }
 .tab-section-label { margin: 0 0 5px; color: #f3a54a; font-size: 11px; font-weight: 600; text-align: right; }
@@ -116,7 +126,7 @@ button:active { transform: scale(.97); }
 .tab-sheet::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--neo-cyan) 35%, transparent); border-radius: 99px; }
 .saved-tab-line { min-width: max-content; margin: 0; color: var(--neo-ink); direction: ltr; text-align: left; font: 500 11px/1.2 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0; white-space: pre; }
 .end-marker { color: #60747d; font-size: 11px; text-align: center; padding-top: 25px; }
-@media (max-width: 850px) { .workspace { grid-template-columns: 1fr; } .control-rail { order: 0; padding: 25px 20px 23px; gap: 24px; border-left: 0; border-bottom: 1px solid rgba(183,199,202,.12); } .rail-copy h1 br { display: none; } .intro { max-width: 550px; } .rail-footer { margin-top: 0; } .song-stage { padding: 22px 12px 50px; } .song-toolbar { align-items: flex-start; flex-direction: column; } .song-tools { width: 100%; justify-content: space-between; } .song-paper { border-radius: 8px; } }
+@media (max-width: 850px) { .workspace { grid-template-columns: 1fr; } .control-rail { order: 0; padding: 25px 20px 23px; gap: 24px; border-left: 0; border-bottom: 1px solid rgba(183,199,202,.12); } .rail-copy h1 br { display: none; } .intro { max-width: 550px; } .rail-footer { margin-top: 0; } .song-stage { padding: 22px 12px 50px; } .song-toolbar { align-items: flex-start; flex-direction: column; } .song-tools { width: 100%; justify-content: space-between; } .song-view-actions { width: 100%; } .song-paper { border-radius: 8px; } }
 @media (max-width: 520px) { .topbar { height: 62px; padding: 0 15px; } .status-dot { display: none; } .song-content { padding: 36px 20px 48px; } .chord-line, .lyric-line { font-size: 15px; } .saved-tab-line { font-size: 12px; } .song-title { font-size: 25px; } .url-row { align-items: stretch; } .load-button { padding: 0 10px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.01ms !important; } }
 
@@ -152,6 +162,8 @@ button:active { transform: scale(.97); }
   .song-meta h2 { font-size: 16px; }
   .song-meta p { font-size: 9px; }
   .live-tag { font-size: 8px; padding: 3px 4px; }
+  .song-view-actions { gap: 6px; }
+  .song-view-toggle, .song-edit-toggle { min-height: 30px; padding: 0 8px; font-size: 9px; }
   .song-tools { display: none; }
   .song-paper { min-height: 640px; border-radius: 9px; }
   .paper-topline { height: 34px; padding: 0 13px; font-size: 9px; }
@@ -170,6 +182,8 @@ button:active { transform: scale(.97); }
   .chord-line { font-size: clamp(14px, 4.5vw, 18px); min-height: 25px; overflow-x: auto; scrollbar-width: none; }
   .chord-line::-webkit-scrollbar { display: none; }
   .lyric-line { font-size: clamp(14px, 4.5vw, 17px); min-height: 27px; }
+  .lyrics-only .song-row { min-height: 31px; }
+  .lyrics-only .lyric-line { font-size: clamp(16px, 4.7vw, 19px); line-height: 1.7; }
   .tab-block { margin: 12px 0 16px; }
   .tab-block.section-row { margin-top: 18px; }
   .tab-section-label { margin-bottom: 4px; font-size: 10px; }
@@ -604,6 +618,7 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
 :root:not(.dark) .url-row input::placeholder,
 :root:not(.dark) .library-search input::placeholder { color: #46566d; }
 :root:not(.dark) .top-library-button { color: #111827; }
+:root:not(.dark) .song-view-toggle, :root:not(.dark) .song-edit-toggle { color: #132238; background: rgba(255,255,255,.72); }
 :root:not(.dark) .library-return { color: #132238; border-color: rgba(19, 34, 56, .32); background: rgba(255, 255, 255, .82); }
 :root:not(.dark) .bookmarklet-card button,
 :root:not(.dark) .userscript-link { color: #111827; }
