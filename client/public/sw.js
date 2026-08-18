@@ -1,8 +1,22 @@
-const CACHE_NAME = "chordshift-shell-v3";
-const APP_SHELL = ["/", "/manifest.webmanifest"];
+const CACHE_NAME = "chordshift-shell-v5";
+const STATIC_SHELL = ["/", "/manifest.webmanifest", "/sw.js"];
+
+async function cacheBuiltAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  const rootResponse = await fetch("/", { cache: "no-store" });
+  if (!rootResponse.ok) throw new Error(`Unable to cache the app shell (${rootResponse.status})`);
+
+  const html = await rootResponse.clone().text();
+  const assetPaths = [...html.matchAll(/(?:src|href)="([^"]+)"/g)]
+    .map(([, value]) => new URL(value, self.location.origin))
+    .filter((url) => url.origin === self.location.origin && url.pathname.startsWith("/assets/"))
+    .map((url) => `${url.pathname}${url.search}`);
+
+  await cache.addAll([...STATIC_SHELL, ...assetPaths]);
+}
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
+  event.waitUntil(cacheBuiltAppShell());
   self.skipWaiting();
 });
 
@@ -15,20 +29,17 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
 
-  if (request.mode === "navigate") {
-    event.respondWith(fetch(request).then((response) => {
-      const copy = response.clone();
-      void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    try {
+      const response = await fetch(request);
+      if (response.ok) void cache.put(request, response.clone());
       return response;
-    }).catch(async () => (await caches.match(request)) || (await caches.match("/"))));
-    return;
-  }
-
-  event.respondWith(fetch(request).then((response) => {
-    if (response.ok) {
-      const copy = response.clone();
-      void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+    } catch {
+      if (request.mode === "navigate") {
+        return (await cache.match(request, { ignoreSearch: true })) || (await cache.match("/")) || Response.error();
+      }
+      return (await cache.match(request)) || Response.error();
     }
-    return response;
-  }).catch(async () => (await caches.match(request)) || Response.error()));
+  })());
 });

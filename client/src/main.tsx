@@ -46,7 +46,7 @@ const trpcClient = trpc.createClient({
 });
 
 if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-  void navigator.serviceWorker.register("/sw.js").catch((error) => {
+  void navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" }).catch((error) => {
     console.warn("[PWA] Service worker registration skipped", error);
   });
 }
