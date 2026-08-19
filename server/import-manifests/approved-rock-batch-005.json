@@ -1,0 +1,16 @@
+{
+  "batch": "approved-rock-005",
+  "description": "שירים 41–50 מתוך רשימת הרוק הישראלי שאושרה",
+  "songs": [
+    {"title":"היוצא לאור","artist":"אהוד בנאי","sourceUrl":"https://www.tab4u.com/tabs/songs/296_%D7%90%D7%94%D7%95%D7%93_%D7%91%D7%A0%D7%90%D7%99_-_%D7%99%D7%95%D7%A6%D7%90_%D7%9C%D7%90%D7%95%D7%A8.html"},
+    {"title":"רחוב האגס 1","artist":"אהוד בנאי","sourceUrl":"https://www.tab4u.com/tabs/songs/279_%D7%90%D7%94%D7%95%D7%93_%D7%91%D7%A0%D7%90%D7%99_-_%D7%94%D7%90%D7%92%D7%A1_1.html"},
+    {"title":"מהרי נא","artist":"אהוד בנאי","sourceUrl":"https://www.tab4u.com/tabs/songs/297_%D7%90%D7%94%D7%95%D7%93_%D7%91%D7%A0%D7%90%D7%99_-_%D7%9E%D7%94%D7%A8%D7%99_%D7%A0%D7%90.html"},
+    {"title":"עיר מקלט","artist":"אהוד בנאי","sourceUrl":"https://www.tab4u.com/tabs/songs/269_%D7%90%D7%94%D7%95%D7%93_%D7%91%D7%A0%D7%90%D7%99_-_%D7%A2%D7%99%D7%A8_%D7%9E%D7%A7%D7%9C%D7%98.html"},
+    {"title":"עיניים שלי","artist":"יהודה פוליקר","sourceUrl":"https://www.tab4u.com/tabs/songs/4082_%D7%99%D7%94%D7%95%D7%93%D7%94_%D7%A4%D7%95%D7%9C%D7%99%D7%A7%D7%A8_-_%D7%A2%D7%99%D7%A0%D7%99%D7%99%D7%9D_%D7%A9%D7%9C%D7%99.html"},
+    {"title":"פחות אבל כואב","artist":"יהודה פוליקר","sourceUrl":"https://www.tab4u.com/tabs/songs/1556_%D7%99%D7%94%D7%95%D7%93%D7%94_%D7%A4%D7%95%D7%9C%D7%99%D7%A7%D7%A8_-_%D7%A4%D7%97%D7%95%D7%AA_%D7%90%D7%91%D7%9C_%D7%9B%D7%95%D7%90%D7%91.html"},
+    {"title":"דברים שרציתי לומר","artist":"יהודה פוליקר","sourceUrl":"https://www.tab4u.com/tabs/songs/1568_%D7%99%D7%94%D7%95%D7%93%D7%94_%D7%A4%D7%95%D7%9C%D7%99%D7%A7%D7%A8_-_%D7%93%D7%91%D7%A8%D7%99%D7%9D_%D7%A9%D7%A8%D7%A6%D7%99%D7%AA%D7%D7%99_%D7%9C%D7%95%D7%9E%D7%A8.html"},
+    {"title":"אני רץ","artist":"דודו טסה","sourceUrl":"https://www.tab4u.com/tabs/songs/1103_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_-_%D7%90%D7%A0%D7%99_%D7%A8%D7%A5.html"},
+    {"title":"באת עם השקט","artist":"דודו טסה","sourceUrl":"https://www.tab4u.com/tabs/songs/70410_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_-_%D7%91%D7%90%D7%AA_%D7%A2%D7%9D_%D7%94%D7%A9%D7%A7%D7%98.html"},
+    {"title":"ואיך שלא","artist":"אריאל זילבר","sourceUrl":"https://www.tab4u.com/tabs/songs/601_%D7%90%D7%A8%D7%99%D7%90%D7%9C_%D7%96%D7%99%D7%9C%D7%91%D7%A8_-_%D7%95%D7%90%D7%99%D7%9A_%D7%A9%D7%9C%D7%90.html"}
+  ]
+}
