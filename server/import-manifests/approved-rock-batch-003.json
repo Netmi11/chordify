@@ -1,0 +1,16 @@
+{
+  "songs": [
+    { "artist": "מוניקה סקס", "title": "גשם חזק", "sourceUrl": "https://www.tab4u.com/tabs/songs/1906_song.html" },
+    { "artist": "נוער שוליים", "title": "אמסטרדם", "sourceUrl": "https://www.tab4u.com/tabs/songs/1818_%D7%A0%D7%95%D7%A2%D7%A8_%D7%A9%D7%95%D7%9C%D7%99%D7%99%D7%9D_-_%D7%90%D7%9E%D7%A1%D7%98%D7%A8%D7%93%D7%9D.html" },
+    { "artist": "אבטיפוס", "title": "בוקר טוב עולם", "sourceUrl": "https://www.tab4u.com/tabs/songs/31_%D7%90%D7%91%D7%98%D7%99%D7%A4%D7%95%D7%A1_-_%D7%91%D7%95%D7%A7%D7%A8_%D7%98%D7%95%D7%91_%D7%A2%D7%95%D7%9C%D7%9D.html" },
+    { "artist": "איפה הילד", "title": "לבן בחלום שחור", "sourceUrl": "https://www.tab4u.com/tabs/songs/482_%D7%90%D7%99%D7%A4%D7%94_%D7%94%D7%99%D7%9C%D7%93_-_%D7%9C%D7%91%D7%9F_%D7%91%D7%97%D7%9C%D7%95%D7%9D_%D7%A9%D7%97%D7%95%D7%A8.html" },
+    { "artist": "איפה הילד", "title": "נפלת חזק", "sourceUrl": "https://www.tab4u.com/tabs/songs/468_%D7%90%D7%99%D7%A4%D7%94_%D7%94%D7%99%D7%9C%D7%93_-_%D7%A0%D7%A4%D7%9C%D7%AA_%D7%97%D7%96%D7%A7.html" },
+    { "artist": "זקני צפת", "title": "רק אל תלכי", "sourceUrl": "https://www.tab4u.com/tabs/songs/1469_%D7%96%D7%A7%D7%A0%D7%99_%D7%A6%D7%A4%D7%AA_-_%D7%A8%D7%A7_%D7%90%D7%9C_%D7%AA%D7%9C%D7%9B%D7%99.html" },
+    { "artist": "היהודים", "title": "אצלך בעולם", "sourceUrl": "https://www.tab4u.com/tabs/songs/76750_%D7%94%D7%99%D7%94%D7%95%D7%93%D7%99%D7%9D_-_%D7%90%D7%A6%D7%9C%D7%9A_%D7%91%D7%A2%D7%95%D7%9C%D7%9D.html" },
+    { "artist": "היהודים", "title": "הזמן שלך", "sourceUrl": "https://www.tab4u.com/tabs/songs/1295_%D7%94%D7%99%D7%94%D7%95%D7%93%D7%99%D7%9D_-_%D7%94%D7%96%D7%9E%D7%9F_%D7%A9%D7%9C%D7%9A.html" },
+    { "artist": "תיסלם", "title": "רדיו חזק", "sourceUrl": "https://www.tab4u.com/tabs/songs/2778_%D7%AA%D7%99%D7%A1%D7%9C%D7%9D_-_%D7%A8%D7%93%D7%99%D7%95_%D7%97%D7%96%D7%A7.html" }
+  ],
+  "skipped": [
+    { "artist": "אבטיפוס", "title": "הלילה הזה", "status": "missing", "reason": "לא נמצא דף Tab4U של אקורדים; אינדקס האמן שנבדק אינו מציג אותו כשיר עם אקורדים." }
+  ]
+}
