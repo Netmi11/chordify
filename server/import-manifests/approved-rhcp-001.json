@@ -1,0 +1,14 @@
+{
+  "batch": "approved-rhcp-001",
+  "description": "שמונת המקורות המאומתים הראשונים של Red Hot Chili Peppers",
+  "songs": [
+    {"title":"Californication","artist":"Red Hot Chili Peppers","sourceUrl":"https://en.tab4u.com/tabs/songs/2978_Red_Hot_Chili_Peppers_-_Californiacation.html"},
+    {"title":"Under the Bridge","artist":"Red Hot Chili Peppers","sourceUrl":"https://en.tab4u.com/tabs/songs/3399_Red_Hot_Chili_Peppers_-_Under_the_bridge.html"},
+    {"title":"Can't Stop","artist":"Red Hot Chili Peppers","sourceUrl":"https://en.tab4u.com/tabs/songs/2991_Red_Hot_Chili_Peppers_-_Can%26%2339%3Bt_Stop.html"},
+    {"title":"Otherside","artist":"Red Hot Chili Peppers","sourceUrl":"https://en.tab4u.com/tabs/songs/3307_Red_Hot_Chili_Peppers_-_Otherside.html"},
+    {"title":"Breaking the Girl","artist":"Red Hot Chili Peppers","sourceUrl":"https://en.tab4u.com/tabs/songs/2973_Red_Hot_Chili_Peppers_-_Breaking_The_Girl.html"},
+    {"title":"Dani California","artist":"Red Hot Chili Peppers","sourceUrl":"https://en.tab4u.com/tabs/songs/4836_Red_Hot_Chili_Peppers_-_Dani_California.html"},
+    {"title":"By the Way","artist":"Red Hot Chili Peppers","sourceUrl":"https://en.tab4u.com/tabs/songs/2977_Red_Hot_Chili_Peppers_-_By_The_Way.html"},
+    {"title":"Give It Away","artist":"Red Hot Chili Peppers","sourceUrl":"https://en.tab4u.com/tabs/songs/4837_Red_Hot_Chili_Peppers_-_Give_It_Away.html"}
+  ]
+}
