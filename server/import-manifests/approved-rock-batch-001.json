@@ -1,0 +1,16 @@
+{
+  "approvedAt": "2026-08-19",
+  "batch": "approved-rock-001",
+  "songs": [
+    { "title": "אדם בתוך עצמו", "artist": "שלום חנוך", "sourceUrl": "https://www.tab4u.com/tabs/songs/2505_%D7%A9%D7%9C%D7%95%D7%9D_%D7%97%D7%A0%D7%95%D7%9A_-_%D7%90%D7%93%D7%9D_%D7%91%D7%AA%D7%95%D7%9A_%D7%A2%D7%A6%D7%9E%D7%95.html" },
+    { "title": "מחכים למשיח", "artist": "שלום חנוך", "sourceUrl": "https://www.tab4u.com/tabs/songs/2440_%D7%A9%D7%9C%D7%95%D7%9D_%D7%97%D7%A0%D7%95%D7%9A_-_%D7%9E%D7%97%D7%9B%D7%99%D7%9D_%D7%9C%D7%9E%D7%A9%D7%99%D7%97.html" },
+    { "title": "אהבת נעורי", "artist": "שלום חנוך", "sourceUrl": "https://www.tab4u.com/tabs/songs/2428_%D7%A9%D7%9C%D7%95%D7%9D_%D7%97%D7%A0%D7%95%D7%9A_-_%D7%90%D7%94%D7%91%D7%AA_%D7%A0%D7%A2%D7%95%D7%A8%D7%99.html" },
+    { "title": "לילה", "artist": "שלום חנוך", "sourceUrl": "https://www.tab4u.com/tabs/songs/621_%D7%A9%D7%9C%D7%95%D7%9D_%D7%97%D7%A0%D7%95%D7%9A_-_%D7%9C%D7%99%D7%9C%D7%94.html" },
+    { "title": "ככה זה", "artist": "ברי סחרוף", "sourceUrl": "https://www.tab4u.com/tabs/songs/930_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_-_%D7%9B%D7%9B%D7%94_%D7%96%D7%94.html" },
+    { "title": "חלליות", "artist": "ברי סחרוף", "sourceUrl": "https://www.tab4u.com/tabs/songs/882_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_-_%D7%97%D7%9C%D7%9C%D7%99%D7%95%D7%AA.html" },
+    { "title": "עוד חוזר הניגון", "artist": "ברי סחרוף", "sourceUrl": "https://www.tab4u.com/tabs/songs/940_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_-_%D7%A2%D7%95%D7%93_%D7%97%D7%95%D7%96%D7%A8_%D7%94%D7%A0%D7%99%D7%92%D7%95%D7%9F.html" },
+    { "title": "חתול מפלצת", "artist": "רמי פורטיס", "sourceUrl": "https://www.tab4u.com/tabs/songs/903_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_%D7%95%D7%A8%D7%9E%D7%99_%D7%A4%D7%95%D7%A8%D7%98%D7%99%D7%A1_-_%D7%97%D7%AA%D7%95%D7%9C_%D7%9E%D7%A4%D7%9C%D7%A6%D7%AA.html" },
+    { "title": "ניצוצות", "artist": "פורטיסחרוף", "sourceUrl": "https://www.tab4u.com/tabs/songs/890_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_%D7%95%D7%A8%D7%9E%D7%99_%D7%A4%D7%95%D7%A8%D7%98%D7%99%D7%A1_-_%D7%A0%D7%99%D7%A6%D7%95%D7%A6%D7%95%D7%AA.html" },
+    { "title": "מה שיותר עמוק יותר כחול", "artist": "תמוז", "sourceUrl": "https://www.tab4u.com/tabs/songs/2451_%D7%90%D7%A8%D7%99%D7%A7_%D7%90%D7%99%D7%A0%D7%A9%D7%98%D7%99%D7%99%D7%9F_%D7%95%D7%A9%D7%9C%D7%95%D7%9D_%D7%97%D7%A0%D7%95%D7%9A_-_%D7%9E%D7%94_%D7%A9%D7%99%D7%95%D7%AA%D7%A8_%D7%A2%D7%9E%D7%95%D7%A7_%D7%99%D7%95%D7%AA%D7%A8_%D7%9B%D7%97%D7%95%D7%9C.html" }
+  ]
+}
