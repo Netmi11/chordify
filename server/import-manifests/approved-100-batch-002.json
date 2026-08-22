@@ -1,0 +1,15 @@
+{
+  "batch": "approved-100-batch-002",
+  "description": "אצווה 002 מתוך 100 השירים שאושרו — תשעה מקורות שלמה ארצי מאומתים; פתאום עכשיו פתאום היום מושהה ללא עמוד שיר עצמאי",
+  "songs": [
+    {"title":"ירח","artist":"שלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/2503_%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%99%D7%A8%D7%97.html"},
+    {"title":"ארץ חדשה","artist":"שלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/2794_%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%90%D7%A8%D7%A5_%D7%97%D7%93%D7%A9%D7%94.html"},
+    {"title":"תרקוד","artist":"שלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/3364_%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%AA%D7%A8%D7%A7%D7%95%D7%93.html"},
+    {"title":"תתארו לכם","artist":"שלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/2481_%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%AA%D7%AA%D7%90%D7%A8%D7%95_%D7%9C%D7%9B%D7%9D.html"},
+    {"title":"היא לא יודעת מה עובר עלי","artist":"שלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/2502_%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%94%D7%99%D7%90_%D7%9C%D7%90_%D7%99%D7%95%D7%93%D7%A2%D7%AA_%D7%9E%D7%94_%D7%A2%D7%95%D7%91%D7%A8_%D7%A2%D7%9C%D7%99.html"},
+    {"title":"נוף ילדות","artist":"שלום חנוך ושלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/2498_%D7%A9%D7%9C%D7%95%D7%9D_%D7%97%D7%A0%D7%95%D7%9A_%D7%95%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%A0%D7%95%D7%A3_%D7%99%D7%9C%D7%93%D7%95%D7%AA.html"},
+    {"title":"אחרי הכל את שיר","artist":"שלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/2499_%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%90%D7%97%D7%A8%D7%99_%D7%94%D7%9B%D7%9C_%D7%90%D7%AA_%D7%A9%D7%99%D7%A8.html"},
+    {"title":"חום יולי אוגוסט","artist":"שלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/4435_%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%97%D7%95%D7%9D_%D7%99%D7%95%D7%9C%D7%99_%D7%90%D7%95%D7%92%D7%95%D7%A1%D7%98.html"},
+    {"title":"האהבה הישנה","artist":"שלמה ארצי","sourceUrl":"https://www.tab4u.com/tabs/songs/414_%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%94%D7%90%D7%94%D7%91%D7%94_%D7%94%D7%99%D7%A9%D7%9F.html"}
+  ]
+}
