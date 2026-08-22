@@ -7,7 +7,7 @@ const mainSource = readFileSync(resolve(process.cwd(), "client/src/main.tsx"), "
 
 describe("PWA offline app shell", () => {
   it("pre-caches the built Vite asset graph together with the navigation shell", () => {
-    expect(serviceWorker).toContain('const CACHE_NAME = "chordshift-shell-v5"');
+    expect(serviceWorker).toContain('const CACHE_NAME = "chordshift-shell-v6"');
     expect(serviceWorker).toContain('fetch("/", { cache: "no-store" })');
     expect(serviceWorker).toContain('new URL(value, self.location.origin)');
     expect(serviceWorker).toContain('pathname.startsWith("/assets/")');

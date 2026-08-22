@@ -1,4 +1,4 @@
-const CACHE_NAME = "chordshift-shell-v5";
+const CACHE_NAME = "chordshift-shell-v6";
 const STATIC_SHELL = ["/", "/manifest.webmanifest", "/sw.js"];
 
 async function cacheBuiltAppShell() {
