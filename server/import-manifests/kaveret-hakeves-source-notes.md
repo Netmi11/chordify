@@ -37,3 +37,9 @@
 | 1728 | כוורת | לאמור א׳לבי | https://www.tab4u.com/tabs/songs/1728_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%9C%D7%90%D7%9E%D7%95%D7%A8_%D7%90%26%2339%3B%D7%9C%D7%91%D7%99.html | אימות דפדפן מלא; כותרת/אמן תואמים; `songContentTPL` עם אקורדים ומילים; snapshot נשמר, dry-run ו־commit הושלמו ללא כפילות. |
 
 | 7582 | כוורת | העולם שמח | https://www.tab4u.com/tabs/songs/7582_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%94%D7%A2%D7%95%D7%9C%D7%9D_%D7%A9%D7%9E%D7%97.html | אימות דפדפן מלא; כותרת/אמן תואמים; `songContentTPL` עם אקורדים, מילים וטאבים; snapshot נשמר, dry-run ו־commit הושלמו ללא כפילות. |
+
+| 5547 | כוורת | ככה היא באמצע | https://www.tab4u.com/tabs/songs/5547_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%9B%D7%9B%D7%94_%D7%94%D7%99%D7%90_%D7%91%D7%90%D7%9E%D7%A6%D7%A2.html | הדף אומת בדפדפן עם כותרת/אמן תואמים ו־`songContentTPL` משמעותי, אך `browser_view` עבר ל־`about:blank`; אין snapshot תקין ולכן לא ייובא. |
+
+| 5547 | כוורת | ככה היא באמצע | https://www.tab4u.com/tabs/songs/5547_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%9B%D7%9B%D7%94_%D7%94%D7%99%D7%90_%D7%91%D7%90%D7%9E%D7%A6%D7%A2.html | ניסיון חוזר: הדף שוב אומת עם כותרת/אמן תואמים ו־`songContentTPL` משמעותי; שמירת ה־HTML עברה ל־`about:blank`, ולכן נשאר מחוץ לייבוא. |
+
+| 6199 | כוורת | מדינה קטנה | https://www.tab4u.com/tabs/songs/6199_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%9E%D7%93%D7%99%D7%A0%D7%94_%D7%A7%D7%98%D7%A0%D7%94.html | אימות דפדפן מלא; כותרת/אמן תואמים; `songContentTPL` עם אקורדים, מילים וטאבים; snapshot נשמר, dry-run ו־commit הושלמו ללא כפילות. |
