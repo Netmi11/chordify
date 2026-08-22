@@ -1,0 +1,40 @@
+{
+  "songs": [
+    {
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "הריני",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/67978_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_-_%D7%94%D7%A8%D7%99%D7%A0%D7%99.html",
+      "requestedNumber": 31
+    },
+    {
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "קפה וסיגריה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/5691_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_-_%D7%A7%D7%A4%D7%94_%D7%95%D7%A1%D7%99%D7%92%D7%A8%D7%99%D7%94.html",
+      "requestedNumber": 32
+    },
+    {
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק) וג׳ימבו ג׳יי",
+      "title": "סמוראי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/67846_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_%D7%95%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_-_%D7%A1%D7%9E%D7%95%D7%A8%D7%90%D7%99.html",
+      "requestedNumber": 41
+    },
+    {
+      "artist": "ג׳ימבו ג׳יי ולהקת ספא",
+      "title": "מתגעגע",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/73535_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_%D7%95%D7%9C%D7%94%D7%A7%D7%AA_%D7%A1%D7%A4%D7%90_-_%D7%9E%D7%AA%D7%92%D7%A2%D7%92%D7%A2.html",
+      "requestedNumber": 43
+    },
+    {
+      "artist": "ג׳ימבו ג׳יי ולהקת ספא",
+      "title": "סיגריות",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/66979_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_%D7%95%D7%9C%D7%94%D7%A7%D7%AA_%D7%A1%D7%A4%D7%90_-_%D7%A1%D7%99%D7%92%D7%A8%D7%99%D7%95%D7%AA.html",
+      "requestedNumber": 44
+    },
+    {
+      "artist": "Full Trunk",
+      "title": "חדוות המאבק",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/70559_Full_Trunk_-_%D7%97%D7%93%D7%95%D7%95%D7%AA_%D7%94%D7%9E%D7%90%D7%91%D7%A7.html",
+      "requestedNumber": 54
+    }
+  ]
+}
