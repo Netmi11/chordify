@@ -1,0 +1,14 @@
+{
+  "batch": "approved-100-batch-007",
+  "description": "אצווה 007 מתוך 100 השירים שאושרו — שמונה מקורות עם snapshots מאומתים; חלום כחול מושהה ודברים שרציתי לומר מזוהה ככפילות לפי clientSongId",
+  "songs": [
+    {"title":"פחות אבל כואב","artist":"יהודה פוליקר","sourceUrl":"https://www.tab4u.com/tabs/songs/1556_%D7%99%D7%94%D7%95%D7%93%D7%94_%D7%A4%D7%95%D7%9C%D7%99%D7%A7%D7%A8_-_%D7%A4%D7%97%D7%95%D7%AA_%D7%90%D7%91%D7%9C_%D7%9B%D7%95%D7%90%D7%91.html"},
+    {"title":"כשתגדל","artist":"יהודה פוליקר","sourceUrl":"https://www.tab4u.com/tabs/songs/1555_%D7%99%D7%94%D7%95%D7%93%D7%94_%D7%A4%D7%95%D7%9C%D7%99%D7%A7%D7%A8_-_%D7%9B%D7%A9%D7%AA%D7%92%D7%93%D7%9C.html"},
+    {"title":"עיניים שלי","artist":"יהודה פוליקר","sourceUrl":"https://www.tab4u.com/tabs/songs/4082_%D7%99%D7%94%D7%95%D7%93%D7%94_%D7%A4%D7%95%D7%9C%D7%99%D7%A7%D7%A8_-_%D7%A2%D7%99%D7%A0%D7%99%D7%99%D7%9D_%D7%A9%D7%9C%D7%99.html"},
+    {"title":"הצל ואני","artist":"יהודה פוליקר","sourceUrl":"https://www.tab4u.com/tabs/songs/1557_%D7%99%D7%94%D7%95%D7%93%D7%94_%D7%A4%D7%95%D7%9C%D7%99%D7%A7%D7%A8_-_%D7%94%D7%A6%D7%9C_%D7%95%D7%90%D7%A0%D7%99.html"},
+    {"title":"אמריקה","artist":"ברי סחרוף ורמי פורטיס","sourceUrl":"https://www.tab4u.com/tabs/songs/887_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_%D7%95%D7%A8%D7%9E%D7%99_%D7%A4%D7%95%D7%A8%D7%98%D7%99%D7%A1_-_%D7%90%D7%9E%D7%A8%D7%99%D7%A7%D7%94.html"},
+    {"title":"אין קץ לילדות (בצהרי היום)","artist":"ברי סחרוף ורמי פורטיס","sourceUrl":"https://www.tab4u.com/tabs/songs/888_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%95%D7%A3_%D7%95%D7%A8%D7%9E%D7%99_%D7%A4%D7%95%D7%A8%D7%98%D7%99%D7%A1_-_%D7%90%D7%99%D7%9F_%D7%A7%D7%A5_%D7%9C%D7%99%D7%9C%D7%93%D7%95%D7%AA_%28%D7%91%D7%A6%D7%94%D7%A8%D7%99_%D7%94%D7%99%D7%95%D7%9D%29.html"},
+    {"title":"ניצוצות","artist":"ברי סחרוף ורמי פורטיס","sourceUrl":"https://www.tab4u.com/tabs/songs/890_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%95%D7%A3_%D7%95%D7%A8%D7%9E%D7%99_%D7%A4%D7%95%D7%A8%D7%98%D7%99%D7%A1_-_%D7%A0%D7%99%D7%A6%D7%95%D7%A6%D7%95%D7%AA.html"},
+    {"title":"להתעורר","artist":"ברי סחרוף ורמי פורטיס","sourceUrl":"https://www.tab4u.com/tabs/songs/970_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%95%D7%A3_%D7%95%D7%A8%D7%9E%D7%99_%D7%A4%D7%95%D7%A8%D7%98%D7%99%D7%A1_-_%D7%9C%D7%94%D7%AA%D7%A2%D7%95%D7%A8%D7%A8.html"}
+  ]
+}
