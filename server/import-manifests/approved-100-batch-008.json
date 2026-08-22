@@ -1,0 +1,13 @@
+{
+  "batch": "approved-100-batch-008",
+  "description": "אצווה 008 מתוך 100 השירים שאושרו — שבעה מקורות שטרם סוננו לפי מקור; גשם חזק מזוהה ככפילות לפי clientSongId ושני פריטי פול טראנק ללא מקור תואם מתועדים ב-source notes",
+  "songs": [
+    {"title":"איך אפשר שלא","artist":"ג׳יין בורדו","sourceUrl":"https://www.tab4u.com/tabs/songs/5997_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%90%D7%99%D7%9A_%D7%90%D7%A4%D7%A9%D7%A8_%D7%A9%D7%9C%D7%90.html"},
+    {"title":"עינב","artist":"ג׳יין בורדו","sourceUrl":"https://www.tab4u.com/tabs/songs/6046_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%A2%D7%99%D7%A0%D7%91.html"},
+    {"title":"רוקדים צמודים","artist":"ג׳יין בורדו","sourceUrl":"https://www.tab4u.com/tabs/songs/66945_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%A8%D7%95%D7%A7%D7%93%D7%99%D7%9D_%D7%A6%D7%9E%D7%95%D7%93%D7%99%D7%9D.html"},
+    {"title":"אוקיינוסים","artist":"ג׳יין בורדו","sourceUrl":"https://www.tab4u.com/tabs/songs/68812_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%90%D7%95%D7%A7%D7%99%D7%99%D7%A0%D7%95%D7%A1%D7%99%D7%9D.html"},
+    {"title":"על הרצפה","artist":"מוניקה סקס","sourceUrl":"https://www.tab4u.com/tabs/songs/1897_%D7%9E%D7%95%D7%A0%D7%99%D7%A7%D7%94_%D7%A1%D7%A7%D7%A1_-_%D7%A2%D7%9C_%D7%94%D7%A8%D7%A6%D7%A4%D7%94.html"},
+    {"title":"פצעים ונשיקות","artist":"מוניקה סקס","sourceUrl":"https://www.tab4u.com/tabs/songs/1892_%D7%9E%D7%95%D7%A0%D7%99%D7%A7%D7%94_%D7%A1%D7%A7%D7%A1_-_%D7%A4%D7%A6%D7%A2%D7%99%D7%9D_%D7%95%D7%A0%D7%A9%D7%99%D7%A7%D7%95%D7%AA.html"},
+    {"title":"כל החבר'ה","artist":"מוניקה סקס","sourceUrl":"https://www.tab4u.com/tabs/songs/1890_%D7%9E%D7%95%D7%A0%D7%99%D7%A7%D7%94_%D7%A1%D7%A7%D7%A1_-_%D7%9B%D7%9C_%D7%94%D7%97%D7%91%D7%A8%26%23039%3B%D7%94.html"}
+  ]
+}
