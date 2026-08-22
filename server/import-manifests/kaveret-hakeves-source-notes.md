@@ -35,3 +35,5 @@
 | 67789 | כוורת | שיר הטמבל | https://www.tab4u.com/tabs/songs/67789_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%A9%D7%99%D7%A8_%D7%94%D7%98%D7%9E%D7%91%D7%9C.html | אימות דפדפן מלא; כותרת/אמן תואמים; `songContentTPL` עם אקורדים ומילים; snapshot נשמר. |
 
 | 1728 | כוורת | לאמור א׳לבי | https://www.tab4u.com/tabs/songs/1728_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%9C%D7%90%D7%9E%D7%95%D7%A8_%D7%90%26%2339%3B%D7%9C%D7%91%D7%99.html | אימות דפדפן מלא; כותרת/אמן תואמים; `songContentTPL` עם אקורדים ומילים; snapshot נשמר, dry-run ו־commit הושלמו ללא כפילות. |
+
+| 7582 | כוורת | העולם שמח | https://www.tab4u.com/tabs/songs/7582_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%94%D7%A2%D7%95%D7%9C%D7%9D_%D7%A9%D7%9E%D7%97.html | אימות דפדפן מלא; כותרת/אמן תואמים; `songContentTPL` עם אקורדים, מילים וטאבים; snapshot נשמר, dry-run ו־commit הושלמו ללא כפילות. |
