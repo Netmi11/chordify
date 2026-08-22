@@ -1,0 +1,950 @@
+{
+  "generatedAt": "2026-08-22T07:42:17.580Z",
+  "sourceProposal": "/home/ubuntu/tab4u-chord-shifter/server/import-manifests/proposed-100-selected-israeli-guitar-songs.md",
+  "requestedCount": 100,
+  "resolvedCount": 89,
+  "unresolvedCount": 11,
+  "indexErrors": [],
+  "indexLinkCounts": {
+    "יסמין מועלם": 32,
+    "ג׳יין בורדו": 36,
+    "טונה": 40,
+    "נצ׳י נצ׳ (רביד פלוטניק)": 40,
+    "ג׳ימבו ג׳יי": 30,
+    "Full Trunk": 26,
+    "התקווה 6": 35,
+    "הדג נחש": 28,
+    "דודו טסה": 40,
+    "אלון עדר": 40,
+    "עדן חסון": 40,
+    "פאר טסי": 40,
+    "חנן בן ארי": 40
+  },
+  "indexSamples": {
+    "יסמין מועלם": [
+      {
+        "title": "יחפים",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/70048_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%97%D7%A4%D7%99%D7%9D.html"
+      },
+      {
+        "title": "שושנים עצובות",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/68960_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_%D7%95%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%A9%D7%95%D7%A9%D7%A0%D7%99%D7%9D_%D7%A2%D7%A6%D7%95%D7%91%D7%95%D7%AA.html"
+      },
+      {
+        "title": "יהיה טוב",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/71982_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%94%D7%99%D7%94_%D7%98%D7%95%D7%91.html"
+      }
+    ],
+    "ג׳יין בורדו": [
+      {
+        "title": "איך אפשר שלא",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/5997_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%90%D7%99%D7%9A_%D7%90%D7%A4%D7%A9%D7%A8_%D7%A9%D7%9C%D7%90.html"
+      },
+      {
+        "title": "עינב",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/6046_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%A2%D7%99%D7%A0%D7%91.html"
+      },
+      {
+        "title": "מגדל המים",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/72275_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%9E%D7%92%D7%93%D7%9C_%D7%94%D7%9E%D7%99%D7%9D.html"
+      }
+    ],
+    "טונה": [
+      {
+        "title": "סהרה",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/70093_%D7%98%D7%95%D7%A0%D7%94_-_%D7%A1%D7%94%D7%A8%D7%94.html"
+      },
+      {
+        "title": "טונה השם ירחם",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/75723_%D7%98%D7%95%D7%A0%D7%94_-_%D7%98%D7%95%D7%A0%D7%94_%D7%94%D7%A9%D7%9D_%D7%99%D7%A8%D7%97%D7%9D.html"
+      },
+      {
+        "title": "קשה בכדור הארץ",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/75724_%D7%98%D7%95%D7%A0%D7%94_-_%D7%A7%D7%A9%D7%94_%D7%91%D7%9B%D7%93%D7%95%D7%A8_%D7%94%D7%90%D7%A8%D7%A5.html"
+      }
+    ],
+    "נצ׳י נצ׳ (רביד פלוטניק)": [
+      {
+        "title": "הריני",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/68203_%D7%90%D7%91%D7%99%D7%AA%D7%A8_%D7%91%D7%A0%D7%90%D7%99_%D7%95%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_-_%D7%94%D7%A8%D7%99%D7%A0%D7%99.html"
+      },
+      {
+        "title": "קפה וסיגריה",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/5691_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_-_%D7%A7%D7%A4%D7%94_%D7%95%D7%A1%D7%99%D7%92%D7%A8%D7%99%D7%94.html"
+      },
+      {
+        "title": "כל הזמן הזה",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/7695_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_-_%D7%9B%D7%9C_%D7%94%D7%96%D7%9E%D7%9F_%D7%94%D7%96%D7%94.html"
+      }
+    ],
+    "ג׳ימבו ג׳יי": [
+      {
+        "title": "סתלבט בקיבוץ",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/70436_Full_Trunk_%D7%95%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_-_%D7%A1%D7%AA%D7%9C%D7%91%D7%98_%D7%91%D7%A7%D7%99%D7%91%D7%95%D7%A5.html"
+      },
+      {
+        "title": "סמוראי",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/67846_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_%D7%95%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_-_%D7%A1%D7%9E%D7%95%D7%A8%D7%90%D7%99.html"
+      },
+      {
+        "title": "מפרש לבן",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/75589_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_-_%D7%9E%D7%A4%D7%A8%D7%A9_%D7%9C%D7%91%D7%9F.html"
+      }
+    ],
+    "Full Trunk": [
+      {
+        "title": "נגנב ממך",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/73610_Full_Trunk_%D7%95%D7%A0%D7%99%D7%A0%D7%98_%D7%98%D7%99%D7%99%D7%91_-_%D7%A0%D7%92%D7%A0%D7%91_%D7%9E%D7%9E%D7%9A.html"
+      },
+      {
+        "title": "אין מילים איתך",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/77104_Full_Trunk_-_%D7%90%D7%99%D7%9F_%D7%9E%D7%99%D7%9C%D7%99%D7%9D_%D7%90%D7%99%D7%AA%D7%9A.html"
+      },
+      {
+        "title": "סתלבט בקיבוץ",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/70436_Full_Trunk_%D7%95%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_-_%D7%A1%D7%AA%D7%9C%D7%91%D7%98_%D7%91%D7%A7%D7%99%D7%91%D7%95%D7%A5.html"
+      }
+    ],
+    "התקווה 6": [
+      {
+        "title": "לחזור הביתה",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/68025_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%9C%D7%97%D7%96%D7%95%D7%A8_%D7%94%D7%91%D7%99%D7%AA%D7%94.html"
+      },
+      {
+        "title": "גיבורי על",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/73041_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%92%D7%99%D7%91%D7%95%D7%A8%D7%99_%D7%A2%D7%9C.html"
+      },
+      {
+        "title": "בעולם שלה",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/6105_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%91%D7%A2%D7%95%D7%9C%D7%9D_%D7%A9%D7%9C%D7%94.html"
+      }
+    ],
+    "הדג נחש": [
+      {
+        "title": "שמש",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/6797_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9_%D7%95%D7%A9%D7%99_%D7%A6%D7%91%D7%A8%D7%99_-_%D7%A9%D7%9E%D7%A9.html"
+      },
+      {
+        "title": "יום שישי",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/5135_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9_%D7%95%D7%99%D7%A6%D7%97%D7%A7_%D7%A7%D7%9C%D7%A4%D7%98%D7%A8_-_%D7%99%D7%95%D7%9D_%D7%A9%D7%99%D7%A9%D7%99.html"
+      },
+      {
+        "title": "שירת הסטיקר",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/1242_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9_-_%D7%A9%D7%99%D7%A8%D7%AA_%D7%94%D7%A1%D7%98%D7%99%D7%A7%D7%A8.html"
+      }
+    ],
+    "דודו טסה": [
+      {
+        "title": "מעליות",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/4115_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_%D7%95%D7%A8%D7%95%D7%A0%D7%99_%D7%90%D7%9C%D7%98%D7%A8_-_%D7%9E%D7%A2%D7%9C%D7%99%D7%95%D7%AA.html"
+      },
+      {
+        "title": "אני רץ",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/1103_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_-_%D7%90%D7%A0%D7%99_%D7%A8%D7%A5.html"
+      },
+      {
+        "title": "לתת ולקחת",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/4729_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_%D7%95%D7%A9%D7%9C%D7%9E%D7%94_%D7%90%D7%A8%D7%A6%D7%99_-_%D7%9C%D7%AA%D7%AA_%D7%95%D7%9C%D7%A7%D7%97%D7%AA.html"
+      }
+    ],
+    "אלון עדר": [
+      {
+        "title": "קצת אהבה לא תזיק",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/5701_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_-_%D7%A7%D7%A6%D7%AA_%D7%90%D7%94%D7%91%D7%94_%D7%9C%D7%90_%D7%AA%D7%96%D7%99%D7%A7.html"
+      },
+      {
+        "title": "אישה שלי",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/66167_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_%D7%95%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_%D7%95%D7%9C%D7%94%D7%A7%D7%94_-_%D7%90%D7%99%D7%A9%D7%94_%D7%A9%D7%9C%D7%99.html"
+      },
+      {
+        "title": "פתאום",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/70463_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_%D7%95%D7%93%D7%A0%D7%99%D7%90%D7%9C%D7%94_%D7%AA%D7%95%D7%A8%D7%92%26%2339%3B%D7%9E%D7%9F_-_%D7%A4%D7%AA%D7%90%D7%95%D7%9D.html"
+      }
+    ],
+    "עדן חסון": [
+      {
+        "title": "איך שהיא רוקדת",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/78037_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F%2C_%D7%90%D7%95%D7%A4%D7%A7_%D7%90%D7%93%D7%A0%D7%A7_%D7%95%D7%90%D7%92%D7%9D_%D7%91%D7%95%D7%97%D7%91%D7%95%D7%98_-_%D7%90%D7%99%D7%9A_%D7%A9%D7%94%D7%99%D7%90_%D7%A8%D7%95%D7%A7%D7%93%D7%AA.html"
+      },
+      {
+        "title": "שקיעות אדומות",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/68159_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%A9%D7%A7%D7%99%D7%A2%D7%95%D7%AA_%D7%90%D7%93%D7%95%D7%9E%D7%95%D7%AA.html"
+      },
+      {
+        "title": "גדל לי קצת זקן",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/68816_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%92%D7%93%D7%9C_%D7%9C%D7%99_%D7%A7%D7%A6%D7%AA_%D7%96%D7%A7%D7%9F.html"
+      }
+    ],
+    "פאר טסי": [
+      {
+        "title": "הלוואי",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/77582_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_%D7%95%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%94%D7%9C%D7%95%D7%95%D7%90%D7%99.html"
+      },
+      {
+        "title": "אחרי הנצח",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/71241_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%90%D7%97%D7%A8%D7%99_%D7%94%D7%A0%D7%A6%D7%97.html"
+      },
+      {
+        "title": "עוף מוזר",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/75995_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%A2%D7%95%D7%A3_%D7%9E%D7%95%D7%96%D7%A8.html"
+      }
+    ],
+    "חנן בן ארי": [
+      {
+        "title": "הלוואי",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/77582_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_%D7%95%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%94%D7%9C%D7%95%D7%95%D7%90%D7%99.html"
+      },
+      {
+        "title": "עטלף עיוור",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/71859_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_-_%D7%A2%D7%98%D7%9C%D7%A3_%D7%A2%D7%99%D7%95%D7%95%D7%A8.html"
+      },
+      {
+        "title": "אמא אם הייתי",
+        "sourceUrl": "https://www.tab4u.com/tabs/songs/6460_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_-_%D7%90%D7%9E%D7%90_%D7%90%D7%9D_%D7%94%D7%99%D7%99%D7%AA%D7%99.html"
+      }
+    ]
+  },
+  "resolved": [
+    {
+      "number": 1,
+      "artist": "יסמין מועלם",
+      "title": "יחפים",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/70048_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%97%D7%A4%D7%99%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html"
+    },
+    {
+      "number": 3,
+      "artist": "יסמין מועלם",
+      "title": "כמה מתוק",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/67325_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%9B%D7%9E%D7%94_%D7%9E%D7%AA%D7%95%D7%A7.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html"
+    },
+    {
+      "number": 4,
+      "artist": "יסמין מועלם",
+      "title": "מסיבה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/68069_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_%D7%95%D7%A9%D7%A7%D7%9C_-_%D7%9E%D7%A1%D7%99%D7%91%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html"
+    },
+    {
+      "number": 5,
+      "artist": "יסמין מועלם",
+      "title": "לבד במדבר",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/72131_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%9C%D7%91%D7%93_%D7%91%D7%9E%D7%93%D7%91%D7%A8.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html"
+    },
+    {
+      "number": 6,
+      "artist": "יסמין מועלם",
+      "title": "אצלנו זה ככה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/76336_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_%D7%95%D7%91%D7%9F_%D7%A6%D7%95%D7%A8_-_%D7%90%D7%A6%D7%9C%D7%A0%D7%95_%D7%96%D7%94_%D7%9B%D7%9B%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html"
+    },
+    {
+      "number": 7,
+      "artist": "יסמין מועלם",
+      "title": "יוצאת מזה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/73346_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%95%D7%A6%D7%90%D7%AA_%D7%9E%D7%96%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html"
+    },
+    {
+      "number": 9,
+      "artist": "יסמין מועלם",
+      "title": "יותר מדי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/71219_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%95%D7%AA%D7%A8_%D7%9E%D7%93%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html"
+    },
+    {
+      "number": 10,
+      "artist": "יסמין מועלם",
+      "title": "מלא מלא",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/75237_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_%D7%95%D7%93%D7%95%D7%93%D7%90_-_%D7%9E%D7%9C%D7%90_%D7%9E%D7%9C%D7%90.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html"
+    },
+    {
+      "number": 11,
+      "artist": "ג׳יין בורדו",
+      "title": "וויסקי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/6251_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%95%D7%95%D7%99%D7%A1%D7%A7%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 12,
+      "artist": "ג׳יין בורדו",
+      "title": "תל אביב זה אני ואת",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/67757_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_%D7%95%D7%90%D7%9E%D7%99%D7%A8_%D7%95%D7%91%D7%9F_-_%D7%AA%D7%9C_%D7%90%D7%91%D7%99%D7%91_%D7%96%D7%94_%D7%90%D7%A0%D7%99_%D7%95%D7%90%D7%AA.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 13,
+      "artist": "ג׳יין בורדו",
+      "title": "מה שחשוב",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/7436_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%9E%D7%94_%D7%A9%D7%97%D7%A9%D7%95%D7%91.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 14,
+      "artist": "ג׳יין בורדו",
+      "title": "אישה קשה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/68670_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_%D7%95%D7%90%D7%A7%D7%95_-_%D7%90%D7%99%D7%A9%D7%94_%D7%A7%D7%A9%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 15,
+      "artist": "ג׳יין בורדו",
+      "title": "טישירט",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/70379_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%98%D7%99%D7%A9%D7%99%D7%A8%D7%98.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 16,
+      "artist": "ג׳יין בורדו",
+      "title": "משהו טיפשי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/70709_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_%D7%95%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_-_%D7%9E%D7%A9%D7%94%D7%95_%D7%98%D7%99%D7%A4%D7%A9%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 17,
+      "artist": "ג׳יין בורדו",
+      "title": "לא פשוט לי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/7017_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%9C%D7%90_%D7%A4%D7%A9%D7%95%D7%98_%D7%9C%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 18,
+      "artist": "ג׳יין בורדו",
+      "title": "לא לבד",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/72926_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%9C%D7%90_%D7%9C%D7%91%D7%93.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 19,
+      "artist": "ג׳יין בורדו",
+      "title": "קולנוע לב",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/7661_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%A7%D7%95%D7%9C%D7%A0%D7%95%D7%A2_%D7%9C%D7%91.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 20,
+      "artist": "ג׳יין בורדו",
+      "title": "חלמתי שאתה פה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/77441_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95_-_%D7%97%D7%9C%D7%9E%D7%AA%D7%99_%D7%A9%D7%90%D7%AA%D7%94_%D7%A4%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/990_%D7%92%26%2339%3B%D7%99%D7%99%D7%9F_%D7%91%D7%95%D7%A8%D7%93%D7%95.html"
+    },
+    {
+      "number": 21,
+      "artist": "טונה",
+      "title": "סהרה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/70093_%D7%98%D7%95%D7%A0%D7%94_-_%D7%A1%D7%94%D7%A8%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 22,
+      "artist": "טונה",
+      "title": "טונה השם ירחם",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/75723_%D7%98%D7%95%D7%A0%D7%94_-_%D7%98%D7%95%D7%A0%D7%94_%D7%94%D7%A9%D7%9D_%D7%99%D7%A8%D7%97%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 23,
+      "artist": "טונה",
+      "title": "קשה בכדור הארץ",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/75724_%D7%98%D7%95%D7%A0%D7%94_-_%D7%A7%D7%A9%D7%94_%D7%91%D7%9B%D7%93%D7%95%D7%A8_%D7%94%D7%90%D7%A8%D7%A5.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 25,
+      "artist": "טונה",
+      "title": "השם ירחם",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/75707_%D7%98%D7%95%D7%A0%D7%94_-_%D7%94%D7%A9%D7%9D_%D7%99%D7%A8%D7%97%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 26,
+      "artist": "טונה",
+      "title": "גם זה יעבור",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/6082_%D7%98%D7%95%D7%A0%D7%94_-_%D7%92%D7%9D_%D7%96%D7%94_%D7%99%D7%A2%D7%91%D7%95%D7%A8.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 27,
+      "artist": "טונה",
+      "title": "בסיבוב",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/67304_%D7%98%D7%95%D7%A0%D7%94_-_%D7%91%D7%A1%D7%99%D7%91%D7%95%D7%91.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 28,
+      "artist": "טונה",
+      "title": "סחרחורת",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/7685_%D7%98%D7%95%D7%A0%D7%94_-_%D7%A1%D7%97%D7%A8%D7%97%D7%95%D7%A8%D7%AA.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 29,
+      "artist": "טונה",
+      "title": "רוק 30",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/6232_%D7%98%D7%95%D7%A0%D7%94_-_%D7%A8%D7%95%D7%A7_30.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 30,
+      "artist": "טונה",
+      "title": "כל הכוכבים",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/70139_%D7%98%D7%95%D7%A0%D7%94_-_%D7%9B%D7%9C_%D7%94%D7%9B%D7%95%D7%9B%D7%91%D7%99%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html"
+    },
+    {
+      "number": 32,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "קפה וסיגריה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/5691_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_-_%D7%A7%D7%A4%D7%94_%D7%95%D7%A1%D7%99%D7%92%D7%A8%D7%99%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html"
+    },
+    {
+      "number": 33,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "כל הזמן הזה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/7695_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_-_%D7%9B%D7%9C_%D7%94%D7%96%D7%9E%D7%9F_%D7%94%D7%96%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html"
+    },
+    {
+      "number": 35,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "נתראה בגלגול הבא",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/66828_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_-_%D7%A0%D7%AA%D7%A8%D7%90%D7%94_%D7%91%D7%92%D7%9C%D7%92%D7%95%D7%9C_%D7%94%D7%91%D7%90.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html"
+    },
+    {
+      "number": 36,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "בדיוק כמו שאני",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/7673_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_-_%D7%91%D7%93%D7%99%D7%95%D7%A7_%D7%9B%D7%9E%D7%95_%D7%A9%D7%90%D7%A0%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html"
+    },
+    {
+      "number": 37,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "שמש שזורחת עליי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/74806_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_-_%D7%A9%D7%9E%D7%A9_%D7%A9%D7%96%D7%95%D7%A8%D7%97%D7%AA_%D7%A2%D7%9C%D7%99%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html"
+    },
+    {
+      "number": 38,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "יום חדש",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/6476_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_-_%D7%99%D7%95%D7%9D_%D7%97%D7%93%D7%A9.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html"
+    },
+    {
+      "number": 39,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "מוזיקה טובה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/76179_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_-_%D7%9E%D7%95%D7%96%D7%99%D7%A7%D7%94_%D7%98%D7%95%D7%91%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html"
+    },
+    {
+      "number": 40,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "כנען",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/71131_%D7%A9%D7%9C%D7%95%D7%9E%D7%99_%D7%A9%D7%91%D7%9F%2C_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_%D7%95%D7%A9%D7%95%D7%9C%D7%99_%D7%A8%D7%A0%D7%93_-_%D7%9B%D7%A0%D7%A2%D7%9F.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html"
+    },
+    {
+      "number": 41,
+      "artist": "ג׳ימבו ג׳יי",
+      "title": "סמוראי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/67846_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_%D7%95%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_-_%D7%A1%D7%9E%D7%95%D7%A8%D7%90%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1283_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99.html"
+    },
+    {
+      "number": 43,
+      "artist": "ג׳ימבו ג׳יי",
+      "title": "מתגעגע",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/73535_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_%D7%95%D7%9C%D7%94%D7%A7%D7%AA_%D7%A1%D7%A4%D7%90_-_%D7%9E%D7%AA%D7%92%D7%A2%D7%92%D7%A2.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1283_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99.html"
+    },
+    {
+      "number": 44,
+      "artist": "ג׳ימבו ג׳יי",
+      "title": "סיגריות",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/66979_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99_%D7%95%D7%9C%D7%94%D7%A7%D7%AA_%D7%A1%D7%A4%D7%90_-_%D7%A1%D7%99%D7%92%D7%A8%D7%99%D7%95%D7%AA.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1283_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99.html"
+    },
+    {
+      "number": 45,
+      "artist": "ג׳ימבו ג׳יי",
+      "title": "במקום בו אני גר",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/73126_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99%2C_%D7%90%D7%95%D7%A8%D7%99%D7%AA_%D7%98%D7%A9%D7%95%D7%9E%D7%94_%D7%95%D7%90%D7%91%D7%A8%D7%94%D7%9D_%D7%9C%D7%92%D7%A1%D7%94_-_%D7%91%D7%9E%D7%A7%D7%95%D7%9D_%D7%91%D7%95_%D7%90%D7%A0%D7%99_%D7%92%D7%A8.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1283_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99.html"
+    },
+    {
+      "number": 46,
+      "artist": "Full Trunk",
+      "title": "נגנב ממך",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/73610_Full_Trunk_%D7%95%D7%A0%D7%99%D7%A0%D7%98_%D7%98%D7%99%D7%99%D7%91_-_%D7%A0%D7%92%D7%A0%D7%91_%D7%9E%D7%9E%D7%9A.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html"
+    },
+    {
+      "number": 48,
+      "artist": "Full Trunk",
+      "title": "אין לזה לאן",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/73557_Full_Trunk_-_%D7%90%D7%99%D7%9F_%D7%9C%D7%96%D7%94_%D7%9C%D7%90%D7%9F.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html"
+    },
+    {
+      "number": 49,
+      "artist": "Full Trunk",
+      "title": "עוד יום",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/67860_Full_Trunk_-_%D7%A2%D7%95%D7%93_%D7%99%D7%95%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html"
+    },
+    {
+      "number": 51,
+      "artist": "Full Trunk",
+      "title": "צריך אותך",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/73630_Full_Trunk_-_%D7%A6%D7%A8%D7%99%D7%9A_%D7%90%D7%95%D7%AA%D7%9A.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html"
+    },
+    {
+      "number": 53,
+      "artist": "Full Trunk",
+      "title": "וואלק",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/76587_Full_Trunk_-_%D7%95%D7%95%D7%90%D7%9C%D7%A7.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html"
+    },
+    {
+      "number": 54,
+      "artist": "Full Trunk",
+      "title": "חדוות המאבק",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/70559_Full_Trunk_-_%D7%97%D7%93%D7%95%D7%95%D7%AA_%D7%94%D7%9E%D7%90%D7%91%D7%A7.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html"
+    },
+    {
+      "number": 55,
+      "artist": "Full Trunk",
+      "title": "עד הזריחה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/76027_Full_Trunk_-_%D7%A2%D7%93_%D7%94%D7%96%D7%A8%D7%99%D7%97%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html"
+    },
+    {
+      "number": 56,
+      "artist": "התקווה 6",
+      "title": "לחזור הביתה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/68025_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%9C%D7%97%D7%96%D7%95%D7%A8_%D7%94%D7%91%D7%99%D7%AA%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 57,
+      "artist": "התקווה 6",
+      "title": "גיבורי על",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/73041_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%92%D7%99%D7%91%D7%95%D7%A8%D7%99_%D7%A2%D7%9C.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 58,
+      "artist": "התקווה 6",
+      "title": "בעולם שלה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/6105_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%91%D7%A2%D7%95%D7%9C%D7%9D_%D7%A9%D7%9C%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 59,
+      "artist": "התקווה 6",
+      "title": "מה שיהיה יהיה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/5922_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%9E%D7%94_%D7%A9%D7%99%D7%94%D7%99%D7%94_%D7%99%D7%94%D7%99%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 60,
+      "artist": "התקווה 6",
+      "title": "איזה מזל",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/76586_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_%D7%95%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_-_%D7%90%D7%99%D7%96%D7%94_%D7%9E%D7%96%D7%9C.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 61,
+      "artist": "התקווה 6",
+      "title": "הכי ישראלי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/6176_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%94%D7%9B%D7%99_%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 62,
+      "artist": "התקווה 6",
+      "title": "כל יום מחדש",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/4322_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%9B%D7%9C_%D7%99%D7%95%D7%9D_%D7%9E%D7%97%D7%93%D7%A9.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 63,
+      "artist": "התקווה 6",
+      "title": "ישראלי קומפלט",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/77097_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99_%D7%A7%D7%95%D7%9E%D7%A4%D7%9C%D7%98.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 64,
+      "artist": "התקווה 6",
+      "title": "השמש תחזור",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/74020_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%94%D7%A9%D7%9E%D7%A9_%D7%AA%D7%97%D7%96%D7%95%D7%A8.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 65,
+      "artist": "התקווה 6",
+      "title": "לא חיים פעמיים",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/71085_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6_-_%D7%9C%D7%90_%D7%97%D7%99%D7%99%D7%9D_%D7%A4%D7%A2%D7%9E%D7%99%D7%99%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/114_%D7%94%D7%AA%D7%A7%D7%95%D7%95%D7%94_6.html"
+    },
+    {
+      "number": 66,
+      "artist": "הדג נחש",
+      "title": "עוד אח אחד",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/4023_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9_-_%D7%A2%D7%95%D7%93_%D7%90%D7%97_%D7%90%D7%97%D7%93.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/97_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9.html"
+    },
+    {
+      "number": 67,
+      "artist": "הדג נחש",
+      "title": "שיר נחמה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/4055_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9_%D7%95%D7%99%D7%94%D7%95%D7%93%D7%94_%D7%A7%D7%99%D7%A1%D7%A8_-_%D7%A9%D7%99%D7%A8_%D7%A0%D7%97%D7%9E%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/97_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9.html"
+    },
+    {
+      "number": 68,
+      "artist": "הדג נחש",
+      "title": "זמן להתעורר",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/5065_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9_-_%D7%96%D7%9E%D7%9F_%D7%9C%D7%94%D7%AA%D7%A2%D7%95%D7%A8%D7%A8.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/97_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9.html"
+    },
+    {
+      "number": 69,
+      "artist": "הדג נחש",
+      "title": "הנה אני בא",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/4109_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9_-_%D7%94%D7%A0%D7%94_%D7%90%D7%A0%D7%99_%D7%91%D7%90.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/97_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9.html"
+    },
+    {
+      "number": 70,
+      "artist": "הדג נחש",
+      "title": "אני מאמין",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/4205_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9_-_%D7%90%D7%A0%D7%99_%D7%9E%D7%90%D7%9E%D7%99%D7%9F.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/97_%D7%94%D7%93%D7%92_%D7%A0%D7%97%D7%A9.html"
+    },
+    {
+      "number": 71,
+      "artist": "דודו טסה",
+      "title": "מעליות",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/4115_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_%D7%95%D7%A8%D7%95%D7%A0%D7%99_%D7%90%D7%9C%D7%98%D7%A8_-_%D7%9E%D7%A2%D7%9C%D7%99%D7%95%D7%AA.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/73_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94.html"
+    },
+    {
+      "number": 72,
+      "artist": "דודו טסה",
+      "title": "הגולה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/6889_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_-_%D7%94%D7%92%D7%95%D7%9C%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/73_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94.html"
+    },
+    {
+      "number": 73,
+      "artist": "דודו טסה",
+      "title": "בית ביפו",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/77275_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_-_%D7%91%D7%99%D7%AA_%D7%91%D7%99%D7%A4%D7%95.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/73_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94.html"
+    },
+    {
+      "number": 74,
+      "artist": "דודו טסה",
+      "title": "איזה יום",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/4096_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_-_%D7%90%D7%99%D7%96%D7%94_%D7%99%D7%95%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/73_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94.html"
+    },
+    {
+      "number": 75,
+      "artist": "דודו טסה",
+      "title": "בסוף מתרגלים להכל",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/4066_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94_-_%D7%91%D7%A1%D7%95%D7%A3_%D7%9E%D7%AA%D7%A8%D7%92%D7%9C%D7%99%D7%9D_%D7%9C%D7%94%D7%9B%D7%9C.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/73_%D7%93%D7%95%D7%93%D7%95_%D7%98%D7%A1%D7%94.html"
+    },
+    {
+      "number": 76,
+      "artist": "אלון עדר",
+      "title": "אישה שלי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/66167_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_%D7%95%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_%D7%95%D7%9C%D7%94%D7%A7%D7%94_-_%D7%90%D7%99%D7%A9%D7%94_%D7%A9%D7%9C%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/918_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8.html"
+    },
+    {
+      "number": 77,
+      "artist": "אלון עדר",
+      "title": "פתאום",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/70463_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_%D7%95%D7%93%D7%A0%D7%99%D7%90%D7%9C%D7%94_%D7%AA%D7%95%D7%A8%D7%92%26%2339%3B%D7%9E%D7%9F_-_%D7%A4%D7%AA%D7%90%D7%95%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/918_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8.html"
+    },
+    {
+      "number": 79,
+      "artist": "אלון עדר",
+      "title": "החיים שלי פיגוע יפיפה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/72079_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_-_%D7%94%D7%97%D7%99%D7%99%D7%9D_%D7%A9%D7%9C%D7%99_%D7%A4%D7%99%D7%92%D7%95%D7%A2_%D7%99%D7%A4%D7%99%D7%A4%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/918_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8.html"
+    },
+    {
+      "number": 80,
+      "artist": "אלון עדר",
+      "title": "מילים אהבה ויין",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/75358_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_%D7%95%D7%9C%D7%94%D7%A7%D7%94_%D7%95%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_-_%D7%9E%D7%99%D7%9C%D7%99%D7%9D_%D7%90%D7%94%D7%91%D7%94_%D7%95%D7%99%D7%99%D7%9F.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/918_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8.html"
+    },
+    {
+      "number": 81,
+      "artist": "עדן חסון",
+      "title": "איך שהיא רוקדת",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/78037_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F%2C_%D7%90%D7%95%D7%A4%D7%A7_%D7%90%D7%93%D7%A0%D7%A7_%D7%95%D7%90%D7%92%D7%9D_%D7%91%D7%95%D7%97%D7%91%D7%95%D7%98_-_%D7%90%D7%99%D7%9A_%D7%A9%D7%94%D7%99%D7%90_%D7%A8%D7%95%D7%A7%D7%93%D7%AA.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 82,
+      "artist": "עדן חסון",
+      "title": "שקיעות אדומות",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/68159_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%A9%D7%A7%D7%99%D7%A2%D7%95%D7%AA_%D7%90%D7%93%D7%95%D7%9E%D7%95%D7%AA.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 83,
+      "artist": "עדן חסון",
+      "title": "גדל לי קצת זקן",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/68816_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%92%D7%93%D7%9C_%D7%9C%D7%99_%D7%A7%D7%A6%D7%AA_%D7%96%D7%A7%D7%9F.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 84,
+      "artist": "עדן חסון",
+      "title": "שושנים עצובות",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/68960_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_%D7%95%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%A9%D7%95%D7%A9%D7%A0%D7%99%D7%9D_%D7%A2%D7%A6%D7%95%D7%91%D7%95%D7%AA.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 85,
+      "artist": "עדן חסון",
+      "title": "ילדים כאלה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/8441_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%99%D7%9C%D7%93%D7%99%D7%9D_%D7%9B%D7%90%D7%9C%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 86,
+      "artist": "עדן חסון",
+      "title": "את חסרה לי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/67250_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%90%D7%AA_%D7%97%D7%A1%D7%A8%D7%94_%D7%9C%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 87,
+      "artist": "עדן חסון",
+      "title": "שמישהו יעצור אותי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/8135_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%A9%D7%9E%D7%99%D7%A9%D7%94%D7%95_%D7%99%D7%A2%D7%A6%D7%95%D7%A8_%D7%90%D7%95%D7%AA%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 88,
+      "artist": "עדן חסון",
+      "title": "לאהוב אותך כל יום",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/71892_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_%D7%95%D7%93%D7%95%D7%9C%D7%99_%D7%95%D7%A4%D7%9F_-_%D7%9C%D7%90%D7%94%D7%95%D7%91_%D7%90%D7%95%D7%AA%D7%9A_%D7%9B%D7%9C_%D7%99%D7%95%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 89,
+      "artist": "עדן חסון",
+      "title": "עיניים",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/66777_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%A2%D7%99%D7%A0%D7%99%D7%99%D7%9D.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 90,
+      "artist": "עדן חסון",
+      "title": "עד שתבואי עד אליי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/71293_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F_-_%D7%A2%D7%93_%D7%A9%D7%AA%D7%91%D7%95%D7%90%D7%99_%D7%A2%D7%93_%D7%90%D7%9C%D7%99%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/837_%D7%A2%D7%93%D7%9F_%D7%97%D7%A1%D7%95%D7%9F.html"
+    },
+    {
+      "number": 91,
+      "artist": "פאר טסי",
+      "title": "הלוואי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/77582_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_%D7%95%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%94%D7%9C%D7%95%D7%95%D7%90%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/934_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99.html"
+    },
+    {
+      "number": 92,
+      "artist": "פאר טסי",
+      "title": "אחרי הנצח",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/71241_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%90%D7%97%D7%A8%D7%99_%D7%94%D7%A0%D7%A6%D7%97.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/934_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99.html"
+    },
+    {
+      "number": 93,
+      "artist": "פאר טסי",
+      "title": "עוף מוזר",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/75995_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%A2%D7%95%D7%A3_%D7%9E%D7%95%D7%96%D7%A8.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/934_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99.html"
+    },
+    {
+      "number": 94,
+      "artist": "פאר טסי",
+      "title": "חורף בחלון",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/68754_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%97%D7%95%D7%A8%D7%A3_%D7%91%D7%97%D7%9C%D7%95%D7%9F.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/934_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99.html"
+    },
+    {
+      "number": 95,
+      "artist": "פאר טסי",
+      "title": "אהבה חולה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/71307_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99_-_%D7%90%D7%94%D7%91%D7%94_%D7%97%D7%95%D7%9C%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/934_%D7%A4%D7%90%D7%A8_%D7%98%D7%A1%D7%99.html"
+    },
+    {
+      "number": 96,
+      "artist": "חנן בן ארי",
+      "title": "שמש",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/66930_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_-_%D7%A9%D7%9E%D7%A9.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/935_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99.html"
+    },
+    {
+      "number": 97,
+      "artist": "חנן בן ארי",
+      "title": "אהבת חיי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/76786_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_-_%D7%90%D7%94%D7%91%D7%AA_%D7%97%D7%99%D7%99.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/935_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99.html"
+    },
+    {
+      "number": 99,
+      "artist": "חנן בן ארי",
+      "title": "יש כאן יותר מזה",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/72062_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_-_%D7%99%D7%A9_%D7%9B%D7%90%D7%9F_%D7%99%D7%95%D7%AA%D7%A8_%D7%9E%D7%96%D7%94.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/935_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99.html"
+    },
+    {
+      "number": 100,
+      "artist": "חנן בן ארי",
+      "title": "מולדת",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/72436_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_-_%D7%9E%D7%95%D7%9C%D7%93%D7%AA.html",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/935_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99.html"
+    }
+  ],
+  "unresolved": [
+    {
+      "number": 2,
+      "artist": "יסמין מועלם",
+      "title": "יהיה טוב",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/71982_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%94%D7%99%D7%94_%D7%98%D7%95%D7%91.html",
+        "https://www.tab4u.com/tabs/songs/71965_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%94%D7%99%D7%94_%D7%98%D7%95%D7%91.html"
+      ]
+    },
+    {
+      "number": 8,
+      "artist": "יסמין מועלם",
+      "title": "יום כיפור",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1835_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/72962_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%95%D7%9D_%D7%9B%D7%99%D7%A4%D7%95%D7%A8.html",
+        "https://www.tab4u.com/tabs/songs/77337_%D7%99%D7%A1%D7%9E%D7%99%D7%9F_%D7%9E%D7%95%D7%A2%D7%9C%D7%9D_-_%D7%99%D7%95%D7%9D_%D7%9B%D7%99%D7%A4%D7%95%D7%A8.html"
+      ]
+    },
+    {
+      "number": 24,
+      "artist": "טונה",
+      "title": "עולם משוגע",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1010_%D7%98%D7%95%D7%A0%D7%94.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/7028_%D7%98%D7%95%D7%A0%D7%94_-_%D7%A2%D7%95%D7%9C%D7%9D_%D7%9E%D7%A9%D7%95%D7%92%D7%A2.html",
+        "https://www.tab4u.com/tabs/songs/7809_%D7%98%D7%95%D7%A0%D7%94_-_%D7%A2%D7%95%D7%9C%D7%9D_%D7%9E%D7%A9%D7%95%D7%92%D7%A2.html"
+      ]
+    },
+    {
+      "number": 31,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "הריני",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/68203_%D7%90%D7%91%D7%99%D7%AA%D7%A8_%D7%91%D7%A0%D7%90%D7%99_%D7%95%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_-_%D7%94%D7%A8%D7%99%D7%A0%D7%99.html",
+        "https://www.tab4u.com/tabs/songs/67978_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29_-_%D7%94%D7%A8%D7%99%D7%A0%D7%99.html"
+      ]
+    },
+    {
+      "number": 34,
+      "artist": "נצ׳י נצ׳ (רביד פלוטניק)",
+      "title": "שלווה בארמונותייך",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/913_%D7%A0%D7%A6%26%2339%3B%D7%99_%D7%A0%D7%A6%26%2339%3B_%28%D7%A8%D7%91%D7%99%D7%93_%D7%A4%D7%9C%D7%95%D7%98%D7%A0%D7%99%D7%A7%29.html",
+      "status": "missing_exact_index_match",
+      "matches": []
+    },
+    {
+      "number": 42,
+      "artist": "ג׳ימבו ג׳יי",
+      "title": "יותר מדי",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1283_%D7%92%26%2339%3B%D7%99%D7%9E%D7%91%D7%95_%D7%92%26%2339%3B%D7%99%D7%99.html",
+      "status": "missing_exact_index_match",
+      "matches": []
+    },
+    {
+      "number": 47,
+      "artist": "Full Trunk",
+      "title": "אין מילים איתך",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/77104_Full_Trunk_-_%D7%90%D7%99%D7%9F_%D7%9E%D7%99%D7%9C%D7%99%D7%9D_%D7%90%D7%99%D7%AA%D7%9A.html",
+        "https://www.tab4u.com/tabs/songs/77415_Full_Trunk_-_%D7%90%D7%99%D7%9F_%D7%9E%D7%99%D7%9C%D7%99%D7%9D_%D7%90%D7%99%D7%AA%D7%9A.html"
+      ]
+    },
+    {
+      "number": 50,
+      "artist": "Full Trunk",
+      "title": "As a Stone",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/8347_Full_Trunk_and_Sivan_Talmor_-_As_a_Stone.html",
+        "https://www.tab4u.com/tabs/songs/8405_Full_Trunk_and_Sivan_Talmor_-_As_A_Stone.html",
+        "https://www.tab4u.com/tabs/songs/8132_Full_Trunk_-_As_A_Stone.html"
+      ]
+    },
+    {
+      "number": 52,
+      "artist": "Full Trunk",
+      "title": "קדימה לאותו מקום",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/1072_Full_Trunk.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/72537_Full_Trunk_-_%D7%A7%D7%93%D7%99%D7%9E%D7%94_%D7%9C%D7%90%D7%95%D7%AA%D7%95_%D7%9E%D7%A7%D7%95%D7%9D.html",
+        "https://www.tab4u.com/tabs/songs/70782_Full_Trunk_-_%D7%A7%D7%93%D7%99%D7%9E%D7%94_%D7%9C%D7%90%D7%95%D7%AA%D7%95_%D7%9E%D7%A7%D7%95%D7%9D.html"
+      ]
+    },
+    {
+      "number": 78,
+      "artist": "אלון עדר",
+      "title": "אהבה עצמית",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/918_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/71449_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_-_%D7%90%D7%94%D7%91%D7%94_%D7%A2%D7%A6%D7%9E%D7%99%D7%AA.html",
+        "https://www.tab4u.com/tabs/songs/71434_%D7%90%D7%9C%D7%95%D7%9F_%D7%A2%D7%93%D7%A8_-_%D7%90%D7%94%D7%91%D7%94_%D7%A2%D7%A6%D7%9E%D7%99%D7%AA.html"
+      ]
+    },
+    {
+      "number": 98,
+      "artist": "חנן בן ארי",
+      "title": "שבורי לב",
+      "indexUrl": "https://www.tab4u.com/tabs/artists/935_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99.html",
+      "status": "ambiguous_index_match",
+      "matches": [
+        "https://www.tab4u.com/tabs/songs/68002_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_-_%D7%A9%D7%91%D7%95%D7%A8%D7%99_%D7%9C%D7%91.html",
+        "https://www.tab4u.com/tabs/songs/67859_%D7%97%D7%A0%D7%9F_%D7%91%D7%9F_%D7%90%D7%A8%D7%99_-_%D7%A9%D7%91%D7%95%D7%A8%D7%99_%D7%9C%D7%91.html"
+      ]
+    }
+  ]
+}
