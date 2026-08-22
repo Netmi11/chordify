@@ -1,0 +1,11 @@
+{
+  "batch": "approved-100-batch-005",
+  "description": "אצווה 005 מתוך 100 השירים שאושרו — חמישה שירים מאומתים; חמישה פריטים חסרים או משויכים לאמן אחר ממתינים לתיקון או החלפה",
+  "songs": [
+    {"title":"חלליות","artist":"ברי סחרוף","sourceUrl":"https://www.tab4u.com/tabs/songs/882_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_-_%D7%97%D7%9C%D7%9C%D7%99%D7%95%D7%AA.html"},
+    {"title":"ככה זה","artist":"ברי סחרוף","sourceUrl":"https://www.tab4u.com/tabs/songs/930_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_-_%D7%9B%D7%9B%D7%94_%D7%96%D7%94.html"},
+    {"title":"עוד חוזר הניגון","artist":"ברי סחרוף","sourceUrl":"https://www.tab4u.com/tabs/songs/940_%D7%91%D7%A8%D7%99_%D7%A1%D7%97%D7%A8%D7%95%D7%A3_-_%D7%A2%D7%95%D7%93_%D7%97%D7%95%D7%96%D7%A8_%D7%94%D7%A0%D7%99%D7%92%D7%95%D7%9F.html"},
+    {"title":"הכעס","artist":"רוקפור","sourceUrl":"https://www.tab4u.com/tabs/songs/2310_%D7%A8%D7%95%D7%A7%D7%A4%D7%95%D7%A8_-_%D7%94%D7%9B%D7%A2%D7%A1.html"},
+    {"title":"האיש שראה הכל","artist":"רוקפור","sourceUrl":"https://www.tab4u.com/tabs/songs/2301_%D7%A8%D7%95%D7%A7%D7%A4%D7%95%D7%A8_-_%D7%94%D7%90%D7%99%D7%A9_%D7%A9%D7%A8%D7%90%D7%94_%D7%94%D7%9B%D7%9C.html"}
+  ]
+}

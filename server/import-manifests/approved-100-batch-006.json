@@ -1,0 +1,12 @@
+{
+  "batch": "approved-100-batch-006",
+  "description": "אצווה 006 מתוך 100 השירים שאושרו — שישה שירים מאומתים; ארבעה פריטים ממתינים לתיקון או החלפה מאושרת",
+  "songs": [
+    {"title":"מחכה לו","artist":"דנה ברגר","sourceUrl":"https://www.tab4u.com/tabs/songs/1140_%D7%93%D7%A0%D7%94_%D7%91%D7%A8%D7%92%D7%A8_-_%D7%9E%D7%97%D7%9B%D7%94_%D7%9C%D7%95.html"},
+    {"title":"בא והולך","artist":"דנה ברגר","sourceUrl":"https://www.tab4u.com/tabs/songs/1146_%D7%93%D7%A0%D7%94_%D7%91%D7%A8%D7%92%D7%A8_-_%D7%91%D7%90_%D7%95%D7%94%D7%95%D7%9C%D7%9A.html"},
+    {"title":"גן מאיר","artist":"דנה ברגר","sourceUrl":"https://www.tab4u.com/tabs/songs/1147_%D7%93%D7%A0%D7%94_%D7%91%D7%A8%D7%92%D7%A8_-_%D7%92%D7%9F_%D7%9E%D7%90%D7%99%D7%A8.html"},
+    {"title":"ארץ קטנה עם שפם","artist":"קורין אלאל","sourceUrl":"https://www.tab4u.com/tabs/songs/74590_%D7%A7%D7%95%D7%A8%D7%99%D7%9F_%D7%90%D7%9C%D7%90%D7%9C_-_%D7%90%D7%A8%D7%A5_%D7%A7%D7%98%D7%A0%D7%94_%D7%A2%D7%9D_%D7%A9%D7%A4%D7%9D.html"},
+    {"title":"זן נדיר","artist":"קורין אלאל","sourceUrl":"https://www.tab4u.com/tabs/songs/1388_%D7%A7%D7%95%D7%A8%D7%99%D7%9F_%D7%90%D7%9C%D7%90%D7%9C_-_%D7%96%D7%9F_%D7%A0%D7%93%D7%99%D7%A8.html"},
+    {"title":"אהוב יקר","artist":"רונית שחר","sourceUrl":"https://www.tab4u.com/tabs/songs/2297_%D7%A8%D7%95%D7%A0%D7%99%D7%AA_%D7%A9%D7%97%D7%A8_-_%D7%90%D7%94%D7%95%D7%91_%D7%99%D7%A7%D7%A8.html"}
+  ]
+}
