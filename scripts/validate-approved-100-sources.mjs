@@ -25,10 +25,27 @@ const manualSourceOverrides = {
 
 function normalize(value) {
   return String(value || "")
+    .replace(/&#39;|&#x27;/giu, "'")
+    .replace(/&quot;|&#34;|&#x22;/giu, '"')
+    .replace(/&amp;/giu, "&")
     .replace(/[׳'״"`.,:;!?()[\]{}|/\\–—-]/g, " ")
     .replace(/\s+/g, " ")
     .trim()
     .toLocaleLowerCase("he");
+}
+
+function artistMatchesRequested(requestedArtist, parsedArtist) {
+  if (!parsedArtist) return false;
+  if (parsedArtist.includes(requestedArtist) || requestedArtist.includes(parsedArtist)) return true;
+
+  const aliases = [
+    ["נצ י נצ י רביד פלוטניק", "נצ י נצ י"],
+    ["רביד פלוטניק", "נצ י נצ י"],
+  ];
+  return aliases.some(([left, right]) =>
+    (requestedArtist.includes(left) && parsedArtist.includes(right)) ||
+    (requestedArtist.includes(right) && parsedArtist.includes(left)),
+  );
 }
 
 function metadataFromTab4uPage(html) {
@@ -101,7 +118,7 @@ for (const requestedSong of requested) {
     const requestedArtist = normalize(requestedSong.artist);
     const parsedArtist = normalize(metadata.artist);
     const titleMatches = requestedTitle === parsedTitle;
-    const artistMatches = Boolean(parsedArtist) && (parsedArtist.includes(requestedArtist) || requestedArtist.includes(parsedArtist));
+    const artistMatches = artistMatchesRequested(requestedArtist, parsedArtist);
     if (!metadata.title || !metadata.artist || !meaningfulLines) {
       skipped.push({ number: requestedSong.number, artist: requestedSong.artist, title: requestedSong.title, sourceUrl, status: "parse_failed", parsedTitle: metadata.title, parsedArtist: metadata.artist, meaningfulLines });
     } else if (!titleMatches || !artistMatches) {
