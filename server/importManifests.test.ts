@@ -35,4 +35,19 @@ describe("user-requested import manifests", () => {
       expect(song.sourceUrl).toMatch(/^https:\/\/(?:www\.)?tab4u\.com\/tabs\/songs\/\d+_.+\.html$/);
     });
   });
+
+  it("accepts the browser-verified Kaveret batch and its snapshots", () => {
+    const songs = readManifest("approved-kaveret-hakeves-batch-001.json");
+    expect(songs).toHaveLength(3);
+    expect(new Set(songs.map((song) => song.sourceUrl)).size).toBe(3);
+    songs.forEach((song) => {
+      expect(song.artist).toBe("כוורת");
+      expect(song.sourceUrl).toMatch(/^https:\/\/www\.tab4u\.com\/tabs\/songs\/\d+_.+\.html$/);
+      const id = song.sourceUrl.match(/\/songs\/(\d+)_/)?.[1];
+      expect(id).toBeTruthy();
+      const snapshot = resolve(process.cwd(), "server", "import-snapshots", "kaveret-hakeves-approved", `tab4u_com_${id}_kaveret_${id === "1729" ? "hi_kol_kach_yafa" : id === "1237" ? "shiur_moledet" : "shir_hatambal"}.html`);
+      const html = readFileSync(snapshot, "utf8");
+      expect(html).toContain('id="songContentTPL"');
+    });
+  });
 });
