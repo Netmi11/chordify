@@ -38,9 +38,9 @@ function clean(value) {
 }
 
 function metadataFromHtml(html) {
-  const match = html.match(/<meta\s+name=["']title["']\s+content=["']([^"']+)["'][^>]*>/iu);
-  const content = clean(match?.[1] || "");
-  const parsed = content.match(/^אקורדים\s+לשיר\s+(.+?)\s+-\s+(.+?)\s*\|\s*Tab4U$/u);
+  const tag = html.match(/<meta\b[^>]*\bname=["']title["'][^>]*>/iu)?.[0] || "";
+  const content = tag.match(/\bcontent="([^"]*)"/iu)?.[1] || tag.match(/\bcontent='([^']*)'/iu)?.[1] || "";
+  const parsed = clean(content).match(/^אקורדים\s+לשיר\s+(.+?)\s+-\s+(.+?)\s*\|\s*Tab4U$/u);
   return parsed ? { title: parsed[1].trim(), artist: parsed[2].trim() } : null;
 }
 

@@ -1,0 +1,12 @@
+{
+  "batch": "approved-kaveret-hakeves-002",
+  "description": "מקור נוסף של כוורת שאומת בדפדפן ונשמר כ־snapshot",
+  "songs": [
+    {
+      "artist": "כוורת",
+      "title": "לאמור א׳לבי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/1728_%D7%9B%D7%95%D7%95%D7%A8%D7%AA_-_%D7%9C%D7%90%D7%9E%D7%95%D7%A8_%D7%90%26%2339%3B%D7%9C%D7%91%D7%99.html",
+      "requestedNumber": 12
+    }
+  ]
+}
