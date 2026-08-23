@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { assertTab4uUrl, fetchTab4uSong, parseTab4uHtml } from "./tab4u";
-import { combineSongLines, getStartingKey, transposeChord } from "../client/src/pages/Home";
+import { combineSongLines, getStartingKey, transposeChord } from "../client/src/lib/chordEngine";
 
 describe("Tab4U parser", () => {
   it("keeps chord rows and lyric rows in source order", () => {
