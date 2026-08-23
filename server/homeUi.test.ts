@@ -54,6 +54,13 @@ describe("song player mobile cleanup", () => {
     expect(homeSource).not.toContain("מסך מלא</button>");
   });
 
+  it("offers explicit cloud catalog sync without replacing local songs", () => {
+    expect(homeSource).toContain('trpcUtils.librarySync.catalog.fetch()');
+    expect(homeSource).toContain('mergeCloudSongs(library, cloudSongs.map((song) => makeSavedSong(song)))');
+    expect(homeSource).toContain('סנכרן 247 שירים');
+    expect(homeSource).toContain('נוספו ${added} שירים מהספרייה בענן');
+  });
+
   it("keeps maintenance tools secondary and the mobile player controls compact", () => {
     expect(homeSource).toContain('className="library-utilities"');
     expect(homeSource).toContain("גיבוי וסנכרון");

@@ -4,7 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { fetchTab4uSong } from "./tab4u";
-import { loadLibrarySnapshot, saveLibrarySnapshot } from "./librarySync";
+import { loadImportedLibraryCatalog, loadLibrarySnapshot, saveLibrarySnapshot } from "./librarySync";
 
 const libraryKeySchema = z.object({
   libraryId: z.string().uuid(),
@@ -46,6 +46,7 @@ export const appRouter = router({
       .query(({ input }) => fetchTab4uSong(input.url)),
   }),
   librarySync: router({
+    catalog: publicProcedure.query(() => loadImportedLibraryCatalog()),
     pull: publicProcedure
       .input(libraryKeySchema)
       .query(({ input }) => loadLibrarySnapshot(input.libraryId, input.secret)),

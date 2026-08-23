@@ -71,9 +71,39 @@ export async function saveLibrarySnapshot(libraryId: string, secret: string, son
   return { saved: songs.length };
 }
 
+export const IMPORTED_LIBRARY_ID = "2c41a12f-5f5a-4bd1-9f99-460299979c3d";
+
 export async function loadLibrarySnapshot(libraryId: string, secret: string): Promise<SyncedSong[]> {
   const db = await assertLibrary(libraryId, secret, false);
   const songs = await db.select().from(chordshiftSongs).where(eq(chordshiftSongs.libraryId, libraryId));
+  if (!songs.length) return [];
+  const lines = await db.select().from(chordshiftSongLines).where(inArray(chordshiftSongLines.songId, songs.map((song) => song.id)));
+  const linesBySong = new Map<number, SyncedSongLine[]>();
+  lines.sort((a, b) => a.position - b.position).forEach((line) => {
+    const current = linesBySong.get(line.songId) ?? [];
+    current.push({ chord: line.chord, lyric: line.lyric, ...(line.label ? { label: line.label } : {}), ...(line.tab ? { tab: line.tab } : {}) });
+    linesBySong.set(line.songId, current);
+  });
+  return songs.map((song) => ({
+    id: song.clientSongId,
+    title: song.title,
+    artist: song.artist,
+    sourceUrl: song.sourceUrl,
+    note: song.note,
+    addedAt: Number(song.addedAt),
+    lines: linesBySong.get(song.id) ?? [],
+  }));
+}
+
+/**
+ * The curated import library is intentionally readable through an explicit
+ * sync action. The library id stays server-side; the browser receives songs,
+ * never the database secret used by the import runner.
+ */
+export async function loadImportedLibraryCatalog(): Promise<SyncedSong[]> {
+  const db = await getDb();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  const songs = await db.select().from(chordshiftSongs).where(eq(chordshiftSongs.libraryId, IMPORTED_LIBRARY_ID));
   if (!songs.length) return [];
   const lines = await db.select().from(chordshiftSongLines).where(inArray(chordshiftSongLines.songId, songs.map((song) => song.id)));
   const linesBySong = new Map<number, SyncedSongLine[]>();
