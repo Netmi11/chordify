@@ -7,17 +7,23 @@ const mainSource = readFileSync(resolve(process.cwd(), "client/src/main.tsx"), "
 
 describe("PWA offline app shell", () => {
   it("pre-caches the built Vite asset graph together with the navigation shell", () => {
-    expect(serviceWorker).toContain('const CACHE_NAME = "chordshift-shell-v6"');
+    expect(serviceWorker).toContain('const CACHE_NAME = "chordshift-shell-v7"');
     expect(serviceWorker).toContain('fetch("/", { cache: "no-store" })');
     expect(serviceWorker).toContain('new URL(value, self.location.origin)');
     expect(serviceWorker).toContain('pathname.startsWith("/assets/")');
-    expect(serviceWorker).toContain('cache.addAll([...STATIC_SHELL, ...assetPaths])');
+    expect(serviceWorker).toContain('cache.addAll([...new Set([...STATIC_SHELL, ...assetPaths])])');
   });
 
-  it("falls back to the cached app shell when navigation has no network", () => {
+  it("uses cache-first for immutable build assets and network-first for navigation", () => {
+    expect(serviceWorker).toContain('return cacheFirst(request, cache)');
     expect(serviceWorker).toContain('request.mode === "navigate"');
+    expect(serviceWorker).toContain('return networkFirst(request, cache)');
     expect(serviceWorker).toContain('await cache.match(request, { ignoreSearch: true })');
     expect(serviceWorker).toContain('await cache.match("/")');
+  });
+
+  it("keeps API traffic outside the service-worker cache", () => {
+    expect(serviceWorker).toContain('url.pathname.startsWith("/api/")');
   });
 
   it("registers the service worker without an HTTP cache delay", () => {
