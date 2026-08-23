@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSongRenderBlocks, replaceChordToken } from "../client/src/pages/Home";
+import { buildSongRenderBlocks, replaceChordToken } from "../client/src/lib/chordEngine";
 
 describe("buildSongRenderBlocks", () => {
   it("joins legacy Tab4U string lines into one continuous six-string block", () => {
