@@ -66,7 +66,11 @@ export async function saveLibrarySnapshot(libraryId: string, secret: string, son
       lyric: line.lyric,
       tab: line.tab ?? null,
     })));
-    if (lines.length) await tx.insert(chordshiftSongLines).values(lines);
+    // Stay below PostgreSQL's parameter limit for large phone libraries.
+    for (let offset = 0; offset < lines.length; offset += 5_000) {
+      await tx.insert(chordshiftSongLines).values(lines.slice(offset, offset + 5_000));
+    }
+    await tx.update(chordshiftLibraries).set({ updatedAt: new Date() }).where(eq(chordshiftLibraries.id, libraryId));
   });
   return { saved: songs.length };
 }
