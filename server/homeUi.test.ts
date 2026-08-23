@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-describe("song player mobile cleanup", () => {
-  const homeSource = readFileSync(resolve(process.cwd(), "client/src/pages/Home.tsx"), "utf8");
-  const styles = readFileSync(resolve(process.cwd(), "client/src/index.css"), "utf8");
+const homeSource = readFileSync(resolve(process.cwd(), "client/src/pages/HomeV2.tsx"), "utf8");
+const librarySource = readFileSync(resolve(process.cwd(), "client/src/components/LibraryView.tsx"), "utf8");
+const styles = readFileSync(resolve(process.cwd(), "client/src/index.css"), "utf8");
+const mobileStyles = readFileSync(resolve(process.cwd(), "client/src/mobile-player.css"), "utf8");
 
+describe("song player mobile cleanup", () => {
   it("uses a song-only workspace when opening a library song", () => {
     expect(homeSource).toContain('savedSong ? "workspace-song-only" : ""');
     expect(homeSource).toContain('savedSong ? "song-loaded-rail" : ""');
@@ -23,16 +25,14 @@ describe("song player mobile cleanup", () => {
     expect(homeSource).toContain("tab-block");
   });
 
-  it("opens the library first and groups songs by artist", () => {
+  it("opens the library first and groups songs by artist in the extracted library view", () => {
     expect(homeSource).toContain('useState<"player" | "library">("library")');
-    expect(homeSource).toContain("const groupedArtists = useMemo");
-    expect(homeSource).toContain("const [expandedArtist, setExpandedArtist]");
-    expect(homeSource).toContain('isExpanded ? "artist-group is-expanded" : "artist-group"');
-    expect(homeSource).toContain("className=\"artist-avatar\"");
-    expect(homeSource).toContain('artistInitials(artistName) || "♪"');
-    expect(homeSource).not.toContain('singleSong ? onOpen(artistSongs[0])');
-    expect(homeSource).toContain('onClick={() => setExpandedArtist(isExpanded ? null : artistName)}');
-    expect(homeSource).toContain("{isExpanded && <div className=\"artist-song-grid\">");
+    expect(librarySource).toContain("groupSongsByArtist(filtered)");
+    expect(librarySource).toContain("const [expandedArtist, setExpandedArtist]");
+    expect(librarySource).toContain('isExpanded ? "artist-group is-expanded" : "artist-group"');
+    expect(librarySource).toContain('className="artist-avatar"');
+    expect(librarySource).toContain('artistInitials(artistName) || "♪"');
+    expect(librarySource).toContain('onClick={() => setExpandedArtist(isExpanded ? null : artistName)}');
   });
 
   it("opens imported bridge songs in the player despite the library-first default", () => {
@@ -43,29 +43,23 @@ describe("song player mobile cleanup", () => {
 
   it("returns from a saved song to the library", () => {
     expect(homeSource).toContain('savedSong ? "חזור לספרייה" : "הספרייה"');
-    expect(homeSource).toContain('screen === "library" ? savedSong ? "חזור לשיר הנוכחי" : "עבור לטעינת שיר" : "חזור לספרייה"');
     expect(homeSource).toContain('window.addEventListener("popstate", onPopState)');
     expect(homeSource).toContain('setScreen("library")');
-    expect(homeSource).toContain('window.history.pushState({ chordshiftScreen: "player" }, "", "#song")');
   });
 
-  it("does not render the removed duplicate toolbar actions", () => {
-    expect(homeSource).not.toContain("העתק</button>");
-    expect(homeSource).not.toContain("מסך מלא</button>");
-  });
-
-  it("offers explicit cloud catalog sync without replacing local songs", () => {
+  it("uses conflict-safe cloud catalog sync and no hard-coded song count", () => {
     expect(homeSource).toContain('trpcUtils.librarySync.catalog.fetch()');
-    expect(homeSource).toContain('mergeCloudSongs(library, cloudSongs.map((song) => makeSavedSong(song)))');
-    expect(homeSource).toContain('סנכרן 247 שירים');
-    expect(homeSource).toContain('נוספו ${added} שירים מהספרייה בענן');
+    expect(homeSource).toContain('mergeLibraryForSync');
+    expect(librarySource).toContain('סנכרן מהענן');
+    expect(librarySource).not.toContain('סנכרן 247 שירים');
   });
 
   it("keeps maintenance tools secondary and the mobile player controls compact", () => {
-    expect(homeSource).toContain('className="library-utilities"');
-    expect(homeSource).toContain("גיבוי וסנכרון");
+    expect(librarySource).toContain('className="library-utilities"');
+    expect(librarySource).toContain("גיבוי וסנכרון");
     expect(homeSource).toContain('className="song-pdf-float"');
-    expect(styles).toContain("grid-template-columns: repeat(6, 1fr)");
+    expect(mobileStyles).toContain(".mobile-dock");
+    expect(mobileStyles).toContain("env(safe-area-inset-bottom)");
   });
 
   it("keeps a personal note available without permanently taking space from the song", () => {

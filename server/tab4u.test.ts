@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { assertTab4uUrl, fetchTab4uSong, parseTab4uHtml } from "./tab4u";
-import { combineSongLines, getStartingKey, transposeChord } from "../client/src/pages/Home";
+import { combineSongLines, getStartingKey, transposeChord, transposeChordLine } from "../client/src/lib/chordEngine";
 
 describe("Tab4U parser", () => {
   it("keeps chord rows and lyric rows in source order", () => {
@@ -88,8 +88,9 @@ describe("ChordShift display logic", () => {
   });
 
   it("supports the +7 shortcut and returns to the original at zero", () => {
-    expect(transposeChord("Am D7", 7, false)).toBe("Em A7");
-    expect(transposeChord("Am D7", 0, false)).toBe("Am D7");
+    expect(transposeChord("Am", 7, false)).toBe("Em");
+    expect(transposeChordLine("Am D7", 7, false)).toBe("Em A7");
+    expect(transposeChordLine("Am D7", 0, false)).toBe("Am D7");
   });
 });
 
