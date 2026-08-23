@@ -1,15 +1,17 @@
 {
-  "name": "ChordShift — אקורדים ל־Tab4U",
+  "name": "ChordShift — הספרייה הפרטית לאקורדים",
   "short_name": "ChordShift",
-  "description": "שינוי מהיר של שמות אקורדים בזמן נגינה",
+  "description": "ספריית אקורדים אישית עם טרנספוזיציה, נגינה ואופליין",
   "lang": "he",
   "dir": "rtl",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
   "background_color": "#101923",
   "theme_color": "#101923",
+  "categories": ["music", "utilities"],
   "icons": [
     {
       "src": "/manus-storage/stage-slate-pick-mark_6b2a5d37.png",
