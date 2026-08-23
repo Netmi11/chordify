@@ -147,6 +147,45 @@ async function loadLibrarySnapshot(libraryId: string, secret: string) {
 const IMPORTED_LIBRARY_ID = "2c41a12f-5f5a-4bd1-9f99-460299979c3d";
 const loadImportedLibraryCatalog = () => readSongs(IMPORTED_LIBRARY_ID);
 
+const DEFAULT_LIBRARY_API_ORIGIN = "https://tab4uchord-t2tntlcw.manus.space";
+
+export function isLibrarySyncPath(path: string) {
+  const procedures = path.split(",").filter(Boolean);
+  return procedures.length > 0 && procedures.every((procedure) => /^librarySync\.(catalog|pull|push)$/.test(procedure));
+}
+
+export function buildUpstreamTrpcUrl(requestUrl: URL, path: string, origin = DEFAULT_LIBRARY_API_ORIGIN) {
+  const upstreamUrl = new URL(`/api/trpc/${path}`, origin);
+  requestUrl.searchParams.forEach((value, key) => {
+    if (key !== "trpcPath") upstreamUrl.searchParams.append(key, value);
+  });
+  return upstreamUrl;
+}
+
+async function readRequestBody(req: IncomingMessage) {
+  const chunks: Buffer[] = [];
+  for await (const chunk of req) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  return chunks.length ? Buffer.concat(chunks) : undefined;
+}
+
+async function proxyLibrarySync(req: IncomingMessage, res: ServerResponse, requestUrl: URL, path: string) {
+  const upstreamOrigin = process.env.CHORDIFY_LIBRARY_API_ORIGIN || DEFAULT_LIBRARY_API_ORIGIN;
+  const upstreamUrl = buildUpstreamTrpcUrl(requestUrl, path, upstreamOrigin);
+  const method = req.method ?? "GET";
+  const body = method === "GET" || method === "HEAD" ? undefined : await readRequestBody(req);
+  const headers = new Headers();
+  for (const name of ["content-type", "trpc-accept", "user-agent"]) {
+    const value = req.headers[name];
+    if (value) headers.set(name, Array.isArray(value) ? value.join(", ") : value);
+  }
+
+  const upstreamResponse = await fetch(upstreamUrl, { method, headers, body, signal: AbortSignal.timeout(30_000) });
+  res.statusCode = upstreamResponse.status;
+  res.setHeader("content-type", upstreamResponse.headers.get("content-type") ?? "application/json; charset=utf-8");
+  res.setHeader("cache-control", "no-store");
+  res.end(Buffer.from(await upstreamResponse.arrayBuffer()));
+}
+
 const TAB4U_HOSTS = new Set(["www.tab4u.com", "tab4u.com"]);
 function decodeHtml(value: string) {
   return value.replace(/&nbsp;|&#160;/gi, " ").replace(/&amp;/gi, "&").replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">");
@@ -214,5 +253,15 @@ const vercelRouter = t.router({
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const requestUrl = new URL(req.url ?? "/", `https://${req.headers.host ?? "localhost"}`);
   const path = requestUrl.searchParams.get("trpcPath") ?? "";
+  if (!process.env.DATABASE_URL && isLibrarySyncPath(path)) {
+    try {
+      return await proxyLibrarySync(req, res, requestUrl, path);
+    } catch (error) {
+      console.error("[Library Sync Proxy] Upstream request failed", error);
+      res.statusCode = 502;
+      res.setHeader("content-type", "application/json; charset=utf-8");
+      return res.end(JSON.stringify({ error: "LIBRARY_SYNC_UPSTREAM_UNAVAILABLE" }));
+    }
+  }
   return nodeHTTPRequestHandler({ req, res, path, router: vercelRouter });
 }
