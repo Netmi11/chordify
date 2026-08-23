@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowDownUp, ChevronDown, ChevronRight, CloudDownload, Download, ExternalLink, KeyRound, LibraryBig, Music2, Search, Trash2 } from "lucide-react";
+import { ArrowDownUp, ChevronDown, ChevronRight, CloudDownload, Download, ExternalLink, KeyRound, LibraryBig, Music2, Search, Trash2, X } from "lucide-react";
 import { filterSongs, groupSongsByArtist } from "@/lib/librarySearch";
 import { sortSongsForLibrary, type LibrarySort, type SavedSong } from "@/lib/songLibraryV2";
 
@@ -42,6 +42,13 @@ export function LibraryView(props: LibraryViewProps) {
 
   const groupedArtists = useMemo(() => groupSongsByArtist(filtered), [filtered]);
   const artistInitials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+  const isFiltered = Boolean(query.trim()) || artist !== "הכול";
+
+  const clearFilters = () => {
+    setQuery("");
+    setArtist("הכול");
+    setExpandedArtist(null);
+  };
 
   return (
     <main className="library-page">
@@ -57,10 +64,15 @@ export function LibraryView(props: LibraryViewProps) {
 
       <section className="library-controls" aria-label="חיפוש, מיון וסינון ספרייה">
         <div className="library-search-row">
-          <label className="library-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שיר או אמן" /></label>
+          <label className="library-search">
+            <Search size={17} />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="חיפוש לפי שיר או אמן" aria-label="חיפוש בספריית השירים" />
+            {query && <button type="button" onClick={() => setQuery("")} aria-label="נקה חיפוש"><X size={15} /></button>}
+          </label>
           <label className="library-sort"><ArrowDownUp size={16} /><span>מיון</span><select value={sortBy} onChange={(event) => setSortBy(event.target.value as LibrarySort)} aria-label="מיין את השירים"><option value="addedAt">תאריך הוספה</option><option value="artist">שם האמן</option><option value="title">שם השיר</option></select></label>
         </div>
-        <div className="artist-filters">{artists.map((name) => <button key={name} className={artist === name ? "artist-filter active" : "artist-filter"} onClick={() => setArtist(name)}>{name}</button>)}</div>
+        <div className="artist-filters">{artists.map((name) => <button key={name} className={artist === name ? "artist-filter active" : "artist-filter"} onClick={() => setArtist(name)} aria-pressed={artist === name}>{name}</button>)}</div>
+        {isFiltered && <div className="library-backup-note" aria-live="polite">נמצאו {filtered.length} מתוך {songs.length} שירים · <button type="button" onClick={clearFilters}>נקה סינון</button></div>}
         <details className="library-utilities">
           <summary>גיבוי וסנכרון</summary>
           <div className="library-backup-actions"><button onClick={onExportBackup}><Download size={15} /> גיבוי לספרייה</button><label><ExternalLink size={15} /> שחזור מקובץ<input type="file" accept="application/json,.json" onChange={(event) => { const file = event.target.files?.[0]; if (file) onImportBackup(file); event.currentTarget.value = ""; }} /></label></div>
@@ -88,7 +100,7 @@ export function LibraryView(props: LibraryViewProps) {
             </section>
           );
         })}
-        {!filtered.length && <div className="library-empty"><Music2 size={26} /><h2>{songs.length ? "לא נמצאו שירים מתאימים" : "הספרייה עדיין ריקה"}</h2><p>{songs.length ? "נסה לחפש בשם אחר או לבחור אמן אחר." : "פתח שיר ב־Tab4U ושמור אותו לספרייה כדי לנגן גם באופליין."}</p><button onClick={onReturn}>טעינת שיר חדש</button></div>}
+        {!filtered.length && <div className="library-empty"><Music2 size={26} /><h2>{songs.length ? "לא נמצאו שירים מתאימים" : "הספרייה עדיין ריקה"}</h2><p>{songs.length ? "נסה לחפש בשם אחר או לבחור אמן אחר." : "פתח שיר ב־Tab4U ושמור אותו לספרייה כדי לנגן גם באופליין."}</p>{songs.length ? <button onClick={clearFilters}>נקה חיפוש וסינון</button> : <button onClick={onReturn}>טעינת שיר חדש</button>}</div>}
       </section>
     </main>
   );
