@@ -18,3 +18,18 @@ export function songMatchesQuery(song: Pick<SavedSong, "title" | "artist">, quer
   const haystack = normalizeLibrarySearch(`${song.title} ${song.artist}`);
   return needle.split(" ").every((part) => haystack.includes(part));
 }
+
+export function filterSongs(songs: SavedSong[], query: string): SavedSong[] {
+  return songs.filter((song) => songMatchesQuery(song, query));
+}
+
+export function groupSongsByArtist(songs: SavedSong[]): Array<[string, SavedSong[]]> {
+  const groups = new Map<string, SavedSong[]>();
+  for (const song of songs) {
+    const artist = song.artist || "אמן לא צוין";
+    const group = groups.get(artist);
+    if (group) group.push(song);
+    else groups.set(artist, [song]);
+  }
+  return Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b, "he"));
+}
