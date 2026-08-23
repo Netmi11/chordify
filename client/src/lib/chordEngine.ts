@@ -24,7 +24,7 @@ export function transposeNote(note: string, steps: number, flats: boolean): stri
   return output[wrapSemitones(index + steps)];
 }
 
-export function transposeChord(chord: string, steps: number, flats: boolean): string {
+function transposeChordToken(chord: string, steps: number, flats: boolean): string {
   const match = chord.match(CHORD_PATTERN);
   if (!match) return chord;
   const [, root, suffix, bass] = match;
@@ -33,11 +33,20 @@ export function transposeChord(chord: string, steps: number, flats: boolean): st
   return `${shiftedRoot}${suffix}${shiftedBass ? `/${shiftedBass}` : ""}`;
 }
 
-export function transposeChordLine(chordLine: string, steps: number, flats: boolean): string {
-  return chordLine
+/**
+ * Transpose a chord token or a whitespace-separated chord line while preserving
+ * the exact spacing between tokens. Keeping the broader behavior maintains
+ * compatibility with the original Home implementation and PDF/export callers.
+ */
+export function transposeChord(chord: string, steps: number, flats: boolean): string {
+  return chord
     .split(/(\s+)/)
-    .map((part) => (CHORD_PATTERN.test(part) ? transposeChord(part, steps, flats) : part))
+    .map((part) => (CHORD_PATTERN.test(part) ? transposeChordToken(part, steps, flats) : part))
     .join("");
+}
+
+export function transposeChordLine(chordLine: string, steps: number, flats: boolean): string {
+  return transposeChord(chordLine, steps, flats);
 }
 
 export function replaceChordToken(chordLine: string, targetIndex: number, replacement: string): string {
