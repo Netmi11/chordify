@@ -1,11 +1,32 @@
 import { useEffect } from "react";
 
-export function useAutoScroll(enabled: boolean, pixelsPerTick = 1, intervalMs = 55) {
+/**
+ * Smooth, frame-based auto-scroll for hands-free playing.
+ * Pauses while the tab is hidden and avoids interval drift on mobile browsers.
+ */
+export function useAutoScroll(enabled: boolean, pixelsPerSecond = 18) {
   useEffect(() => {
     if (!enabled) return;
-    const timer = window.setInterval(() => {
-      window.scrollBy({ top: pixelsPerTick, behavior: "auto" });
-    }, intervalMs);
-    return () => window.clearInterval(timer);
-  }, [enabled, intervalMs, pixelsPerTick]);
+
+    let frame = 0;
+    let previous = performance.now();
+
+    const tick = (now: number) => {
+      frame = window.requestAnimationFrame(tick);
+      if (document.hidden) {
+        previous = now;
+        return;
+      }
+
+      const deltaSeconds = Math.min((now - previous) / 1000, 0.1);
+      previous = now;
+      const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      if (window.scrollY >= maxScrollTop - 1) return;
+
+      window.scrollBy({ top: pixelsPerSecond * deltaSeconds, behavior: "auto" });
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frame);
+  }, [enabled, pixelsPerSecond]);
 }
