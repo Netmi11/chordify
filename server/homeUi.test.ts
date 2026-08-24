@@ -62,12 +62,17 @@ describe("song player mobile cleanup", () => {
     expect(mobileStyles).toContain("env(safe-area-inset-bottom)");
   });
 
-  it("keeps a personal note available without permanently taking space from the song", () => {
-    expect(homeSource).toContain('<details className={`personal-note');
-    expect(homeSource).toContain('onBlur={saveNote}');
-    expect(homeSource).toContain("הערה אישית");
-    expect(styles).toContain(".personal-note summary");
-    expect(styles).toContain(".note-editor textarea");
+  it("removes personal notes from the player and library interface", () => {
+    expect(homeSource).not.toContain("personal-note");
+    expect(homeSource).not.toContain("הערה אישית");
+    expect(librarySource).not.toContain("song-card-note");
+    expect(styles).not.toContain(".personal-note");
+  });
+
+  it("transposes tablature together with the song", () => {
+    expect(homeSource).toContain('transposeTab(block.tabs.join("\\n"), shift)');
+    expect(homeSource).toContain("transposeSongLine(line, exportShift, flats)");
+    expect(homeSource).toContain("line.tab ? { tab: line.tab }");
   });
 
   it("offers private single-chord editing and a lyrics-only reading mode", () => {

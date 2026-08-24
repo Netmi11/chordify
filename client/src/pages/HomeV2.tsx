@@ -4,9 +4,9 @@ import { ChordLine } from "@/components/ChordLine";
 import { LibraryView } from "@/components/LibraryView";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
-import { buildSongRenderBlocks, combineSongLines, getStartingKey, replaceChordToken, transposeChord, transposeChordLine } from "@/lib/chordEngine";
+import { buildSongRenderBlocks, combineSongLines, getStartingKey, replaceChordToken, transposeChord, transposeSongLine, transposeTab } from "@/lib/chordEngine";
 import { formatCloudRecoveryCode, getOrCreateCloudLibraryKey, parseCloudRecoveryCode, setCloudLibraryKey, type CloudLibraryKey } from "@/lib/libraryCloud";
-import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, type SavedSong, type SongLine, updateSongNote, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
+import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, type SavedSong, type SongLine, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
 import { exportSongToPdf } from "@/lib/songPdf";
 import { mergeLibraryForSync } from "@/lib/syncPolicy";
 import { trpc } from "@/lib/trpc";
@@ -43,7 +43,6 @@ export default function HomeV2() {
   const [cleared, setCleared] = useState(false);
   const [library, setLibrary] = useState<SavedSong[]>([]);
   const [savedSong, setSavedSong] = useState<SavedSong | null>(null);
-  const [noteDraft, setNoteDraft] = useState("");
   const [saveNotice, setSaveNotice] = useState(false);
   const [showChords, setShowChords] = useState(true);
   const [editingChords, setEditingChords] = useState(false);
@@ -88,7 +87,6 @@ export default function HomeV2() {
         ]);
         setLibrary(next);
         setSavedSong(importedSongs[0] ?? null);
-        setNoteDraft(importedSongs[0]?.note ?? "");
         setUrl(importedSongs[0]?.sourceUrl ?? "");
         window.history.pushState({ chordshiftScreen: "player" }, "", "#song");
         setHistoryVersion((value) => value + 1);
@@ -108,7 +106,6 @@ export default function HomeV2() {
       const song = makeSavedSong({ id: existing?.id, addedAt: existing?.addedAt, note: existing?.note, ...imported.song });
       setLibrary(upsertSong(window.localStorage, song));
       setSavedSong(song);
-      setNoteDraft(song.note);
       setUrl(song.sourceUrl);
       window.history.pushState({ chordshiftScreen: "player" }, "", "#song");
       setHistoryVersion((value) => value + 1);
@@ -169,7 +166,7 @@ export default function HomeV2() {
     };
   }, []);
 
-  const fetchedLines: SongLine[] = fetchSong.data?.lines?.map((line) => ({ label: line.section ?? "", chord: line.chord, lyric: line.lyric })) ?? [];
+  const fetchedLines: SongLine[] = fetchSong.data?.lines?.map((line) => ({ label: line.section ?? "", chord: line.chord, lyric: line.lyric, ...(line.tab ? { tab: line.tab } : {}) })) ?? [];
   const sourceLines = savedSong?.lines ?? (!cleared && fetchedLines.length ? fetchedLines : demoSong);
   const activeSong = useMemo(() => combineSongLines(sourceLines), [sourceLines]);
   const songBlocks = useMemo(() => buildSongRenderBlocks(sourceLines), [sourceLines]);
@@ -187,7 +184,7 @@ export default function HomeV2() {
   const exportPdf = (song: { title: string; artist: string; lines: SongLine[] }, exportShift = 0) => {
     const opened = exportSongToPdf({
       ...song,
-      lines: song.lines.map((line) => ({ ...line, chord: transposeChordLine(line.chord, exportShift, flats) })),
+      lines: song.lines.map((line) => transposeSongLine(line, exportShift, flats)),
     });
     if (!opened) window.alert("הדפדפן חסם פתיחת חלון ל־PDF. אפשר חלונות קופצים ונסה שוב.");
   };
@@ -261,7 +258,7 @@ export default function HomeV2() {
       setCloudKey(key);
       setLibrary(next);
       setCloudStatus(`שוחזרו ${next.length} שירים מהענן`);
-      window.alert(`שוחזרו ${next.length} שירים מהענן בלי למחוק הערות מקומיות.`);
+      window.alert(`שוחזרו ${next.length} שירים מהענן בלי למחוק שירים מקומיים.`);
     } catch {
       window.alert("לא הצלחתי לשחזר מהענן. בדוק את הקוד ואת החיבור לאינטרנט.");
     }
@@ -279,7 +276,7 @@ export default function HomeV2() {
     const song = makeSavedSong({
       id: existing?.id,
       addedAt: existing?.addedAt,
-      note: existing?.note ?? noteDraft,
+      note: existing?.note,
       title: activeTitle,
       artist: activeArtist,
       sourceUrl: savedSong?.sourceUrl ?? url,
@@ -289,7 +286,6 @@ export default function HomeV2() {
       const next = upsertSong(window.localStorage, song);
       setLibrary(next);
       setSavedSong(song);
-      setNoteDraft(song.note);
       setSaveNotice(true);
       window.setTimeout(() => setSaveNotice(false), 2200);
     } catch {
@@ -299,7 +295,6 @@ export default function HomeV2() {
 
   const openSavedSong = (song: SavedSong) => {
     setSavedSong(song);
-    setNoteDraft(song.note);
     setUrl(song.sourceUrl);
     resetTranspose();
     setShowChords(true);
@@ -327,17 +322,6 @@ export default function HomeV2() {
       if (savedSong?.id === id) setSavedSong(null);
     } catch {
       window.alert("לא ניתן למחוק כרגע.");
-    }
-  };
-
-  const saveNote = () => {
-    if (!savedSong) return;
-    try {
-      const next = updateSongNote(window.localStorage, savedSong.id, noteDraft);
-      setLibrary(next);
-      setSavedSong(next.find((song) => song.id === savedSong.id) ?? savedSong);
-    } catch {
-      window.alert("לא ניתן לשמור את ההערה כרגע.");
     }
   };
 
@@ -431,10 +415,9 @@ export default function HomeV2() {
                 <div className="reading-guide" aria-hidden="true" />
                 <div className="song-title">{activeTitle}</div>
                 <div className="song-artist">{activeArtist}</div>
-                {savedSong && <details className={`personal-note ${noteDraft.trim() ? "has-note" : ""}`}><summary><span>הערה אישית</span><span className="note-state">{noteDraft.trim() ? "נשמרה" : "הוספה"}</span></summary><div className="note-editor"><textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} onBlur={saveNote} placeholder="לדוגמה: קאפו 2, פתיחה שקטה…" rows={3} /></div></details>}
                 <div className="rule" />
                 {songBlocks.map((block, index) => block.kind === "tab" ? (
-                  showChords ? <section className={`tab-block ${block.label ? "section-row" : ""}`} key={`${block.tabs[0]}-${index}`} dir="ltr">{block.label && <div className="tab-section-label" dir="rtl">{block.label}:</div>}{block.chord && <ChordLine chord={block.chord} shift={shift} flats={flats} className="tab-chord-line" onEditChord={editingChords && block.chordSourceIndex !== null ? (chordIndex) => editChordAt(block.chordSourceIndex!, chordIndex, block.chord) : undefined} />}<div className="tab-sheet"><pre className="saved-tab-line">{block.tabs.join("\n")}</pre></div></section> : null
+                  showChords ? <section className={`tab-block ${block.label ? "section-row" : ""}`} key={`${block.tabs[0]}-${index}`} dir="ltr">{block.label && <div className="tab-section-label" dir="rtl">{block.label}:</div>}{block.chord && <ChordLine chord={block.chord} shift={shift} flats={flats} className="tab-chord-line" onEditChord={editingChords && block.chordSourceIndex !== null ? (chordIndex) => editChordAt(block.chordSourceIndex!, chordIndex, block.chord) : undefined} />}<div className="tab-sheet"><pre className="saved-tab-line">{transposeTab(block.tabs.join("\n"), shift)}</pre></div></section> : null
                 ) : block.line.lyric ? (
                   <div className={`song-row ${block.line.label ? "section-row" : ""}`} key={`${block.line.lyric}-${index}`}>{block.line.label && <div className="section-label">{block.line.label}:</div>}{showChords && <ChordLine chord={block.line.chord} shift={shift} flats={flats} onEditChord={editingChords && savedSong ? (chordIndex, originalChord) => editChordAt(block.sourceIndex, chordIndex, originalChord) : undefined} />}<div className="lyric-line">{block.line.lyric}</div></div>
                 ) : null)}

@@ -7,6 +7,8 @@ import {
   transposeChord,
   transposeChordLine,
   transposeNote,
+  transposeSongLine,
+  transposeTab,
 } from "./chordEngine";
 
 describe("chordEngine", () => {
@@ -53,5 +55,28 @@ describe("chordEngine", () => {
     expect(blocks).toHaveLength(1);
     expect(blocks[0]).toMatchObject({ kind: "tab", label: "סולו", chord: "Am" });
     if (blocks[0].kind === "tab") expect(blocks[0].tabs).toEqual(["e|---0---", "B|---1---"]);
+  });
+
+  it("transposes single and double-digit frets while preserving tab width", () => {
+    const source = "e|--9---10h12--|\nB|--0---2/10---|";
+    const shifted = transposeTab(source, 1);
+
+    expect(shifted).toBe("e|--10--11h13--|\nB|--1---3/11---|");
+    expect(shifted.split("\n").map((line) => line.length)).toEqual(source.split("\n").map((line) => line.length));
+  });
+
+  it("moves out-of-range frets by octaves and always resets to the exact source", () => {
+    expect(transposeTab("e|--0--1--23--24--|", -2)).toBe("e|--10-11-21--22--|");
+    expect(transposeTab("e|--23--24--|", 2)).toBe("e|--13--14--|");
+    expect(transposeTab("e|--0h2/10--|\r\nB|--1p0-----|", 0)).toBe("e|--0h2/10--|\r\nB|--1p0-----|");
+  });
+
+  it("does not transpose numbers outside a tablature string", () => {
+    expect(transposeTab("Tempo 120\ne|--3--|", 2)).toBe("Tempo 120\ne|--5--|");
+  });
+
+  it("transposes modern and legacy tab rows for exports", () => {
+    expect(transposeSongLine({ chord: "Am", lyric: "", tab: "e|--9--|" }, 1, false)).toEqual({ chord: "A#m", lyric: "", tab: "e|--10-|" });
+    expect(transposeSongLine({ chord: "", lyric: "  B|--0--|" }, -1, false)).toEqual({ chord: "", lyric: "", tab: "  B|--11-|" });
   });
 });

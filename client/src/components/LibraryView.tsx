@@ -94,7 +94,6 @@ export function LibraryView(props: LibraryViewProps) {
               {isExpanded && <div className="artist-song-grid">{artistSongs.map((song) => <article className="song-card" key={song.id}>
                 <div className="song-card-top"><span>מקור</span><button className="delete-song" aria-label={`מחק את ${song.title}`} onClick={() => onDelete(song.id)}><Trash2 size={15} /></button></div>
                 <h3>{song.title}</h3>
-                {song.note && <p className="song-card-note">{song.note}</p>}
                 <footer><time>{formatAddedAt(song.addedAt)}</time><div className="song-card-actions"><button className="song-pdf-button" onClick={() => onExport(song)} aria-label={`הורד PDF של ${song.title}`}><Download size={14} /> PDF</button><button onClick={() => onOpen(song)}>פתח לנגינה <ChevronRight size={15} /></button></div></footer>
               </article>)}</div>}
             </section>
