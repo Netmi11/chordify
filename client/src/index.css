@@ -837,6 +837,8 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
   white-space: nowrap;
 }
 .artist-filter.active, .artist-filter:hover { border-color: var(--ink); background: var(--ink); color: #fff; }
+:root:not(.dark) .artist-filter.active,
+:root:not(.dark) .artist-filter:hover { color: #fff; }
 .library-backup-note { color: var(--ink-soft); font-size: 11px; }
 .library-backup-note button { border: 0; background: transparent; color: var(--accent); text-decoration: underline; }
 
@@ -962,6 +964,12 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
 .mobile-dock button:active, .mobile-dock .dock-active { color: var(--accent); background: var(--accent-soft); }
 .mobile-key { color: var(--accent); }
 .mobile-key small { color: var(--ink-faint); }
+
+/* Explicit contrast guards for controls with dark fills. */
+:root:not(.dark) .brand-mark,
+:root:not(.dark) .load-button,
+:root:not(.dark) .artist-filter.active,
+:root:not(.dark) .artist-filter:hover { color: #fff; }
 
 @media (max-width: 700px) {
   .topbar { height: 60px; padding: 0 13px; }

@@ -62,6 +62,12 @@ describe("song player mobile cleanup", () => {
     expect(mobileStyles).toContain("env(safe-area-inset-bottom)");
   });
 
+  it("keeps text legible on every dark control in the light theme", () => {
+    expect(styles).toContain(":root:not(.dark) .artist-filter.active");
+    expect(styles).toContain(":root:not(.dark) .load-button");
+    expect(styles).toContain("color: #fff;");
+  });
+
   it("keeps a personal note available without permanently taking space from the song", () => {
     expect(homeSource).toContain('<details className={`personal-note');
     expect(homeSource).toContain('onBlur={saveNote}');
