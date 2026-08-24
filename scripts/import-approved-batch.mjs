@@ -1,6 +1,6 @@
-import { createRequire } from "node:module";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import postgres from "postgres";
 
 const args = process.argv.slice(2);
 const valueAfter = (flag) => {
@@ -82,10 +82,9 @@ const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 const songs = manifest.songs || [];
 if (!songs.length || songs.length > 10) throw new Error("Manifest חייב להכיל בין 1 ל־10 שירים");
 const files = await readdir(snapshotDir);
-const requireFromProject = createRequire(resolve(project, "package.json"));
-const mysql = requireFromProject("mysql2/promise");
-const db = await mysql.createConnection(process.env.DATABASE_URL);
-const [existingRows] = await db.query("SELECT clientSongId, sourceUrl FROM chordshift_songs WHERE libraryId = ?", [libraryId]);
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
+const db = postgres(process.env.DATABASE_URL, { max: 1, prepare: false });
+const existingRows = await db`SELECT "clientSongId", "sourceUrl" FROM chordshift_songs WHERE "libraryId" = ${libraryId}`;
 const existingUrls = new Set(existingRows.map((row) => new URL(row.sourceUrl).toString()));
 const existingIds = new Set(existingRows.map((row) => row.clientSongId));
 const seenUrls = new Set();
@@ -116,19 +115,17 @@ for (const requested of songs) {
 
 const result = { mode: commit ? "commit" : "dry-run", requested: songs.length, readyToAdd: parsedSongs.length, duplicates, songs: parsedSongs.map((song) => ({ id: song.id, title: song.title, artist: song.artist, sourceUrl: song.sourceUrl, lineCount: song.lines.filter((line) => line.chord || line.lyric || line.tab).length })) };
 if (commit && parsedSongs.length) {
-  await db.beginTransaction();
-  try {
+  await db.begin(async (tx) => {
     for (const song of parsedSongs) {
-      const [inserted] = await db.execute("INSERT INTO chordshift_songs (libraryId, clientSongId, title, artist, sourceUrl, note, addedAt) VALUES (?, ?, ?, ?, ?, ?, ?)", [libraryId, song.id, song.title, song.artist, song.sourceUrl, song.note, song.addedAt]);
-      const songId = inserted.insertId;
-      const lines = song.lines.map((line, position) => [songId, position, line.label || null, line.chord || "", line.lyric || "", line.tab || null]);
-      if (lines.length) await db.query("INSERT INTO chordshift_song_lines (songId, position, label, chord, lyric, tab) VALUES ?", [lines]);
+      const [inserted] = await tx`
+        INSERT INTO chordshift_songs ("libraryId", "clientSongId", title, artist, "sourceUrl", note, "addedAt")
+        VALUES (${libraryId}, ${song.id}, ${song.title}, ${song.artist}, ${song.sourceUrl}, ${song.note}, ${song.addedAt})
+        RETURNING id
+      `;
+      const lines = song.lines.map((line, position) => ({ songId: inserted.id, position, label: line.label || null, chord: line.chord || "", lyric: line.lyric || "", tab: line.tab || null }));
+      if (lines.length) await tx`INSERT INTO chordshift_song_lines ${tx(lines, "songId", "position", "label", "chord", "lyric", "tab")}`;
     }
-    await db.commit();
-  } catch (error) {
-    await db.rollback();
-    throw error;
-  }
+  });
 }
 await db.end();
 console.log(JSON.stringify(result, null, 2));

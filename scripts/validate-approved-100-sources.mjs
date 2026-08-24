@@ -1,6 +1,6 @@
-import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import postgres from "postgres";
 
 const project = resolve(process.argv[2] || process.cwd());
 const libraryId = process.argv[3];
@@ -75,8 +75,6 @@ async function fetchTab4uHtml(sourceUrl) {
 
 const { parseTab4uHtml } = await import(`${project}/server/tab4u.ts`);
 const { normalizeSongMetadata } = await import(`${project}/client/src/lib/songLibraryV2.ts`);
-const requireFromProject = createRequire(`${project}/package.json`);
-const mysql = requireFromProject("mysql2/promise");
 
 const resolution = JSON.parse(await readFile(resolutionPath, "utf8"));
 const resolvedByNumber = new Map(resolution.resolved.map((song) => [song.number, song]));
@@ -85,8 +83,9 @@ const requested = [
   ...resolution.unresolved.filter((song) => manualSourceOverrides[song.number]).map((song) => ({ ...song, sourceUrl: manualSourceOverrides[song.number] })),
 ].sort((a, b) => a.number - b.number);
 
-const db = await mysql.createConnection(process.env.DATABASE_URL);
-const [existingRows] = await db.query("SELECT sourceUrl, clientSongId FROM chordshift_songs WHERE libraryId = ?", [libraryId]);
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
+const db = postgres(process.env.DATABASE_URL, { max: 1, prepare: false });
+const existingRows = await db`SELECT "sourceUrl", "clientSongId" FROM chordshift_songs WHERE "libraryId" = ${libraryId}`;
 const existingUrls = new Set(existingRows.map((row) => new URL(row.sourceUrl).toString()));
 const existingClientIds = new Set(existingRows.map((row) => row.clientSongId).filter(Boolean));
 

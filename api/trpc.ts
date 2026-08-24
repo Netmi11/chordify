@@ -3,37 +3,39 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { initTRPC } from "@trpc/server";
 import { nodeHTTPRequestHandler } from "@trpc/server/adapters/node-http";
 import { eq, inArray } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
-import { bigint, index, int, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { bigint, index, integer, pgTable, serial, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+import postgres from "postgres";
 import superjson from "superjson";
 import { z } from "zod";
 
-const chordshiftLibraries = mysqlTable("chordshift_libraries", {
+const chordshiftLibraries = pgTable("chordshift_libraries", {
   id: varchar("id", { length: 64 }).primaryKey(),
   secretHash: varchar("secretHash", { length: 128 }).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 });
 
-const chordshiftSongs = mysqlTable("chordshift_songs", {
-  id: int("id").autoincrement().primaryKey(),
-  libraryId: varchar("libraryId", { length: 64 }).notNull(),
+const chordshiftSongs = pgTable("chordshift_songs", {
+  id: serial("id").primaryKey(),
+  libraryId: varchar("libraryId", { length: 64 }).notNull().references(() => chordshiftLibraries.id, { onDelete: "cascade" }),
   clientSongId: varchar("clientSongId", { length: 120 }).notNull(),
   title: text("title").notNull(),
   artist: varchar("artist", { length: 512 }).notNull(),
   sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
   note: text("note").notNull(),
   addedAt: bigint("addedAt", { mode: "number" }).notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
   uniqueIndex("chordshift_songs_library_client_unique").on(table.libraryId, table.clientSongId),
+  uniqueIndex("chordshift_songs_library_source_unique").on(table.libraryId, table.sourceUrl),
   index("chordshift_songs_library_index").on(table.libraryId),
 ]);
 
-const chordshiftSongLines = mysqlTable("chordshift_song_lines", {
-  id: int("id").autoincrement().primaryKey(),
-  songId: int("songId").notNull(),
-  position: int("position").notNull(),
+const chordshiftSongLines = pgTable("chordshift_song_lines", {
+  id: serial("id").primaryKey(),
+  songId: integer("songId").notNull().references(() => chordshiftSongs.id, { onDelete: "cascade" }),
+  position: integer("position").notNull(),
   label: text("label"),
   chord: text("chord").notNull(),
   lyric: text("lyric").notNull(),
@@ -54,10 +56,14 @@ type SyncedSong = {
   lines: SyncedSongLine[];
 };
 
+let sqlClient: ReturnType<typeof postgres> | null = null;
 let db: ReturnType<typeof drizzle> | null = null;
 function getDb() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_UNAVAILABLE");
-  db ??= drizzle(process.env.DATABASE_URL);
+  if (!db) {
+    sqlClient = postgres(process.env.DATABASE_URL, { max: 1, prepare: false });
+    db = drizzle(sqlClient);
+  }
   return db;
 }
 
@@ -112,7 +118,12 @@ async function saveLibrarySnapshot(libraryId: string, secret: string, songs: Syn
       lyric: line.lyric,
       tab: line.tab ?? null,
     })));
-    if (lines.length) await tx.insert(chordshiftSongLines).values(lines);
+    // PostgreSQL has a 65,535-parameter limit. Chunk line inserts so a full
+    // phone library can be pushed in one atomic snapshot.
+    for (let offset = 0; offset < lines.length; offset += 5_000) {
+      await tx.insert(chordshiftSongLines).values(lines.slice(offset, offset + 5_000));
+    }
+    await tx.update(chordshiftLibraries).set({ updatedAt: new Date() }).where(eq(chordshiftLibraries.id, libraryId));
   });
   return { saved: songs.length };
 }
