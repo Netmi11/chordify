@@ -22,12 +22,12 @@
   }
 
   .mobile-dock > button:focus-visible {
-    outline: 2px solid #f3a54a;
+    outline: 2px solid var(--accent, #315c4d);
     outline-offset: 2px;
   }
 
   .mobile-dock .dock-active {
-    box-shadow: inset 0 0 0 1px rgba(243, 165, 74, .65);
+    box-shadow: inset 0 0 0 1px rgba(49, 92, 77, .45);
   }
 
   .mobile-key strong { font-size: 18px; }
@@ -36,5 +36,5 @@
   .song-stage { padding-bottom: 26px; }
   .song-paper { min-height: auto; }
   .song-content { padding-bottom: 44px; }
-  .song-pdf-float { bottom: calc(86px + env(safe-area-inset-bottom)); }
+  .song-pdf-float { display: none; }
 }

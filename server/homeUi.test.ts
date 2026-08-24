@@ -42,7 +42,7 @@ describe("song player mobile cleanup", () => {
   });
 
   it("returns from a saved song to the library", () => {
-    expect(homeSource).toContain('savedSong ? "חזור לספרייה" : "הספרייה"');
+    expect(homeSource).toContain('screen === "library" ? "שיר חדש" : "הספרייה"');
     expect(homeSource).toContain('window.addEventListener("popstate", onPopState)');
     expect(homeSource).toContain('setScreen("library")');
   });
@@ -50,14 +50,14 @@ describe("song player mobile cleanup", () => {
   it("uses conflict-safe cloud catalog sync and no hard-coded song count", () => {
     expect(homeSource).toContain('trpcUtils.librarySync.catalog.fetch()');
     expect(homeSource).toContain('mergeLibraryForSync');
-    expect(librarySource).toContain('סנכרן מהענן');
+    expect(homeSource).toContain('סנכרן את קטלוג השירים');
     expect(librarySource).not.toContain('סנכרן 247 שירים');
   });
 
   it("keeps maintenance tools secondary and the mobile player controls compact", () => {
-    expect(librarySource).toContain('className="library-utilities"');
-    expect(librarySource).toContain("גיבוי וסנכרון");
-    expect(homeSource).toContain('className="song-pdf-float"');
+    expect(homeSource).toContain('className="app-menu"');
+    expect(homeSource).toContain("ניהול הספרייה");
+    expect(homeSource).not.toContain('className="song-pdf-float"');
     expect(mobileStyles).toContain(".mobile-dock");
     expect(mobileStyles).toContain("env(safe-area-inset-bottom)");
   });
