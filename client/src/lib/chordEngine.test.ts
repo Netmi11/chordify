@@ -71,6 +71,76 @@ describe("chordEngine", () => {
     expect(transposeTab("e|--0h2/10--|\r\nB|--1p0-----|", 0)).toBe("e|--0h2/10--|\r\nB|--1p0-----|");
   });
 
+  it("moves notes to adjacent strings when a transposition crosses fretboard boundaries", () => {
+    const highFret = [
+      "e|--------|",
+      "B|--------|",
+      "G|--------|",
+      "D|--------|",
+      "A|--------|",
+      "E|--24----|",
+    ].join("\n");
+    expect(transposeTab(highFret, 1)).toBe([
+      "e|--------|",
+      "B|--------|",
+      "G|--------|",
+      "D|--------|",
+      "A|--20----|",
+      "E|--------|",
+    ].join("\n"));
+
+    const openHighE = [
+      "e|--0-----|",
+      "B|--------|",
+      "G|--------|",
+      "D|--------|",
+      "A|--------|",
+      "E|--------|",
+    ].join("\n");
+    expect(transposeTab(openHighE, -1)).toBe([
+      "e|--------|",
+      "B|--4-----|",
+      "G|--------|",
+      "D|--------|",
+      "A|--------|",
+      "E|--------|",
+    ].join("\n"));
+  });
+
+  it("moves complete hammer-on and slide groups together instead of splitting the fingering", () => {
+    const source = [
+      "e|----------|",
+      "B|----------|",
+      "G|----------|",
+      "D|----------|",
+      "A|----------|",
+      "E|--23h24---|",
+    ].join("\n");
+    expect(transposeTab(source, 2)).toBe([
+      "e|----------|",
+      "B|----------|",
+      "G|----------|",
+      "D|----------|",
+      "A|--20h21---|",
+      "E|----------|",
+    ].join("\n"));
+  });
+
+  it("treats consecutive six-string systems as separate fretboards", () => {
+    const system = [
+      "e|--------|",
+      "B|--------|",
+      "G|--------|",
+      "D|--------|",
+      "A|--------|",
+      "E|--24----|",
+    ];
+    expect(transposeTab([...system, ...system].join("\n"), 1)).toBe([
+      "e|--------|", "B|--------|", "G|--------|", "D|--------|", "A|--20----|", "E|--------|",
+      "e|--------|", "B|--------|", "G|--------|", "D|--------|", "A|--20----|", "E|--------|",
+    ].join("\n"));
+  });
+
   it("does not transpose numbers outside a tablature string", () => {
     expect(transposeTab("Tempo 120\ne|--3--|", 2)).toBe("Tempo 120\ne|--5--|");
   });

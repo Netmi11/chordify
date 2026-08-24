@@ -6,6 +6,28 @@ const NOTE_PATTERN = /^[A-G](?:#|b)?$/;
 const CHORD_PATTERN = /^([A-G](?:#|b)?)([^/\s]*)(?:\/([A-G](?:#|b)?))?$/;
 const TAB_STRING_PATTERN = /^[eBGDAE]\|/;
 const MAX_STANDARD_FRET = 24;
+const TAB_ROW_PATTERN = /^\s*([A-Ga-g](?:#|b)?)\s*\|/;
+const NOTE_CLASSES: Record<string, number> = { C: 0, "C#": 1, Db: 1, D: 2, "D#": 3, Eb: 3, E: 4, F: 5, "F#": 6, Gb: 6, G: 7, "G#": 8, Ab: 8, A: 9, "A#": 10, Bb: 10, B: 11 };
+
+type ParsedTabRow = {
+  prefix: string;
+  body: string;
+  tuning: number;
+};
+
+type TabChunk = {
+  sourceRow: number;
+  start: number;
+  end: number;
+  text: string;
+  frets: number[];
+};
+
+type TabPlacement = {
+  row: number;
+  text: string;
+  score: number;
+};
 
 function noteIndex(note: string): number {
   const sharpIndex = SHARP_NOTES.indexOf(note as (typeof SHARP_NOTES)[number]);
@@ -17,74 +39,145 @@ function wrapSemitones(value: number): number {
   return ((value % 12) + 12) % 12;
 }
 
-function playableFret(fret: number, steps: number): number {
-  const shifted = fret + steps;
-  if (shifted >= 0 && shifted <= MAX_STANDARD_FRET) return shifted;
-
-  // Chord transposition is octave-independent. When the same-string position
-  // would fall outside a standard 24-fret neck, keep the transposed pitch
-  // class and move it by one or more octaves into the playable range.
-  const minimumOctaves = Math.ceil(-shifted / 12);
-  const maximumOctaves = Math.floor((MAX_STANDARD_FRET - shifted) / 12);
-  if (minimumOctaves > maximumOctaves) return fret;
-
-  const octaveOffset = Math.min(maximumOctaves, Math.max(minimumOctaves, 0));
-  return shifted + octaveOffset * 12;
+function noteClass(label: string): number | null {
+  const normalized = `${label[0]?.toUpperCase() ?? ""}${label.slice(1)}`;
+  return NOTE_CLASSES[normalized] ?? null;
 }
 
-function transposePhysicalTabLine(line: string, steps: number): string {
-  if (!steps) return line;
+function inferTabTunings(labels: string[]): number[] | null {
+  const classes = labels.map(noteClass);
+  if (classes.some((value) => value === null)) return null;
 
-  const pipeIndex = line.indexOf("|");
-  if (pipeIndex < 0) return line;
+  const firstClass = classes[0]!;
+  let previous = firstClass + 12 * Math.round((64 - firstClass) / 12);
+  const tunings = [previous];
 
-  const prefix = line.slice(0, pipeIndex + 1);
-  const parts = line.slice(pipeIndex + 1).split(/(\d+)/);
-
-  for (let index = 1; index < parts.length; index += 2) {
-    const original = parts[index];
-    const fret = Number(original);
-    if (!Number.isInteger(fret)) continue;
-
-    const replacement = String(playableFret(fret, steps));
-    const widthDelta = replacement.length - original.length;
-    parts[index] = replacement;
-    if (!widthDelta) continue;
-
-    // Compensate with the next run of timing dashes. This keeps string lines
-    // aligned even when a fret changes between one and two digits.
-    let rebalanced = false;
-    for (let nextIndex = index + 1; nextIndex < parts.length; nextIndex += 2) {
-      const leadingDashes = parts[nextIndex].match(/^-+/)?.[0].length ?? 0;
-      if (widthDelta > 0 && leadingDashes >= widthDelta) {
-        parts[nextIndex] = parts[nextIndex].slice(widthDelta);
-        rebalanced = true;
-        break;
-      }
-      if (widthDelta < 0) {
-        parts[nextIndex] = `${"-".repeat(-widthDelta)}${parts[nextIndex]}`;
-        rebalanced = true;
-        break;
-      }
-    }
-
-    if (!rebalanced && widthDelta < 0) parts.push("-".repeat(-widthDelta));
+  for (const value of classes.slice(1)) {
+    let pitch = value! + 12 * Math.floor((previous - 1 - value!) / 12);
+    while (pitch >= previous) pitch -= 12;
+    tunings.push(pitch);
+    previous = pitch;
   }
 
-  return prefix + parts.join("");
+  return tunings;
+}
+
+function parseTabChunks(body: string, sourceRow: number): TabChunk[] {
+  const chunks: TabChunk[] = [];
+  const pattern = /[^-|\s]*\d+[^-|\s]*/g;
+  for (const match of Array.from(body.matchAll(pattern))) {
+    const frets = Array.from(match[0].matchAll(/\d+/g)).map((fret) => Number(fret[0]));
+    if (!frets.length || frets.some((fret) => !Number.isInteger(fret))) continue;
+    chunks.push({ sourceRow, start: match.index, end: match.index + match[0].length, text: match[0], frets });
+  }
+  return chunks;
+}
+
+function placementCandidates(chunk: TabChunk, rows: ParsedTabRow[], steps: number): TabPlacement[] {
+  const sourceTuning = rows[chunk.sourceRow].tuning;
+  const placements: TabPlacement[] = [];
+
+  for (let octaveShift = -2; octaveShift <= 2; octaveShift += 1) {
+    for (let row = 0; row < rows.length; row += 1) {
+      const targetFrets = chunk.frets.map((fret) => sourceTuning + fret + steps + octaveShift * 12 - rows[row].tuning);
+      if (targetFrets.some((fret) => fret < 0 || fret > MAX_STANDARD_FRET)) continue;
+
+      let fretIndex = 0;
+      const text = chunk.text.replace(/\d+/g, () => String(targetFrets[fretIndex++]));
+      const octavePenalty = Math.abs(octaveShift) * 1000;
+      const stringPenalty = Math.abs(row - chunk.sourceRow) * 20;
+      const sameStringBonus = row === chunk.sourceRow ? -1 : 0;
+      placements.push({ row, text, score: octavePenalty + stringPenalty + sameStringBonus });
+    }
+  }
+
+  return placements.sort((left, right) => left.score - right.score || left.row - right.row);
+}
+
+function canPlace(body: string[], start: number, width: number): boolean {
+  for (let index = start; index < start + width; index += 1) {
+    if (index < body.length && body[index] !== "-") return false;
+  }
+  return true;
+}
+
+function transposeTabRows(lines: string[], steps: number): string[] {
+  const labels = lines.map((line) => line.match(TAB_ROW_PATTERN)?.[1] ?? "");
+  const tunings = inferTabTunings(labels);
+  if (!tunings) return lines;
+
+  const rows: ParsedTabRow[] = lines.map((line, index) => {
+    const pipeIndex = line.indexOf("|");
+    return { prefix: line.slice(0, pipeIndex + 1), body: line.slice(pipeIndex + 1), tuning: tunings[index] };
+  });
+  const chunks = rows.flatMap((row, index) => parseTabChunks(row.body, index));
+  const bodies = rows.map((row) => row.body.split(""));
+
+  for (const chunk of chunks) {
+    for (let index = chunk.start; index < chunk.end; index += 1) bodies[chunk.sourceRow][index] = "-";
+  }
+
+  const occupiedAtStart = new Map<number, Set<number>>();
+  for (const chunk of chunks.sort((left, right) => left.start - right.start || left.sourceRow - right.sourceRow)) {
+    const occupiedRows = occupiedAtStart.get(chunk.start) ?? new Set<number>();
+    const candidates = placementCandidates(chunk, rows, steps);
+    const placement = candidates.find((candidate) => !occupiedRows.has(candidate.row) && canPlace(bodies[candidate.row], chunk.start, candidate.text.length))
+      ?? candidates.find((candidate) => !occupiedRows.has(candidate.row))
+      ?? candidates[0];
+    if (!placement) continue;
+
+    occupiedRows.add(placement.row);
+    occupiedAtStart.set(chunk.start, occupiedRows);
+    const target = bodies[placement.row];
+    while (target.length < chunk.start + placement.text.length) target.push("-");
+    target.splice(chunk.start, placement.text.length, ...placement.text.split(""));
+  }
+
+  return rows.map((row, index) => row.prefix + bodies[index].join(""));
+}
+
+function splitTabSystems(rowIndexes: number[], parts: string[]): number[][] {
+  const systems: number[][] = [];
+  let current: number[] = [];
+  let firstLabel = "";
+
+  for (const rowIndex of rowIndexes) {
+    const label = parts[rowIndex].match(TAB_ROW_PATTERN)?.[1] ?? "";
+    const startsRepeatedSystem = current.length >= 2 && current.length < 5 && label === firstLabel;
+    if (current.length >= 6 || startsRepeatedSystem) {
+      systems.push(current);
+      current = [];
+    }
+    if (!current.length) firstLabel = label;
+    current.push(rowIndex);
+  }
+
+  if (current.length) systems.push(current);
+  return systems;
 }
 
 /**
- * Transpose every fret in a single- or multi-line tablature block.
+ * Transpose a single- or multi-line tablature block across a real fretboard.
  *
- * The source is never mutated and a zero shift is returned byte-for-byte,
- * making reset and repeated +/- transformations deterministic.
+ * Notes stay on their original string while the fret remains playable. At the
+ * 0/24-fret boundaries, complete technique groups move to the nearest playable
+ * string. Octave displacement is a last resort only at the instrument's range.
  */
 export function transposeTab(tab: string, steps: number): string {
-  return tab
-    .split(/(\r?\n)/)
-    .map((part) => (/^\r?\n$/.test(part) ? part : transposePhysicalTabLine(part, steps)))
-    .join("");
+  if (!steps) return tab;
+
+  const parts = tab.split(/(\r?\n)/);
+  for (let index = 0; index < parts.length; index += 2) {
+    if (!TAB_ROW_PATTERN.test(parts[index])) continue;
+    const rowIndexes: number[] = [];
+    for (let cursor = index; cursor < parts.length && TAB_ROW_PATTERN.test(parts[cursor]); cursor += 2) rowIndexes.push(cursor);
+    for (const system of splitTabSystems(rowIndexes, parts)) {
+      const transposed = transposeTabRows(system.map((rowIndex) => parts[rowIndex]), steps);
+      system.forEach((rowIndex, row) => { parts[rowIndex] = transposed[row]; });
+    }
+    index = rowIndexes[rowIndexes.length - 1];
+  }
+  return parts.join("");
 }
 
 export function transposeNote(note: string, steps: number, flats: boolean): string {
