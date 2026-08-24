@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, BookmarkPlus, Download, ExternalLink, Eye, EyeOff, LibraryBig, Loader2, Moon, Pencil, Play, RotateCcw, Sparkles, Sun, X } from "lucide-react";
+import { ArrowDown, ArrowUp, BookmarkPlus, CloudDownload, Download, ExternalLink, Eye, EyeOff, KeyRound, LibraryBig, Loader2, MoreHorizontal, Pencil, Play, Plus, RotateCcw, Sparkles, X } from "lucide-react";
 import { ChordLine } from "@/components/ChordLine";
 import { LibraryView } from "@/components/LibraryView";
-import { useTheme } from "@/contexts/ThemeContext";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
-import { buildSongRenderBlocks, combineSongLines, getStartingKey, replaceChordToken, transposeChord, transposeSongLine, transposeTab } from "@/lib/chordEngine";
+import { buildSongRenderBlocks, combineSongLines, getStartingKey, replaceChordToken, transposeChord, transposeTab } from "@/lib/chordEngine";
 import { formatCloudRecoveryCode, getOrCreateCloudLibraryKey, parseCloudRecoveryCode, setCloudLibraryKey, type CloudLibraryKey } from "@/lib/libraryCloud";
 import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, type SavedSong, type SongLine, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
-import { exportSongToPdf } from "@/lib/songPdf";
 import { mergeLibraryForSync } from "@/lib/syncPolicy";
 import { trpc } from "@/lib/trpc";
 
@@ -34,7 +32,6 @@ function formatAddedAt(timestamp: number) {
 }
 
 export default function HomeV2() {
-  const { theme, toggleTheme } = useTheme();
   const [shift, setShift] = useState(0);
   const [flats, setFlats] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -180,16 +177,6 @@ export default function HomeV2() {
     setShift(0);
     setFlats(false);
   };
-
-  const exportPdf = (song: { title: string; artist: string; lines: SongLine[] }, exportShift = 0) => {
-    const opened = exportSongToPdf({
-      ...song,
-      lines: song.lines.map((line) => transposeSongLine(line, exportShift, flats)),
-    });
-    if (!opened) window.alert("הדפדפן חסם פתיחת חלון ל־PDF. אפשר חלונות קופצים ונסה שוב.");
-  };
-
-  const exportCurrentSongPdf = () => exportPdf({ title: activeTitle, artist: activeArtist, lines: activeSong }, shift);
 
   const exportLibraryBackup = () => {
     const blob = new Blob([serializeSongLibrary(library)], { type: "application/json;charset=utf-8" });
@@ -355,12 +342,22 @@ export default function HomeV2() {
   return (
     <div dir="rtl" className="app-shell">
       <header className="topbar">
-        <div className="brand-lockup"><img src="/manus-storage/stage-slate-pick-mark_6b2a5d37.png" alt="" className="brand-mark" /><div><div className="brand-name">ChordShift</div><div className="brand-caption">הספרייה הפרטית שלך</div></div></div>
+        <div className="brand-lockup"><span className="brand-mark" aria-hidden="true">C</span><div><div className="brand-name">Chordify</div><div className="brand-caption">הספרייה שלך</div></div></div>
         <div className="topbar-actions">
-          <span className="status-dot"><span /> נשמר בטלפון</span>
-          {installPrompt && <button className="install-app-button" onClick={() => void installApp()}>התקן כאפליקציה</button>}
-          <button className="top-library-button" onClick={() => screen === "library" ? setScreen("player") : returnToLibrary()} aria-label={screen === "library" ? savedSong ? "חזור לשיר הנוכחי" : "עבור לטעינת שיר" : "חזור לספרייה"}><LibraryBig size={17} /> {screen === "library" ? savedSong ? "חזור לשיר" : "טעינת שיר" : savedSong ? "חזור לספרייה" : "הספרייה"}</button>
-          <button className="theme-toggle" onClick={toggleTheme} aria-label={theme === "dark" ? "עבור למצב יום" : "עבור למצב לילה"} title={theme === "dark" ? "מצב יום" : "מצב לילה"}>{theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}</button>
+          <span className="status-dot"><span /> {library.length} שירים</span>
+          <button className="top-library-button" onClick={() => screen === "library" ? setScreen("player") : returnToLibrary()} aria-label={screen === "library" ? "הוסף שיר חדש" : "חזור לספרייה"}>{screen === "library" ? <Plus size={17} /> : <LibraryBig size={17} />} {screen === "library" ? "שיר חדש" : "הספרייה"}</button>
+          <details className="app-menu">
+            <summary aria-label="פתח תפריט נוסף"><MoreHorizontal size={20} /></summary>
+            <div className="app-menu-panel">
+              <div className="app-menu-heading"><strong>ניהול הספרייה</strong><span>{cloudStatus}</span></div>
+              {installPrompt && <button onClick={() => void installApp()}><Plus size={15} /> התקן כאפליקציה</button>}
+              <button onClick={exportLibraryBackup}><Download size={15} /> הורד קובץ גיבוי</button>
+              <label><ExternalLink size={15} /> שחזר מקובץ<input type="file" accept="application/json,.json" onChange={(event) => { const file = event.target.files?.[0]; if (file) void importLibraryBackup(file); event.currentTarget.value = ""; }} /></label>
+              <button onClick={() => void showCloudRecoveryCode()}><KeyRound size={15} /> העתק קוד שחזור</button>
+              <button onClick={() => void restoreFromCloud()}><CloudDownload size={15} /> שחזר מהענן</button>
+              <button onClick={() => void syncImportedLibrary()} disabled={isSyncing}><CloudDownload size={15} /> {isSyncing ? "מסנכרן…" : "סנכרן את קטלוג השירים"}</button>
+            </div>
+          </details>
         </div>
       </header>
 
@@ -368,7 +365,6 @@ export default function HomeV2() {
         <LibraryView
           songs={library}
           onOpen={openSavedSong}
-          onExport={(song) => exportPdf(song)}
           onDelete={deleteSavedSong}
           onReturn={() => {
             if (savedSong) {
@@ -377,13 +373,6 @@ export default function HomeV2() {
             }
             setScreen("player");
           }}
-          onExportBackup={exportLibraryBackup}
-          onImportBackup={importLibraryBackup}
-          onShowCloudCode={() => void showCloudRecoveryCode()}
-          onRestoreCloud={() => void restoreFromCloud()}
-          onSyncImported={() => void syncImportedLibrary()}
-          isSyncing={isSyncing}
-          cloudStatus={cloudStatus}
           showReturn={Boolean(savedSong)}
         />
       ) : (
@@ -424,7 +413,6 @@ export default function HomeV2() {
                 <div className="end-marker">— סוף —</div>
               </article>
             </div>
-            <button className="song-pdf-float" onClick={exportCurrentSongPdf} aria-label="הורד את השיר כ־PDF"><Download size={16} /> PDF</button>
           </section>
         </main>
       )}
