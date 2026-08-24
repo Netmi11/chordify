@@ -58,17 +58,49 @@ describe("chordEngine", () => {
   });
 
   it("transposes single and double-digit frets while preserving tab width", () => {
-    const source = "e|--9---10h12--|\nB|--0---2/10---|";
+    const source = [
+      "e|--9---10h12--|",
+      "B|--0---2/10---|",
+      "G|--------------|",
+      "D|--------------|",
+      "A|--------------|",
+      "E|--------------|",
+    ].join("\n");
     const shifted = transposeTab(source, 1);
 
-    expect(shifted).toBe("e|--10--11h13--|\nB|--1---3/11---|");
+    expect(shifted).toBe([
+      "e|--10---------|",
+      "B|--1---3/11---|",
+      "G|------8h10----|",
+      "D|--------------|",
+      "A|--------------|",
+      "E|--------------|",
+    ].join("\n"));
     expect(shifted.split("\n").map((line) => line.length)).toEqual(source.split("\n").map((line) => line.length));
   });
 
   it("moves out-of-range frets by octaves and always resets to the exact source", () => {
-    expect(transposeTab("e|--0--1--23--24--|", -2)).toBe("e|--10-11-21--22--|");
-    expect(transposeTab("e|--23--24--|", 2)).toBe("e|--13--14--|");
+    expect(transposeTab("e|--0--1--23--24--|", -2)).toBe("e|--10-11-9---10--|");
+    expect(transposeTab("e|--23--24--|", 2)).toBe("e|--1---2---|");
     expect(transposeTab("e|--0h2/10--|\r\nB|--1p0-----|", 0)).toBe("e|--0h2/10--|\r\nB|--1p0-----|");
+  });
+
+  it("allows fret 12 but never emits a higher fret after transposition", () => {
+    expect(transposeTab("e|--11--|", 1)).toBe("e|--12--|");
+
+    const source = [
+      "e|--0------------------|",
+      "B|------7--------------|",
+      "G|----------12---------|",
+      "D|--------------19-----|",
+      "A|------------------24-|",
+      "E|--24-----------------|",
+    ].join("\n");
+    for (const steps of [-24, -13, -1, 1, 13, 24]) {
+      const frets = Array.from(transposeTab(source, steps).matchAll(/\d+/g), (match) => Number(match[0]));
+      expect(frets.length).toBeGreaterThan(0);
+      expect(Math.max(...frets)).toBeLessThanOrEqual(12);
+    }
   });
 
   it("moves notes to adjacent strings when a transposition crosses fretboard boundaries", () => {
@@ -83,9 +115,9 @@ describe("chordEngine", () => {
     expect(transposeTab(highFret, 1)).toBe([
       "e|--------|",
       "B|--------|",
-      "G|--------|",
+      "G|--10----|",
       "D|--------|",
-      "A|--20----|",
+      "A|--------|",
       "E|--------|",
     ].join("\n"));
 
@@ -119,9 +151,9 @@ describe("chordEngine", () => {
     expect(transposeTab(source, 2)).toBe([
       "e|----------|",
       "B|----------|",
-      "G|----------|",
+      "G|--10h11---|",
       "D|----------|",
-      "A|--20h21---|",
+      "A|----------|",
       "E|----------|",
     ].join("\n"));
   });
@@ -136,8 +168,8 @@ describe("chordEngine", () => {
       "E|--24----|",
     ];
     expect(transposeTab([...system, ...system].join("\n"), 1)).toBe([
-      "e|--------|", "B|--------|", "G|--------|", "D|--------|", "A|--20----|", "E|--------|",
-      "e|--------|", "B|--------|", "G|--------|", "D|--------|", "A|--20----|", "E|--------|",
+      "e|--------|", "B|--------|", "G|--10----|", "D|--------|", "A|--------|", "E|--------|",
+      "e|--------|", "B|--------|", "G|--10----|", "D|--------|", "A|--------|", "E|--------|",
     ].join("\n"));
   });
 

@@ -5,7 +5,7 @@ const FLAT_NOTES = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", 
 const NOTE_PATTERN = /^[A-G](?:#|b)?$/;
 const CHORD_PATTERN = /^([A-G](?:#|b)?)([^/\s]*)(?:\/([A-G](?:#|b)?))?$/;
 const TAB_STRING_PATTERN = /^[eBGDAE]\|/;
-const MAX_STANDARD_FRET = 24;
+const MAX_TRANSPOSED_FRET = 12;
 const TAB_ROW_PATTERN = /^\s*([A-Ga-g](?:#|b)?)\s*\|/;
 const NOTE_CLASSES: Record<string, number> = { C: 0, "C#": 1, Db: 1, D: 2, "D#": 3, Eb: 3, E: 4, F: 5, "F#": 6, Gb: 6, G: 7, "G#": 8, Ab: 8, A: 9, "A#": 10, Bb: 10, B: 11 };
 
@@ -80,7 +80,7 @@ function placementCandidates(chunk: TabChunk, rows: ParsedTabRow[], steps: numbe
   for (let octaveShift = -2; octaveShift <= 2; octaveShift += 1) {
     for (let row = 0; row < rows.length; row += 1) {
       const targetFrets = chunk.frets.map((fret) => sourceTuning + fret + steps + octaveShift * 12 - rows[row].tuning);
-      if (targetFrets.some((fret) => fret < 0 || fret > MAX_STANDARD_FRET)) continue;
+      if (targetFrets.some((fret) => fret < 0 || fret > MAX_TRANSPOSED_FRET)) continue;
 
       let fretIndex = 0;
       const text = chunk.text.replace(/\d+/g, () => String(targetFrets[fretIndex++]));
@@ -101,6 +101,50 @@ function canPlace(body: string[], start: number, width: number): boolean {
   return true;
 }
 
+function choosePlacements(chunks: TabChunk[], rows: ParsedTabRow[], bodies: string[][], steps: number): Array<TabPlacement | null> {
+  const options = chunks.map((chunk) => {
+    const bestByRow = new Map<number, TabPlacement>();
+    for (const candidate of placementCandidates(chunk, rows, steps)) {
+      if (!bestByRow.has(candidate.row) && canPlace(bodies[candidate.row], chunk.start, candidate.text.length)) {
+        bestByRow.set(candidate.row, candidate);
+      }
+    }
+    return Array.from(bestByRow.values());
+  });
+
+  let best: Array<TabPlacement | null> = chunks.map(() => null);
+  let bestPlaced = -1;
+  let bestScore = Number.POSITIVE_INFINITY;
+
+  function visit(index: number, usedRows: Set<number>, current: Array<TabPlacement | null>, placed: number, score: number): void {
+    if (placed + chunks.length - index < bestPlaced) return;
+    if (index === chunks.length) {
+      if (placed > bestPlaced || (placed === bestPlaced && score < bestScore)) {
+        best = [...current];
+        bestPlaced = placed;
+        bestScore = score;
+      }
+      return;
+    }
+
+    for (const candidate of options[index]) {
+      if (usedRows.has(candidate.row)) continue;
+      usedRows.add(candidate.row);
+      current.push(candidate);
+      visit(index + 1, usedRows, current, placed + 1, score + candidate.score);
+      current.pop();
+      usedRows.delete(candidate.row);
+    }
+
+    current.push(null);
+    visit(index + 1, usedRows, current, placed, score);
+    current.pop();
+  }
+
+  visit(0, new Set<number>(), [], 0, 0);
+  return best;
+}
+
 function transposeTabRows(lines: string[], steps: number): string[] {
   const labels = lines.map((line) => line.match(TAB_ROW_PATTERN)?.[1] ?? "");
   const tunings = inferTabTunings(labels);
@@ -117,20 +161,20 @@ function transposeTabRows(lines: string[], steps: number): string[] {
     for (let index = chunk.start; index < chunk.end; index += 1) bodies[chunk.sourceRow][index] = "-";
   }
 
-  const occupiedAtStart = new Map<number, Set<number>>();
-  for (const chunk of chunks.sort((left, right) => left.start - right.start || left.sourceRow - right.sourceRow)) {
-    const occupiedRows = occupiedAtStart.get(chunk.start) ?? new Set<number>();
-    const candidates = placementCandidates(chunk, rows, steps);
-    const placement = candidates.find((candidate) => !occupiedRows.has(candidate.row) && canPlace(bodies[candidate.row], chunk.start, candidate.text.length))
-      ?? candidates.find((candidate) => !occupiedRows.has(candidate.row))
-      ?? candidates[0];
-    if (!placement) continue;
+  const sortedChunks = chunks.sort((left, right) => left.start - right.start || left.sourceRow - right.sourceRow);
+  for (let index = 0; index < sortedChunks.length;) {
+    const start = sortedChunks[index].start;
+    const simultaneous: TabChunk[] = [];
+    while (index < sortedChunks.length && sortedChunks[index].start === start) simultaneous.push(sortedChunks[index++]);
 
-    occupiedRows.add(placement.row);
-    occupiedAtStart.set(chunk.start, occupiedRows);
-    const target = bodies[placement.row];
-    while (target.length < chunk.start + placement.text.length) target.push("-");
-    target.splice(chunk.start, placement.text.length, ...placement.text.split(""));
+    const placements = choosePlacements(simultaneous, rows, bodies, steps);
+    placements.forEach((placement, placementIndex) => {
+      if (!placement) return;
+      const chunk = simultaneous[placementIndex];
+      const target = bodies[placement.row];
+      while (target.length < chunk.start + placement.text.length) target.push("-");
+      target.splice(chunk.start, placement.text.length, ...placement.text.split(""));
+    });
   }
 
   return rows.map((row, index) => row.prefix + bodies[index].join(""));
@@ -160,7 +204,7 @@ function splitTabSystems(rowIndexes: number[], parts: string[]): number[][] {
  * Transpose a single- or multi-line tablature block across a real fretboard.
  *
  * Notes stay on their original string while the fret remains playable. At the
- * 0/24-fret boundaries, complete technique groups move to the nearest playable
+ * 0/12-fret boundaries, complete technique groups move to the nearest playable
  * string. Octave displacement is a last resort only at the instrument's range.
  */
 export function transposeTab(tab: string, steps: number): string {
