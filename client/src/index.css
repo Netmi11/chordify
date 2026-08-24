@@ -934,6 +934,7 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
 .userscript-link { border-color: var(--line-strong); background: var(--surface); color: var(--accent); }
 .shift-panel, .rule, .paper-topline { border-color: var(--line); }
 .panel-heading strong, .key-display b, .quick.active, .quick:hover, .notation-toggle, .live-tag, .section-label, .chord-line { color: var(--accent); }
+.panel-heading small { color: var(--ink-soft); }
 .quick { border-color: var(--line-strong); color: var(--ink-soft); }
 .quick.active, .quick:hover { border-color: var(--accent); background: var(--accent-soft); }
 .shortcut-button { border-color: var(--line-strong); background: var(--surface); color: var(--ink-soft); }
@@ -944,7 +945,7 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
 .song-view-toggle:hover, .song-view-toggle.active, .song-edit-toggle:hover, .song-edit-toggle.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .live-tag { border-color: var(--line-strong); background: var(--surface); }
 .paper-topline { color: var(--ink-soft); }
-.position-note { color: var(--ink-faint); }
+.position-note { color: var(--ink-soft); }
 .lyric-line { color: var(--ink); }
 .reading-guide { background: linear-gradient(to bottom, rgba(49, 92, 77, .22), transparent 35%, transparent 75%, rgba(49, 92, 77, .12)); }
 .personal-note { border-color: var(--line); background: var(--surface-soft); }

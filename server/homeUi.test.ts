@@ -68,6 +68,11 @@ describe("song player mobile cleanup", () => {
     expect(styles).toContain("color: #fff;");
   });
 
+  it("keeps secondary player labels readable on light surfaces", () => {
+    expect(styles).toContain(".panel-heading small { color: var(--ink-soft); }");
+    expect(styles).toContain(".position-note { color: var(--ink-soft); }");
+  });
+
   it("keeps a personal note available without permanently taking space from the song", () => {
     expect(homeSource).toContain('<details className={`personal-note');
     expect(homeSource).toContain('onBlur={saveNote}');
