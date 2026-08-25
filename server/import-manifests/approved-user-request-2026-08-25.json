@@ -1,0 +1,48 @@
+{
+  "batch": "approved-user-request-2026-08-25",
+  "description": "שבעת השירים שנתנאל אישר להוספה, עם קטגוריות ראשוניות",
+  "songs": [
+    {
+      "title": "This Love",
+      "artist": "Maroon 5",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/6409_Maroon_5_-_This_Love.html",
+      "categories": ["פופ לועזי"]
+    },
+    {
+      "title": "ילדה סוכר",
+      "artist": "מוקי",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/1956_%D7%9E%D7%95%D7%A7%D7%99_-_%D7%99%D7%9C%D7%93%D7%94_%D7%A1%D7%95%D7%9B%D7%A8.html",
+      "categories": ["פופ ישראלי"]
+    },
+    {
+      "title": "Stolen Dance",
+      "artist": "Milky chance",
+      "sourceUrl": "https://en.tab4u.com/tabs/songs/5483_Milky_chance_-_Stolen_Dance.html",
+      "categories": ["רוק לועזי"]
+    },
+    {
+      "title": "גג",
+      "artist": "ג'ירפות",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/1030_%D7%92%26%2339%3B%D7%99%D7%A8%D7%A4%D7%95%D7%AA_-_%D7%92%D7%92.html",
+      "categories": ["רוק ישראלי"]
+    },
+    {
+      "title": "Mr Brightside",
+      "artist": "The Killers",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/75998_The_Killers_-_Mr_Brightside.html",
+      "categories": ["רוק לועזי"]
+    },
+    {
+      "title": "Runaway",
+      "artist": "AURORA",
+      "sourceUrl": "https://www.cifraclub.com/aurora/runaway/",
+      "categories": ["פופ לועזי", "שירים שקטים"]
+    },
+    {
+      "title": "What's Up",
+      "artist": "4 Non Blondes",
+      "sourceUrl": "https://www.tab4u.com/tabs/songs/5125_4_Non_Blondes_-_Whats_Up.html",
+      "categories": ["רוק לועזי"]
+    }
+  ]
+}

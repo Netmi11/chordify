@@ -2,12 +2,13 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { initTRPC } from "@trpc/server";
 import { nodeHTTPRequestHandler } from "@trpc/server/adapters/node-http";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { bigint, index, integer, pgTable, serial, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 import postgres from "postgres";
 import superjson from "superjson";
 import { z } from "zod";
+import { inferSongCategories, SONG_CATEGORIES, type SongCategory } from "../shared/songCategories";
 
 const chordshiftLibraries = pgTable("chordshift_libraries", {
   id: varchar("id", { length: 64 }).primaryKey(),
@@ -26,6 +27,7 @@ const chordshiftSongs = pgTable("chordshift_songs", {
   sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
   note: text("note").notNull(),
   addedAt: bigint("addedAt", { mode: "number" }).notNull(),
+  categories: text("categories").array().default(sql`ARRAY[]::text[]`).notNull(),
   syncRevision: bigint("syncRevision", { mode: "number" }).default(0).notNull(),
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
@@ -77,6 +79,7 @@ type SyncedSong = {
   sourceUrl: string;
   note: string;
   addedAt: number;
+  categories?: SongCategory[];
   lines: SyncedSongLine[];
 };
 
@@ -148,6 +151,7 @@ async function readSongs(libraryId: string): Promise<SyncedSong[]> {
     sourceUrl: song.sourceUrl,
     note: song.note,
     addedAt: Number(song.addedAt),
+    categories: inferSongCategories(song.title, song.artist, song.categories),
     lines: linesBySong.get(song.id) ?? [],
   }));
 }
@@ -197,8 +201,9 @@ async function syncLibraryOperations(libraryId: string, secret: string, operatio
 
         revision += 1;
         const now = new Date();
-        const inserted = await tx.insert(chordshiftSongs).values({ libraryId, clientSongId: operation.song.id, title: operation.song.title, artist: operation.song.artist, sourceUrl: operation.sourceUrl, note: operation.song.note, addedAt: operation.song.addedAt, syncRevision: revision, updatedAt: now })
-          .onConflictDoUpdate({ target: [chordshiftSongs.libraryId, chordshiftSongs.sourceUrl], set: { clientSongId: operation.song.id, title: operation.song.title, artist: operation.song.artist, note: operation.song.note, addedAt: operation.song.addedAt, syncRevision: revision, updatedAt: now } })
+        const categories = inferSongCategories(operation.song.title, operation.song.artist, operation.song.categories);
+        const inserted = await tx.insert(chordshiftSongs).values({ libraryId, clientSongId: operation.song.id, title: operation.song.title, artist: operation.song.artist, sourceUrl: operation.sourceUrl, note: operation.song.note, addedAt: operation.song.addedAt, categories, syncRevision: revision, updatedAt: now })
+          .onConflictDoUpdate({ target: [chordshiftSongs.libraryId, chordshiftSongs.sourceUrl], set: { clientSongId: operation.song.id, title: operation.song.title, artist: operation.song.artist, note: operation.song.note, addedAt: operation.song.addedAt, categories, syncRevision: revision, updatedAt: now } })
           .returning({ id: chordshiftSongs.id });
         const songId = inserted[0]!.id;
         await tx.delete(chordshiftSongLines).where(eq(chordshiftSongLines.songId, songId));
@@ -315,6 +320,7 @@ const t = initTRPC.create({ transformer: superjson });
 const libraryKeySchema = z.object({ libraryId: z.string().uuid(), secret: z.string().min(32).max(256) });
 const syncedSongSchema = z.object({
   id: z.string().min(1).max(120), title: z.string().min(1).max(2000), artist: z.string().min(1).max(512), sourceUrl: z.string().url().max(2048), note: z.string().max(10000), addedAt: z.number().int().nonnegative(),
+  categories: z.array(z.enum(SONG_CATEGORIES)).max(10).optional(),
   lines: z.array(z.object({ label: z.string().max(2000).optional(), chord: z.string().max(10000), lyric: z.string().max(10000), tab: z.string().max(10000).optional() })).max(3000),
 });
 const syncOperationBaseSchema = z.object({ operationId: z.string().min(1).max(64), deviceId: z.string().min(1).max(64), baseRevision: z.number().int().nonnegative(), sourceUrl: z.string().url().max(2048) });

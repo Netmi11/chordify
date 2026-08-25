@@ -801,8 +801,13 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
 }
 .library-sort span { color: var(--ink-soft); }
 .library-sort select, .library-sort option { color: var(--ink); background: var(--surface); }
+.library-filter-group { display: grid; gap: 7px; }
+.library-filter-label { color: var(--ink-faint); font-size: 10px; font-weight: 700; }
+.category-filters,
 .artist-filters { gap: 7px; flex-wrap: nowrap; overflow-x: auto; padding: 1px 0 3px; scrollbar-width: none; }
+.category-filters::-webkit-scrollbar,
 .artist-filters::-webkit-scrollbar { display: none; }
+.category-filter,
 .artist-filter {
   min-height: 34px;
   padding: 0 12px;
@@ -813,7 +818,10 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
   font-size: 11px;
   white-space: nowrap;
 }
+.category-filter.active, .category-filter:hover,
 .artist-filter.active, .artist-filter:hover { border-color: var(--ink); background: var(--ink); color: #fff; }
+:root:not(.dark) .category-filter.active,
+:root:not(.dark) .category-filter:hover,
 :root:not(.dark) .artist-filter.active,
 :root:not(.dark) .artist-filter:hover { color: #fff; }
 .library-backup-note { color: var(--ink-soft); font-size: 11px; }
@@ -942,6 +950,8 @@ html, body { background: var(--neo-bg); color: var(--neo-ink); }
 /* Explicit contrast guards for controls with dark fills. */
 :root:not(.dark) .brand-mark,
 :root:not(.dark) .load-button,
+:root:not(.dark) .category-filter.active,
+:root:not(.dark) .category-filter:hover,
 :root:not(.dark) .artist-filter.active,
 :root:not(.dark) .artist-filter:hover { color: #fff; }
 

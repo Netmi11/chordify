@@ -1,3 +1,5 @@
+import { inferSongCategories, normalizeSongCategories, type SongCategory } from "@shared/songCategories";
+
 export type SongLine = {
   label?: string;
   chord: string;
@@ -13,6 +15,7 @@ export type SavedSong = {
   lines: SongLine[];
   addedAt: number;
   note: string;
+  categories?: SongCategory[];
 };
 
 export const SONG_LIBRARY_STORAGE_KEY = "chordshift-song-library-v1";
@@ -67,7 +70,13 @@ export function normalizeSongMetadata(rawTitle: string, rawArtist: string): { ti
 }
 
 function normalizeSavedSong(song: SavedSong): SavedSong {
-  return { ...song, ...normalizeSongMetadata(song.title, song.artist), lines: song.lines.map((line) => ({ ...line })) };
+  const metadata = normalizeSongMetadata(song.title, song.artist);
+  return {
+    ...song,
+    ...metadata,
+    categories: inferSongCategories(metadata.title, metadata.artist, normalizeSongCategories(song.categories)),
+    lines: song.lines.map((line) => ({ ...line })),
+  };
 }
 
 export function parseSongLibrary(raw: string | null): SavedSong[] {
@@ -90,12 +99,14 @@ export function sortSongsForLibrary(songs: SavedSong[], sortBy: LibrarySort): Sa
 }
 
 export function makeSavedSong(input: Omit<SavedSong, "id" | "addedAt" | "note"> & { id?: string; addedAt?: number; note?: string }): SavedSong {
+  const metadata = normalizeSongMetadata(input.title, input.artist);
   return {
     ...input,
-    ...normalizeSongMetadata(input.title, input.artist),
+    ...metadata,
     id: input.id ?? `song-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     addedAt: input.addedAt ?? Date.now(),
     note: input.note ?? "",
+    categories: inferSongCategories(metadata.title, metadata.artist, input.categories),
     lines: input.lines.map((line) => ({ ...line })),
   };
 }
@@ -153,6 +164,7 @@ export type SongImportPayload = {
     title: string;
     artist: string;
     sourceUrl: string;
+    categories?: SongCategory[];
     lines: SongLine[];
   };
 };
@@ -169,7 +181,7 @@ function parseImportedSong(value: unknown): SongImportPayload["song"] | null {
   const tab4uHost = url.hostname === "tab4u.com" || url.hostname === "www.tab4u.com" || url.hostname === "m.tab4u.com" || url.hostname === "en.tab4u.com";
   if (!tab4uHost || !url.pathname.startsWith("/tabs/songs/") || typeof song.title !== "string" || typeof song.artist !== "string" || !Array.isArray(song.lines) || !song.lines.every(isSongLine)) return null;
   const metadata = normalizeSongMetadata(song.title, song.artist);
-  return { ...metadata, sourceUrl: url.toString(), lines: song.lines.map((line) => ({ ...line })) };
+  return { ...metadata, sourceUrl: url.toString(), categories: inferSongCategories(metadata.title, metadata.artist, song.categories), lines: song.lines.map((line) => ({ ...line })) };
 }
 
 export function parseSongImport(raw: string): SongImportPayload | null {

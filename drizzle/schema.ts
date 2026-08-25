@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { bigint, index, integer, pgEnum, pgTable, serial, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 
 export const userRole = pgEnum("user_role", ["user", "admin"]);
@@ -39,6 +40,7 @@ export const chordshiftSongs = pgTable("chordshift_songs", {
   sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
   note: text("note").notNull(),
   addedAt: bigint("addedAt", { mode: "number" }).notNull(),
+  categories: text("categories").array().default(sql`ARRAY[]::text[]`).notNull(),
   syncRevision: bigint("syncRevision", { mode: "number" }).default(0).notNull(),
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [

@@ -5,6 +5,7 @@ import { publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { fetchTab4uSong } from "./tab4u";
 import { loadImportedLibraryCatalog, loadLibrarySnapshot, syncLibraryOperations } from "./librarySync";
+import { SONG_CATEGORIES } from "../shared/songCategories";
 
 const libraryKeySchema = z.object({
   libraryId: z.string().uuid(),
@@ -18,6 +19,7 @@ const syncedSongSchema = z.object({
   sourceUrl: z.string().url().max(2048),
   note: z.string().max(10000),
   addedAt: z.number().int().nonnegative(),
+  categories: z.array(z.enum(SONG_CATEGORIES)).max(10).optional(),
   lines: z.array(z.object({
     label: z.string().max(2000).optional(),
     chord: z.string().max(10000),
