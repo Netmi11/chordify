@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, BookmarkPlus, CloudDownload, Download, ExternalLink, Eye, EyeOff, KeyRound, LibraryBig, Loader2, MoreHorizontal, Pencil, Play, Plus, RotateCcw, Sparkles, X } from "lucide-react";
 import { ChordLine } from "@/components/ChordLine";
 import { LibraryView } from "@/components/LibraryView";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { buildSongRenderBlocks, combineSongLines, getStartingKey, replaceChordToken, transposeChord, transposeTab } from "@/lib/chordEngine";
 import { formatCloudRecoveryCode, getOrCreateCloudLibraryKey, parseCloudRecoveryCode, setCloudLibraryKey, type CloudLibraryKey } from "@/lib/libraryCloud";
+import { adoptLibrarySyncSnapshot, applyLibrarySyncSnapshot, filterLocallyDeletedSongs, initializeLibrarySyncState, queueSongDelete, queueSongUpsert, readLibrarySyncState } from "@/lib/librarySyncState";
 import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, type SavedSong, type SongLine, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
 import { mergeLibraryForSync } from "@/lib/syncPolicy";
 import { trpc } from "@/lib/trpc";
@@ -45,14 +46,15 @@ export default function HomeV2() {
   const [editingChords, setEditingChords] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
   const [cloudKey, setCloudKey] = useState<CloudLibraryKey | null>(null);
-  const [cloudReady, setCloudReady] = useState(false);
-  const [cloudHydrated, setCloudHydrated] = useState(false);
+  const [localReady, setLocalReady] = useState(false);
+  const [syncTick, setSyncTick] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [cloudStatus, setCloudStatus] = useState("הספרייה נשמרת בטלפון");
   const [, setHistoryVersion] = useState(0);
+  const syncInFlight = useRef(false);
 
   const fetchSong = trpc.tab4u.fetchSong.useQuery({ url }, { enabled: false, retry: false });
-  const cloudPush = trpc.librarySync.push.useMutation();
+  const cloudSync = trpc.librarySync.sync.useMutation();
   const trpcUtils = trpc.useUtils();
 
   useAutoScroll(playing);
@@ -70,7 +72,10 @@ export default function HomeV2() {
 
   useEffect(() => {
     try {
+      const key = getOrCreateCloudLibraryKey(window.localStorage);
+      setCloudKey(key);
       const currentLibrary = readSongLibrary(window.localStorage);
+      initializeLibrarySyncState(window.localStorage, key.libraryId, currentLibrary);
       const batch = parseSongBatchImport(window.name);
       if (batch) {
         window.name = "";
@@ -82,6 +87,7 @@ export default function HomeV2() {
           ...importedSongs,
           ...currentLibrary.filter((song) => !importedSongs.some((imported) => imported.sourceUrl === song.sourceUrl)),
         ]);
+        importedSongs.forEach((song) => queueSongUpsert(window.localStorage, key.libraryId, song));
         setLibrary(next);
         setSavedSong(importedSongs[0] ?? null);
         setUrl(importedSongs[0]?.sourceUrl ?? "");
@@ -90,18 +96,23 @@ export default function HomeV2() {
         setScreen("player");
         setSaveNotice(true);
         window.setTimeout(() => setSaveNotice(false), 2200);
+        setLocalReady(true);
+        setSyncTick((value) => value + 1);
         return;
       }
 
       const imported = parseSongImport(window.name);
       if (!imported) {
         setLibrary(currentLibrary);
+        setLocalReady(true);
+        setSyncTick((value) => value + 1);
         return;
       }
       window.name = "";
       const existing = currentLibrary.find((song) => song.sourceUrl === imported.song.sourceUrl);
       const song = makeSavedSong({ id: existing?.id, addedAt: existing?.addedAt, note: existing?.note, ...imported.song });
       setLibrary(upsertSong(window.localStorage, song));
+      queueSongUpsert(window.localStorage, key.libraryId, song);
       setSavedSong(song);
       setUrl(song.sourceUrl);
       window.history.pushState({ chordshiftScreen: "player" }, "", "#song");
@@ -109,45 +120,49 @@ export default function HomeV2() {
       setScreen("player");
       setSaveNotice(true);
       window.setTimeout(() => setSaveNotice(false), 2200);
+      setLocalReady(true);
+      setSyncTick((value) => value + 1);
     } catch {
       setLibrary([]);
+      setLocalReady(true);
     }
   }, []);
 
   useEffect(() => {
-    setCloudKey(getOrCreateCloudLibraryKey(window.localStorage));
-    setCloudReady(true);
+    const retrySync = () => setSyncTick((value) => value + 1);
+    window.addEventListener("online", retrySync);
+    return () => window.removeEventListener("online", retrySync);
   }, []);
 
   useEffect(() => {
-    if (!cloudReady || !cloudKey) return;
-    void trpcUtils.librarySync.pull.fetch(cloudKey)
-      .then((cloudSongs) => {
-        if (!cloudSongs.length) return;
-        const cloudLibrary = cloudSongs.map((song) => makeSavedSong(song));
-        const result = mergeLibraryForSync(library, cloudLibrary);
-        if (!result.added && !result.updated) return;
-        const restored = writeSongLibrary(window.localStorage, result.songs);
-        setLibrary(restored);
-        setCloudStatus(`סונכרנו ${result.added + result.updated} שירים מהענן`);
-      })
-      .catch(() => undefined)
-      .finally(() => setCloudHydrated(true));
-  }, [cloudKey, cloudReady]);
-
-  useEffect(() => {
-    if (!cloudReady || !cloudHydrated || !cloudKey || !navigator.onLine) return;
+    if (!localReady || !cloudKey || !navigator.onLine || syncInFlight.current) return;
     const timer = window.setTimeout(() => {
-      cloudPush.mutate(
-        { libraryId: cloudKey.libraryId, secret: cloudKey.secret, songs: library },
+      const state = readLibrarySyncState(window.localStorage, cloudKey.libraryId)
+        ?? initializeLibrarySyncState(window.localStorage, cloudKey.libraryId, readSongLibrary(window.localStorage));
+      syncInFlight.current = true;
+      setIsSyncing(true);
+      cloudSync.mutate(
+        { libraryId: cloudKey.libraryId, secret: cloudKey.secret, operations: state.pending.slice(0, 25) },
         {
-          onSuccess: () => setCloudStatus("מגובה בענן הפרטי שלך"),
+          onSuccess: (snapshot) => {
+            const result = applyLibrarySyncSnapshot(window.localStorage, cloudKey.libraryId, snapshot);
+            const next = writeSongLibrary(window.localStorage, result.songs);
+            setLibrary(next);
+            setSavedSong((current) => current && next.some((song) => song.id === current.id) ? current : null);
+            setCloudStatus(snapshot.rejectedOperationIds.length ? "מחיקה ממכשיר אחר נשמרה; שינוי ישן לא הוחזר" : "מסונכרן עם הענן הפרטי שלך");
+          },
           onError: () => setCloudStatus("נשמר בטלפון — הסנכרון ינסה שוב כשיש חיבור"),
+          onSettled: () => {
+            syncInFlight.current = false;
+            setIsSyncing(false);
+            const remaining = readLibrarySyncState(window.localStorage, cloudKey.libraryId)?.pending.length ?? 0;
+            if (remaining) setSyncTick((value) => value + 1);
+          },
         },
       );
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [cloudKey, cloudReady, cloudHydrated, library]);
+  }, [cloudKey, localReady, syncTick]);
 
   useEffect(() => {
     const onInstallAvailable = (event: Event) => {
@@ -196,7 +211,9 @@ export default function HomeV2() {
     if (!window.confirm(`לשחזר ${imported.length} שירים מהגיבוי? השירים הקיימים יישמרו.`)) return;
     const result = mergeLibraryForSync(library, imported);
     const next = writeSongLibrary(window.localStorage, result.songs);
+    if (cloudKey) imported.forEach((song) => queueSongUpsert(window.localStorage, cloudKey.libraryId, song));
     setLibrary(next);
+    setSyncTick((value) => value + 1);
     setSavedSong(null);
     setScreen("library");
   };
@@ -211,9 +228,18 @@ export default function HomeV2() {
     setIsSyncing(true);
     try {
       const cloudSongs = await trpcUtils.librarySync.catalog.fetch();
-      const result = mergeLibraryForSync(library, cloudSongs.map((song) => makeSavedSong(song)));
+      const syncState = cloudKey ? readLibrarySyncState(window.localStorage, cloudKey.libraryId) : null;
+      const catalog = filterLocallyDeletedSongs(cloudSongs.map((song) => makeSavedSong(song)), syncState);
+      const localByUrl = new Map(library.map((song) => [song.sourceUrl, song]));
+      const changedCatalogSongs = catalog.filter((song) => {
+        const local = localByUrl.get(song.sourceUrl);
+        return !local || local.title !== song.title || local.artist !== song.artist || JSON.stringify(local.lines) !== JSON.stringify(song.lines);
+      });
+      const result = mergeLibraryForSync(library, catalog);
       const next = writeSongLibrary(window.localStorage, result.songs);
+      if (cloudKey) changedCatalogSongs.forEach((song) => queueSongUpsert(window.localStorage, cloudKey.libraryId, song));
       setLibrary(next);
+      setSyncTick((value) => value + 1);
       const changed = result.added + result.updated;
       setCloudStatus(changed ? `סונכרנו ${changed} שירים מהספרייה בענן` : "הספרייה כבר מעודכנת");
       window.alert(changed ? `נוספו ${result.added} ועודכנו ${result.updated} שירים. יש לך עכשיו ${next.length} שירים.` : `הספרייה כבר מעודכנת עם ${next.length} שירים.`);
@@ -234,16 +260,17 @@ export default function HomeV2() {
       return;
     }
     try {
-      const cloudSongs = await trpcUtils.librarySync.pull.fetch(key);
-      if (!cloudSongs.length) {
-        window.alert("לא נמצאו שירים בספרייה הזו בענן.");
-        return;
-      }
-      const result = mergeLibraryForSync(library, cloudSongs.map((song) => makeSavedSong(song)));
+      const snapshot = await trpcUtils.librarySync.pull.fetch(key);
+      const deletedInCloud = new Set(snapshot.deletedSourceUrls);
+      const localToPreserve = library.filter((song) => !deletedInCloud.has(song.sourceUrl));
+      const result = mergeLibraryForSync(localToPreserve, snapshot.songs.map((song) => makeSavedSong(song)));
       const next = writeSongLibrary(window.localStorage, result.songs);
       setCloudLibraryKey(window.localStorage, key);
+      adoptLibrarySyncSnapshot(window.localStorage, key.libraryId, snapshot);
+      localToPreserve.forEach((song) => queueSongUpsert(window.localStorage, key.libraryId, song));
       setCloudKey(key);
       setLibrary(next);
+      setSyncTick((value) => value + 1);
       setCloudStatus(`שוחזרו ${next.length} שירים מהענן`);
       window.alert(`שוחזרו ${next.length} שירים מהענן בלי למחוק שירים מקומיים.`);
     } catch {
@@ -271,7 +298,9 @@ export default function HomeV2() {
     });
     try {
       const next = upsertSong(window.localStorage, song);
+      if (cloudKey) queueSongUpsert(window.localStorage, cloudKey.libraryId, song);
       setLibrary(next);
+      setSyncTick((value) => value + 1);
       setSavedSong(song);
       setSaveNotice(true);
       window.setTimeout(() => setSaveNotice(false), 2200);
@@ -302,10 +331,14 @@ export default function HomeV2() {
   };
 
   const deleteSavedSong = (id: string) => {
-    if (!window.confirm("למחוק את השיר מהספרייה בטלפון הזה?")) return;
+    if (!window.confirm("למחוק את השיר מהספרייה? המחיקה תסתנכרן לכל המכשירים כשיהיה חיבור.")) return;
     try {
+      const deletedSong = library.find((song) => song.id === id);
       const next = removeSong(window.localStorage, id);
+      if (cloudKey && deletedSong) queueSongDelete(window.localStorage, cloudKey.libraryId, deletedSong);
       setLibrary(next);
+      setCloudStatus(navigator.onLine ? "המחיקה ממתינה לסנכרון" : "נמחק בטלפון — יסונכרן כשיהיה חיבור");
+      setSyncTick((value) => value + 1);
       if (savedSong?.id === id) setSavedSong(null);
     } catch {
       window.alert("לא ניתן למחוק כרגע.");
@@ -325,8 +358,10 @@ export default function HomeV2() {
     const nextSong = { ...savedSong, lines: nextLines };
     try {
       const nextLibrary = upsertSong(window.localStorage, nextSong);
+      if (cloudKey) queueSongUpsert(window.localStorage, cloudKey.libraryId, nextSong);
       setLibrary(nextLibrary);
       setSavedSong(nextSong);
+      setSyncTick((value) => value + 1);
     } catch {
       window.alert("לא ניתן לשמור את תיקון האקורד כרגע.");
     }
