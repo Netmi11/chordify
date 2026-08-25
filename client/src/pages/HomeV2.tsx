@@ -233,7 +233,7 @@ export default function HomeV2() {
       const localByUrl = new Map(library.map((song) => [song.sourceUrl, song]));
       const changedCatalogSongs = catalog.filter((song) => {
         const local = localByUrl.get(song.sourceUrl);
-        return !local || local.title !== song.title || local.artist !== song.artist || JSON.stringify(local.lines) !== JSON.stringify(song.lines);
+        return !local || local.title !== song.title || local.artist !== song.artist || JSON.stringify(local.categories ?? []) !== JSON.stringify(song.categories ?? []) || JSON.stringify(local.lines) !== JSON.stringify(song.lines);
       });
       const result = mergeLibraryForSync(library, catalog);
       const next = writeSongLibrary(window.localStorage, result.songs);
@@ -294,6 +294,7 @@ export default function HomeV2() {
       title: activeTitle,
       artist: activeArtist,
       sourceUrl: savedSong?.sourceUrl ?? url,
+      categories: existing?.categories,
       lines: activeSong,
     });
     try {

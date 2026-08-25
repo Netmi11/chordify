@@ -1,6 +1,7 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { canApplyUpsert, type LibrarySyncOperation, type LibrarySyncSnapshot, type SyncedSong, type SyncedSongLine } from "../shared/librarySync";
+import { inferSongCategories } from "../shared/songCategories";
 import { chordshiftLibraries, chordshiftSongLines, chordshiftSongs, chordshiftSongTombstones, chordshiftSyncOperations } from "../drizzle/schema";
 import { getDb } from "./db";
 
@@ -46,6 +47,7 @@ export async function saveLibrarySnapshot(libraryId: string, secret: string, son
       sourceUrl: song.sourceUrl,
       note: song.note,
       addedAt: song.addedAt,
+      categories: inferSongCategories(song.title, song.artist, song.categories),
     })));
     const inserted = await tx.select({ id: chordshiftSongs.id, clientSongId: chordshiftSongs.clientSongId })
       .from(chordshiftSongs).where(eq(chordshiftSongs.libraryId, libraryId));
@@ -92,6 +94,7 @@ export async function loadLibrarySnapshot(libraryId: string, secret: string): Pr
       sourceUrl: song.sourceUrl,
       note: song.note,
       addedAt: Number(song.addedAt),
+      categories: inferSongCategories(song.title, song.artist, song.categories),
       lines: linesBySong.get(song.id) ?? [],
     })),
     deletedSourceUrls: tombstones.map((tombstone) => tombstone.sourceUrl),
@@ -164,6 +167,7 @@ export async function syncLibraryOperations(
           sourceUrl: operation.song.sourceUrl,
           note: operation.song.note,
           addedAt: operation.song.addedAt,
+          categories: inferSongCategories(operation.song.title, operation.song.artist, operation.song.categories),
           syncRevision: revision,
           updatedAt: now,
         }).onConflictDoUpdate({
@@ -174,6 +178,7 @@ export async function syncLibraryOperations(
             artist: operation.song.artist,
             note: operation.song.note,
             addedAt: operation.song.addedAt,
+            categories: inferSongCategories(operation.song.title, operation.song.artist, operation.song.categories),
             syncRevision: revision,
             updatedAt: now,
           },
@@ -253,6 +258,7 @@ export async function loadImportedLibraryCatalog(): Promise<SyncedSong[]> {
     sourceUrl: song.sourceUrl,
     note: song.note,
     addedAt: Number(song.addedAt),
+    categories: inferSongCategories(song.title, song.artist, song.categories),
     lines: linesBySong.get(song.id) ?? [],
   }));
 }

@@ -1,3 +1,5 @@
+import type { SongCategory } from "./songCategories";
+
 export type SyncedSongLine = { label?: string; chord: string; lyric: string; tab?: string };
 
 export type SyncedSong = {
@@ -7,6 +9,7 @@ export type SyncedSong = {
   sourceUrl: string;
   note: string;
   addedAt: number;
+  categories?: SongCategory[];
   lines: SyncedSongLine[];
 };
 

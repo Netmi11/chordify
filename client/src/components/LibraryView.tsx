@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ArrowDownUp, ChevronDown, ChevronLeft, LibraryBig, Music2, Search, Trash2, X } from "lucide-react";
 import { filterSongs, groupSongsByArtist } from "@/lib/librarySearch";
 import { sortSongsForLibrary, type LibrarySort, type SavedSong } from "@/lib/songLibraryV2";
+import { SONG_CATEGORIES, type SongCategory } from "@shared/songCategories";
 
 function formatAddedAt(timestamp: number) {
   return new Intl.DateTimeFormat("he-IL", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(timestamp));
@@ -19,6 +20,7 @@ export function LibraryView(props: LibraryViewProps) {
   const { songs, onOpen, onDelete, onReturn, showReturn } = props;
   const [query, setQuery] = useState("");
   const [artist, setArtist] = useState("הכול");
+  const [category, setCategory] = useState<"הכול" | SongCategory>("הכול");
   const [sortBy, setSortBy] = useState<LibrarySort>("addedAt");
   const [expandedArtist, setExpandedArtist] = useState<string | null>(null);
 
@@ -26,19 +28,22 @@ export function LibraryView(props: LibraryViewProps) {
     () => ["הכול", ...Array.from(new Set(songs.map((song) => song.artist).filter(Boolean))).sort((a, b) => a.localeCompare(b, "he"))],
     [songs],
   );
+  const categories = SONG_CATEGORIES;
 
   const filtered = useMemo(() => {
     const byArtist = artist === "הכול" ? songs : songs.filter((song) => song.artist === artist);
-    return sortSongsForLibrary(filterSongs(byArtist, query), sortBy);
-  }, [artist, query, sortBy, songs]);
+    const byCategory = category === "הכול" ? byArtist : byArtist.filter((song) => song.categories?.includes(category));
+    return sortSongsForLibrary(filterSongs(byCategory, query), sortBy);
+  }, [artist, category, query, sortBy, songs]);
 
   const groupedArtists = useMemo(() => groupSongsByArtist(filtered), [filtered]);
   const artistInitials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
-  const isFiltered = Boolean(query.trim()) || artist !== "הכול";
+  const isFiltered = Boolean(query.trim()) || artist !== "הכול" || category !== "הכול";
 
   const clearFilters = () => {
     setQuery("");
     setArtist("הכול");
+    setCategory("הכול");
     setExpandedArtist(null);
   };
 
@@ -62,7 +67,17 @@ export function LibraryView(props: LibraryViewProps) {
           </label>
           <label className="library-sort"><ArrowDownUp size={16} /><span>מיון</span><select value={sortBy} onChange={(event) => setSortBy(event.target.value as LibrarySort)} aria-label="מיין את השירים"><option value="addedAt">תאריך הוספה</option><option value="artist">שם האמן</option><option value="title">שם השיר</option></select></label>
         </div>
-        <div className="artist-filters">{artists.map((name) => <button key={name} className={artist === name ? "artist-filter active" : "artist-filter"} onClick={() => setArtist(name)} aria-pressed={artist === name}>{name}</button>)}</div>
+        <div className="library-filter-group">
+          <span className="library-filter-label">קטגוריות</span>
+          <div className="category-filters">
+            <button className={category === "הכול" ? "category-filter active" : "category-filter"} onClick={() => setCategory("הכול")} aria-pressed={category === "הכול"}>הכול</button>
+            {categories.map((name) => <button key={name} className={category === name ? "category-filter active" : "category-filter"} onClick={() => setCategory(name)} aria-pressed={category === name}>{name}</button>)}
+          </div>
+        </div>
+        <div className="library-filter-group">
+          <span className="library-filter-label">אמנים</span>
+          <div className="artist-filters">{artists.map((name) => <button key={name} className={artist === name ? "artist-filter active" : "artist-filter"} onClick={() => setArtist(name)} aria-pressed={artist === name}>{name}</button>)}</div>
+        </div>
         {isFiltered && <div className="library-backup-note" aria-live="polite">נמצאו {filtered.length} מתוך {songs.length} שירים · <button type="button" onClick={clearFilters}>נקה סינון</button></div>}
       </section>
 
