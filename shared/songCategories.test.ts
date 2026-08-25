@@ -22,4 +22,8 @@ describe("song categories", () => {
   it("drops unknown category values and keeps explicit categories unique", () => {
     expect(normalizeSongCategories(["רוק ישראלי", "לא קיים", "רוק ישראלי"])).toEqual(["רוק ישראלי"]);
   });
+
+  it("keeps a manual category selection instead of re-adding inferred genres", () => {
+    expect(inferSongCategories("גג", "ג׳ירפות", ["שירים שקטים"])).toEqual(["שירים שקטים"]);
+  });
 });

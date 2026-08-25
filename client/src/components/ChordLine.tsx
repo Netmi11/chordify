@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { transposeChord } from "@/lib/chordEngine";
 
 type ChordLineProps = {
@@ -11,9 +11,16 @@ type ChordLineProps = {
 
 export function ChordLine({ chord, shift, flats, className = "", onEditChord }: ChordLineProps) {
   let chordIndex = 0;
+  const lineRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    // An RTL scroller uses zero as its visible right edge in Chromium. Reset
+    // after every modulation so a wider replacement chord cannot remain hidden.
+    if (lineRef.current) lineRef.current.scrollLeft = 0;
+  }, [chord, flats, shift]);
 
   return (
-    <div className={`chord-line ${className}`.trim()} dir="rtl" aria-label={`אקורדים אחרי שינוי של ${shift} חצאי טונים`}>
+    <div ref={lineRef} className={`chord-line ${className}`.trim()} dir="rtl" aria-label={`אקורדים אחרי שינוי של ${shift} חצאי טונים`}>
       <span className="chord-line-content" dir="ltr">
         {chord.split(/(\s+)/).map((part, index) => {
           if (!/^[A-G](?:#|b)?/.test(part)) return <span key={`${part}-${index}`}>{part}</span>;

@@ -2,13 +2,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, BookmarkPlus, CloudDownload, Download, ExternalLink, Eye, EyeOff, KeyRound, LibraryBig, Loader2, MoreHorizontal, Pencil, Play, Plus, RotateCcw, Sparkles, X } from "lucide-react";
 import { ChordLine } from "@/components/ChordLine";
 import { LibraryView } from "@/components/LibraryView";
+import { SongCategoryEditor } from "@/components/SongCategoryEditor";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
-import { buildSongRenderBlocks, combineSongLines, getStartingKey, replaceChordToken, transposeChord, transposeTab } from "@/lib/chordEngine";
+import { buildSongRenderBlocks, combineSongLines, getStartingKey, normalizeTransposeSteps, replaceChordToken, transposeChord, transposeTab } from "@/lib/chordEngine";
 import { formatCloudRecoveryCode, getOrCreateCloudLibraryKey, parseCloudRecoveryCode, setCloudLibraryKey, type CloudLibraryKey } from "@/lib/libraryCloud";
 import { adoptLibrarySyncSnapshot, applyLibrarySyncSnapshot, filterLocallyDeletedSongs, initializeLibrarySyncState, queueSongDelete, queueSongUpsert, readLibrarySyncState } from "@/lib/librarySyncState";
-import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, type SavedSong, type SongLine, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
+import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryBackup, readSongLibrary, removeSong, serializeSongLibrary, type SavedSong, type SongLine, updateSongCategories, upsertSong, writeSongLibrary } from "@/lib/songLibraryV2";
 import { mergeLibraryForSync } from "@/lib/syncPolicy";
 import { trpc } from "@/lib/trpc";
+import type { SongCategory } from "@shared/songCategories";
 
 const demoSong: SongLine[] = [
   { label: "פתיחה", chord: "Am   Gm   Am   Fmaj7", lyric: "" },
@@ -193,6 +195,10 @@ export default function HomeV2() {
     setFlats(false);
   };
 
+  const changeTranspose = (delta: number) => {
+    setShift((value) => normalizeTransposeSteps(value + delta));
+  };
+
   const exportLibraryBackup = () => {
     const blob = new Blob([serializeSongLibrary(library)], { type: "application/json;charset=utf-8" });
     const link = document.createElement("a");
@@ -231,13 +237,15 @@ export default function HomeV2() {
       const syncState = cloudKey ? readLibrarySyncState(window.localStorage, cloudKey.libraryId) : null;
       const catalog = filterLocallyDeletedSongs(cloudSongs.map((song) => makeSavedSong(song)), syncState);
       const localByUrl = new Map(library.map((song) => [song.sourceUrl, song]));
-      const changedCatalogSongs = catalog.filter((song) => {
+      const changedCatalogUrls = new Set(catalog.filter((song) => {
         const local = localByUrl.get(song.sourceUrl);
-        return !local || local.title !== song.title || local.artist !== song.artist || JSON.stringify(local.categories ?? []) !== JSON.stringify(song.categories ?? []) || JSON.stringify(local.lines) !== JSON.stringify(song.lines);
-      });
+        // Category differences are intentionally ignored: a user's manual
+        // selection must not be replaced by the curated catalog defaults.
+        return !local || local.title !== song.title || local.artist !== song.artist || JSON.stringify(local.lines) !== JSON.stringify(song.lines);
+      }).map((song) => song.sourceUrl));
       const result = mergeLibraryForSync(library, catalog);
       const next = writeSongLibrary(window.localStorage, result.songs);
-      if (cloudKey) changedCatalogSongs.forEach((song) => queueSongUpsert(window.localStorage, cloudKey.libraryId, song));
+      if (cloudKey) next.filter((song) => changedCatalogUrls.has(song.sourceUrl)).forEach((song) => queueSongUpsert(window.localStorage, cloudKey.libraryId, song));
       setLibrary(next);
       setSyncTick((value) => value + 1);
       const changed = result.added + result.updated;
@@ -368,6 +376,22 @@ export default function HomeV2() {
     }
   };
 
+  const saveSongCategories = (categories: SongCategory[]) => {
+    if (!savedSong) return;
+    try {
+      const nextLibrary = updateSongCategories(window.localStorage, savedSong.id, categories);
+      const nextSong = nextLibrary.find((song) => song.id === savedSong.id);
+      if (!nextSong) return;
+      if (cloudKey) queueSongUpsert(window.localStorage, cloudKey.libraryId, nextSong);
+      setLibrary(nextLibrary);
+      setSavedSong(nextSong);
+      setCloudStatus(navigator.onLine ? "שינוי הקטגוריות ממתין לסנכרון" : "הקטגוריות נשמרו בטלפון — יסונכרנו כשיהיה חיבור");
+      setSyncTick((value) => value + 1);
+    } catch {
+      window.alert("לא ניתן לשמור את הקטגוריות כרגע.");
+    }
+  };
+
   const loadFromUrl = () => {
     setSavedSong(null);
     resetTranspose();
@@ -424,7 +448,7 @@ export default function HomeV2() {
             </div>
             <div className="shift-panel">
               <div className="panel-heading"><span>שינוי סולם זמני</span><strong>{shift > 0 ? `+${shift}` : shift} <small>חצאי טון</small></strong></div>
-              <div className="shift-controls"><button className="shift-button" onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="key-display"><span>אקורד פתיחה</span><b>{keyLabel}</b></div><button className="shift-button" onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button></div>
+              <div className="shift-controls"><button className="shift-button" onClick={() => changeTranspose(-1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="key-display"><span>אקורד פתיחה</span><b>{keyLabel}</b></div><button className="shift-button" onClick={() => changeTranspose(1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button></div>
               <div className="quick-shifts">{[-3, -2, -1, 0, 1, 2, 3].map((value) => <button key={value} className={shift === value ? "quick active" : "quick"} onClick={() => setShift(value)}>{value > 0 ? `+${value}` : value}</button>)}</div>
               <div className="shortcut-row"><button className={shift === 7 ? "shortcut-button active" : "shortcut-button"} onClick={() => setShift(7)}>+7</button><button className={shift === 0 ? "shortcut-button active" : "shortcut-button"} onClick={resetTranspose}><RotateCcw size={14} /> מקור</button></div>
               <div className="notation-row"><span>כתיבת אקורדים</span><button onClick={() => setFlats((value) => !value)} className="notation-toggle">{flats ? "♭ במולים" : "♯ דיאזים"}</button></div>
@@ -440,6 +464,7 @@ export default function HomeV2() {
                 <div className="reading-guide" aria-hidden="true" />
                 <div className="song-title">{activeTitle}</div>
                 <div className="song-artist">{activeArtist}</div>
+                {savedSong && <SongCategoryEditor categories={savedSong.categories ?? []} onChange={saveSongCategories} />}
                 <div className="rule" />
                 {songBlocks.map((block, index) => block.kind === "tab" ? (
                   showChords ? <section className={`tab-block ${block.label ? "section-row" : ""}`} key={`${block.tabs[0]}-${index}`} dir="ltr">{block.label && <div className="tab-section-label" dir="rtl">{block.label}:</div>}{block.chord && <ChordLine chord={block.chord} shift={shift} flats={flats} className="tab-chord-line" onEditChord={editingChords && block.chordSourceIndex !== null ? (chordIndex) => editChordAt(block.chordSourceIndex!, chordIndex, block.chord) : undefined} />}<div className="tab-sheet"><pre className="saved-tab-line">{transposeTab(block.tabs.join("\n"), shift)}</pre></div></section> : null
@@ -453,7 +478,7 @@ export default function HomeV2() {
         </main>
       )}
 
-      {screen === "player" && <nav className="mobile-dock" aria-label="פקדי נגינה בנייד"><button onClick={() => setShift((value) => value - 1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="mobile-key"><small>פתיחה</small><strong>{keyLabel}</strong></div><button onClick={() => setShift((value) => value + 1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button><button onClick={() => setShift(7)} aria-label="טרנספוזיציה פלוס שבע"><span>+7</span></button><button onClick={resetTranspose} aria-label="חזרה למקור"><RotateCcw size={17} /><span>מקור</span></button><button onClick={() => setPlaying((value) => !value)} className={playing ? "dock-active" : ""} aria-label="גלילה"><Play size={17} fill={playing ? "currentColor" : "none"} /><span>{playing ? "עצור" : "גלול"}</span></button></nav>}
+      {screen === "player" && <nav className="mobile-dock" aria-label="פקדי נגינה בנייד"><button onClick={() => changeTranspose(-1)} aria-label="הורד חצי טון"><ArrowDown size={18} /><span>הורד</span></button><div className="mobile-key"><small>פתיחה</small><strong>{keyLabel}</strong></div><button onClick={() => changeTranspose(1)} aria-label="העלה חצי טון"><ArrowUp size={18} /><span>העלה</span></button><button onClick={() => setShift(7)} aria-label="טרנספוזיציה פלוס שבע"><span>+7</span></button><button onClick={resetTranspose} aria-label="חזרה למקור"><RotateCcw size={17} /><span>מקור</span></button><button onClick={() => setPlaying((value) => !value)} className={playing ? "dock-active" : ""} aria-label="גלילה"><Play size={17} fill={playing ? "currentColor" : "none"} /><span>{playing ? "עצור" : "גלול"}</span></button></nav>}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import {
   buildSongRenderBlocks,
   combineSongLines,
   getStartingKey,
+  normalizeTransposeSteps,
   replaceChordToken,
   transposeChord,
   transposeChordLine,
@@ -17,6 +18,14 @@ describe("chordEngine", () => {
     expect(transposeNote("Db", 1, false)).toBe("D");
     expect(transposeNote("C#", 1, true)).toBe("D");
     expect(transposeNote("B", 1, true)).toBe("C");
+  });
+
+  it("wraps modulation after one octave in both directions", () => {
+    expect(normalizeTransposeSteps(12)).toBe(0);
+    expect(normalizeTransposeSteps(13)).toBe(1);
+    expect(normalizeTransposeSteps(-12)).toBe(0);
+    expect(normalizeTransposeSteps(-13)).toBe(-1);
+    expect(transposeTab("e|--3--|", 25)).toBe(transposeTab("e|--3--|", 1));
   });
 
   it("transposes slash chords even when root and bass use different notation", () => {
@@ -96,11 +105,13 @@ describe("chordEngine", () => {
       "A|------------------24-|",
       "E|--24-----------------|",
     ].join("\n");
-    for (const steps of [-24, -13, -1, 1, 13, 24]) {
+    for (const steps of [-23, -13, -1, 1, 13, 23]) {
       const frets = Array.from(transposeTab(source, steps).matchAll(/\d+/g), (match) => Number(match[0]));
       expect(frets.length).toBeGreaterThan(0);
       expect(Math.max(...frets)).toBeLessThanOrEqual(12);
     }
+    expect(transposeTab(source, 12)).toBe(source);
+    expect(transposeTab(source, -12)).toBe(source);
   });
 
   it("moves notes to adjacent strings when a transposition crosses fretboard boundaries", () => {

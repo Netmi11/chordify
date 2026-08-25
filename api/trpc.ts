@@ -67,9 +67,12 @@ function includesArtist(artist: string, candidates: string[]): boolean {
 
 function inferSongCategories(title: string, artist: string, explicit?: readonly string[]): SongCategory[] {
   const allowed = new Set<string>(SONG_CATEGORIES);
-  const categories = new Set<SongCategory>(
+  const selected = Array.from(new Set(
     (explicit ?? []).filter((category): category is SongCategory => allowed.has(category)),
-  );
+  ));
+  if (selected.length) return SONG_CATEGORIES.filter((category) => selected.includes(category));
+
+  const categories = new Set<SongCategory>();
   const normalizedTitle = normalizeCategoryValue(title);
   const isIsraeli = /[א-ת]/.test(`${title} ${artist}`) || includesArtist(artist, israeliRockArtists);
 

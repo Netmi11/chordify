@@ -39,6 +39,12 @@ function wrapSemitones(value: number): number {
   return ((value % 12) + 12) % 12;
 }
 
+/** Keep the UI and tablature inside a single octave instead of counting forever. */
+export function normalizeTransposeSteps(steps: number): number {
+  const normalized = Math.trunc(steps) % 12;
+  return Object.is(normalized, -0) ? 0 : normalized;
+}
+
 function noteClass(label: string): number | null {
   const normalized = `${label[0]?.toUpperCase() ?? ""}${label.slice(1)}`;
   return NOTE_CLASSES[normalized] ?? null;
@@ -208,7 +214,8 @@ function splitTabSystems(rowIndexes: number[], parts: string[]): number[][] {
  * string. Octave displacement is a last resort only at the instrument's range.
  */
 export function transposeTab(tab: string, steps: number): string {
-  if (!steps) return tab;
+  const normalizedSteps = normalizeTransposeSteps(steps);
+  if (!normalizedSteps) return tab;
 
   const parts = tab.split(/(\r?\n)/);
   for (let index = 0; index < parts.length; index += 2) {
@@ -216,7 +223,7 @@ export function transposeTab(tab: string, steps: number): string {
     const rowIndexes: number[] = [];
     for (let cursor = index; cursor < parts.length && TAB_ROW_PATTERN.test(parts[cursor]); cursor += 2) rowIndexes.push(cursor);
     for (const system of splitTabSystems(rowIndexes, parts)) {
-      const transposed = transposeTabRows(system.map((rowIndex) => parts[rowIndex]), steps);
+      const transposed = transposeTabRows(system.map((rowIndex) => parts[rowIndex]), normalizedSteps);
       system.forEach((rowIndex, row) => { parts[rowIndex] = transposed[row]; });
     }
     index = rowIndexes[rowIndexes.length - 1];

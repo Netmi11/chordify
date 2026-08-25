@@ -154,6 +154,13 @@ export function updateSongNote(storage: Pick<Storage, "getItem" | "setItem">, id
   return writeSongLibrary(storage, next);
 }
 
+export function updateSongCategories(storage: Pick<Storage, "getItem" | "setItem">, id: string, categories: readonly string[]): SavedSong[] {
+  const selected = normalizeSongCategories(categories);
+  if (!selected.length) throw new Error("SONG_CATEGORY_REQUIRED");
+  const next = readSongLibrary(storage).map((song) => (song.id === id ? { ...song, categories: selected } : song));
+  return writeSongLibrary(storage, next);
+}
+
 export function removeSong(storage: Pick<Storage, "getItem" | "setItem">, id: string): SavedSong[] {
   return writeSongLibrary(storage, readSongLibrary(storage).filter((song) => song.id !== id));
 }

@@ -15,13 +15,14 @@ const makeSong = (overrides: Partial<SavedSong> = {}): SavedSong => ({
 
 describe("mergeLibraryForSync", () => {
   it("refreshes cloud content while preserving local identity and notes", () => {
-    const local = makeSong();
+    const local = makeSong({ categories: ["שירים שקטים"] });
     const cloud = makeSong({
       id: "cloud-99",
       title: "New title",
       lines: [{ chord: "D", lyric: "new" }],
       addedAt: 999,
       note: "",
+      categories: ["רוק לועזי"],
     });
 
     const result = mergeLibraryForSync([local], [cloud]);
@@ -32,6 +33,7 @@ describe("mergeLibraryForSync", () => {
       title: "New title",
       addedAt: 100,
       note: "my note",
+      categories: ["שירים שקטים"],
     });
   });
 

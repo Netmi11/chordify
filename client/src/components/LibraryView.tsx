@@ -93,7 +93,7 @@ export function LibraryView(props: LibraryViewProps) {
               </button>
               {isExpanded && <div className="artist-song-grid">{artistSongs.map((song) => <article className="song-card" key={song.id}>
                 <button className="song-card-main" onClick={() => onOpen(song)} aria-label={`פתח את ${song.title}`}>
-                  <div><h3>{song.title}</h3><time>{formatAddedAt(song.addedAt)}</time></div>
+                  <div><h3>{song.title}</h3><div className="song-card-categories">{song.categories?.map((name) => <span key={name}>{name}</span>)}</div><time>{formatAddedAt(song.addedAt)}</time></div>
                   <ChevronLeft size={18} aria-hidden="true" />
                 </button>
                 <button className="delete-song" aria-label={`מחק את ${song.title}`} onClick={() => onDelete(song.id)}><Trash2 size={15} /></button>

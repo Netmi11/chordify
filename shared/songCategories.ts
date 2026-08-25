@@ -58,7 +58,12 @@ export function normalizeSongCategories(categories: readonly string[] | undefine
 
 /** Supplies useful defaults for old songs while preserving explicit categories. */
 export function inferSongCategories(title: string, artist: string, explicit?: readonly string[]): SongCategory[] {
-  const categories = new Set<SongCategory>(normalizeSongCategories(explicit));
+  const selected = normalizeSongCategories(explicit);
+  // A non-empty explicit selection is a user-owned override. Empty or missing
+  // metadata still receives useful defaults for older/imported songs.
+  if (selected.length) return SONG_CATEGORIES.filter((category) => selected.includes(category));
+
+  const categories = new Set<SongCategory>();
   const normalizedTitle = normalize(title);
   const isIsraeli = /[א-ת]/.test(`${title} ${artist}`) || includesArtist(artist, israeliRockArtists);
 

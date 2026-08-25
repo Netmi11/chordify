@@ -6,6 +6,7 @@ import {
   parseSongImport,
   serializeSongLibrary,
   sortSongsForLibrary,
+  updateSongCategories,
   type SavedSong,
 } from "./songLibraryV2";
 
@@ -63,5 +64,17 @@ describe("song library", () => {
       ],
     });
     expect(parseSongBatchImport(raw)).toBeNull();
+  });
+
+  it("persists an exact non-empty manual category selection", () => {
+    let raw = JSON.stringify([{ ...song("1", "גג", "ג׳ירפות"), categories: ["רוק ישראלי"] }]);
+    const storage = {
+      getItem: () => raw,
+      setItem: (_key: string, value: string) => { raw = value; },
+    };
+
+    const updated = updateSongCategories(storage, "1", ["שירים שקטים"]);
+    expect(updated[0].categories).toEqual(["שירים שקטים"]);
+    expect(() => updateSongCategories(storage, "1", [])).toThrow("SONG_CATEGORY_REQUIRED");
   });
 });
