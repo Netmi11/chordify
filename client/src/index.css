@@ -96,7 +96,9 @@ button:active { transform: scale(.97); }
 .song-row { min-height: 48px; position: relative; line-height: 1.55; }
 .song-row.section-row { margin-top: 21px; }
 .section-label { position: absolute; right: -18px; top: -22px; color: #f3a54a; font-size: 11px; font-weight: 600; }
-.chord-line { min-height: 24px; color: #f3a54a; font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 500; white-space: pre; direction: ltr; text-align: right; letter-spacing: .015em; }
+.chord-line { max-width: 100%; min-height: 24px; overflow-x: auto; overflow-y: hidden; color: #f3a54a; font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 500; white-space: pre; direction: rtl; text-align: right; letter-spacing: .015em; scrollbar-width: none; }
+.chord-line::-webkit-scrollbar { display: none; }
+.chord-line-content { display: inline-block; box-sizing: border-box; width: max-content; min-width: 100%; padding-inline: 2px; direction: ltr; text-align: right; }
 .chord-mark { display: inline-block; background: rgba(243,165,74,.08); border-radius: 3px; padding: 0 2px; transition: color 160ms ease, background 160ms ease; }
 .chord-editable { border: 1px dashed rgba(169,159,255,.56); color: inherit; font: inherit; line-height: inherit; cursor: pointer; }
 .chord-editable:hover, .chord-editable:focus-visible { background: rgba(169,159,255,.2); border-color: #c3bbff; outline: 0; }
@@ -108,7 +110,8 @@ button:active { transform: scale(.97); }
 .tab-block { position: relative; width: fit-content; max-width: 100%; margin: 14px 0 18px; direction: ltr; }
 .tab-block.section-row { margin-top: 23px; }
 .tab-section-label { margin: 0 0 5px; color: #f3a54a; font-size: 11px; font-weight: 600; text-align: right; }
-.tab-chord-line { width: max-content; min-width: 100%; min-height: 20px; margin: 0 0 3px; color: #a99fff; font-size: 12px; line-height: 1; text-align: left; letter-spacing: 0; }
+.tab-chord-line { width: max-content; min-width: 100%; min-height: 20px; margin: 0 0 3px; overflow-x: visible; color: #a99fff; font-size: 12px; line-height: 1; direction: ltr; text-align: left; letter-spacing: 0; }
+.tab-chord-line .chord-line-content { min-width: 100%; padding-inline: 0; text-align: left; }
 .tab-chord-line .chord-mark { padding: 1px 2px; border-radius: 4px; background: #6e5de9; color: #fff; }
 .tab-sheet { display: block; width: fit-content; max-width: 100%; overflow-x: auto; padding: 0; direction: ltr; scrollbar-width: thin; }
 .tab-sheet::-webkit-scrollbar { height: 3px; }

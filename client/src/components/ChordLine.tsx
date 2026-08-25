@@ -1,3 +1,4 @@
+import React from "react";
 import { transposeChord } from "@/lib/chordEngine";
 
 type ChordLineProps = {
@@ -12,27 +13,29 @@ export function ChordLine({ chord, shift, flats, className = "", onEditChord }: 
   let chordIndex = 0;
 
   return (
-    <div className={`chord-line ${className}`.trim()} aria-label={`אקורדים אחרי שינוי של ${shift} חצאי טונים`}>
-      {chord.split(/(\s+)/).map((part, index) => {
-        if (!/^[A-G](?:#|b)?/.test(part)) return <span key={`${part}-${index}`}>{part}</span>;
-        const currentIndex = chordIndex;
-        chordIndex += 1;
-        const displayed = transposeChord(part, shift, flats);
+    <div className={`chord-line ${className}`.trim()} dir="rtl" aria-label={`אקורדים אחרי שינוי של ${shift} חצאי טונים`}>
+      <span className="chord-line-content" dir="ltr">
+        {chord.split(/(\s+)/).map((part, index) => {
+          if (!/^[A-G](?:#|b)?/.test(part)) return <span key={`${part}-${index}`}>{part}</span>;
+          const currentIndex = chordIndex;
+          chordIndex += 1;
+          const displayed = transposeChord(part, shift, flats);
 
-        return onEditChord ? (
-          <button
-            type="button"
-            className="chord-mark chord-editable"
-            key={`${part}-${index}`}
-            onClick={() => onEditChord(currentIndex, part)}
-            aria-label={`ערוך את האקורד ${displayed}`}
-          >
-            {displayed}
-          </button>
-        ) : (
-          <span className="chord-mark" key={`${part}-${index}`}>{displayed}</span>
-        );
-      })}
+          return onEditChord ? (
+            <button
+              type="button"
+              className="chord-mark chord-editable"
+              key={`${part}-${index}`}
+              onClick={() => onEditChord(currentIndex, part)}
+              aria-label={`ערוך את האקורד ${displayed}`}
+            >
+              {displayed}
+            </button>
+          ) : (
+            <span className="chord-mark" key={`${part}-${index}`}>{displayed}</span>
+          );
+        })}
+      </span>
     </div>
   );
 }
