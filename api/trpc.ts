@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { initTRPC } from "@trpc/server";
 import { nodeHTTPRequestHandler } from "@trpc/server/adapters/node-http";
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { bigint, index, integer, pgTable, serial, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 import postgres from "postgres";
@@ -12,6 +12,7 @@ import { z } from "zod";
 const chordshiftLibraries = pgTable("chordshift_libraries", {
   id: varchar("id", { length: 64 }).primaryKey(),
   secretHash: varchar("secretHash", { length: 128 }).notNull(),
+  revision: bigint("revision", { mode: "number" }).default(0).notNull(),
   createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -25,6 +26,7 @@ const chordshiftSongs = pgTable("chordshift_songs", {
   sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
   note: text("note").notNull(),
   addedAt: bigint("addedAt", { mode: "number" }).notNull(),
+  syncRevision: bigint("syncRevision", { mode: "number" }).default(0).notNull(),
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
   uniqueIndex("chordshift_songs_library_client_unique").on(table.libraryId, table.clientSongId),
@@ -45,6 +47,28 @@ const chordshiftSongLines = pgTable("chordshift_song_lines", {
   index("chordshift_song_lines_song_index").on(table.songId),
 ]);
 
+const chordshiftSongTombstones = pgTable("chordshift_song_tombstones", {
+  id: serial("id").primaryKey(),
+  libraryId: varchar("libraryId", { length: 64 }).notNull().references(() => chordshiftLibraries.id, { onDelete: "cascade" }),
+  sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
+  clientSongId: varchar("clientSongId", { length: 120 }),
+  syncRevision: bigint("syncRevision", { mode: "number" }).notNull(),
+  deletedAt: timestamp("deletedAt", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [uniqueIndex("chordshift_tombstones_library_source_unique").on(table.libraryId, table.sourceUrl)]);
+
+const chordshiftSyncOperations = pgTable("chordshift_sync_operations", {
+  id: serial("id").primaryKey(),
+  libraryId: varchar("libraryId", { length: 64 }).notNull().references(() => chordshiftLibraries.id, { onDelete: "cascade" }),
+  operationId: varchar("operationId", { length: 64 }).notNull(),
+  deviceId: varchar("deviceId", { length: 64 }).notNull(),
+  kind: varchar("kind", { length: 16 }).notNull(),
+  sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
+  baseRevision: bigint("baseRevision", { mode: "number" }).notNull(),
+  serverRevision: bigint("serverRevision", { mode: "number" }).notNull(),
+  outcome: varchar("outcome", { length: 16 }).notNull(),
+  createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [uniqueIndex("chordshift_sync_operations_library_operation_unique").on(table.libraryId, table.operationId)]);
+
 type SyncedSongLine = { label?: string; chord: string; lyric: string; tab?: string };
 type SyncedSong = {
   id: string;
@@ -55,6 +79,22 @@ type SyncedSong = {
   addedAt: number;
   lines: SyncedSongLine[];
 };
+
+type LibrarySyncOperation =
+  | { operationId: string; deviceId: string; baseRevision: number; sourceUrl: string; kind: "upsert"; song: SyncedSong }
+  | { operationId: string; deviceId: string; baseRevision: number; sourceUrl: string; kind: "delete"; clientSongId?: string };
+
+type LibrarySyncSnapshot = {
+  revision: number;
+  songs: SyncedSong[];
+  deletedSourceUrls: string[];
+  completedOperationIds: string[];
+  rejectedOperationIds: string[];
+};
+
+function canApplyUpsert(baseRevision: number, tombstoneRevision: number | null) {
+  return tombstoneRevision === null || tombstoneRevision <= baseRevision;
+}
 
 let sqlClient: ReturnType<typeof postgres> | null = null;
 let db: ReturnType<typeof drizzle> | null = null;
@@ -82,57 +122,19 @@ async function assertLibrary(libraryId: string, secret: string, createIfMissing:
   const found = await database.select().from(chordshiftLibraries).where(eq(chordshiftLibraries.id, libraryId)).limit(1);
   const library = found[0];
   if (!library && createIfMissing) {
-    await database.insert(chordshiftLibraries).values({ id: libraryId, secretHash: hashSecret(secret) });
+    await database.insert(chordshiftLibraries).values({ id: libraryId, secretHash: hashSecret(secret) }).onConflictDoNothing();
+    const created = await database.select().from(chordshiftLibraries).where(eq(chordshiftLibraries.id, libraryId)).limit(1);
+    if (!created[0] || !secretsMatch(created[0].secretHash, secret)) throw new Error("INVALID_LIBRARY_KEY");
     return database;
   }
   if (!library || !secretsMatch(library.secretHash, secret)) throw new Error("INVALID_LIBRARY_KEY");
   return database;
 }
 
-async function saveLibrarySnapshot(libraryId: string, secret: string, songs: SyncedSong[]) {
-  const database = await assertLibrary(libraryId, secret, true);
-  await database.transaction(async (tx) => {
-    const existing = await tx.select({ id: chordshiftSongs.id }).from(chordshiftSongs).where(eq(chordshiftSongs.libraryId, libraryId));
-    const songIds = existing.map((song) => song.id);
-    if (songIds.length) await tx.delete(chordshiftSongLines).where(inArray(chordshiftSongLines.songId, songIds));
-    await tx.delete(chordshiftSongs).where(eq(chordshiftSongs.libraryId, libraryId));
-    if (!songs.length) return;
-
-    await tx.insert(chordshiftSongs).values(songs.map((song) => ({
-      libraryId,
-      clientSongId: song.id,
-      title: song.title,
-      artist: song.artist,
-      sourceUrl: song.sourceUrl,
-      note: song.note,
-      addedAt: song.addedAt,
-    })));
-    const inserted = await tx.select({ id: chordshiftSongs.id, clientSongId: chordshiftSongs.clientSongId })
-      .from(chordshiftSongs).where(eq(chordshiftSongs.libraryId, libraryId));
-    const songIdByClientId = new Map(inserted.map((song) => [song.clientSongId, song.id]));
-    const lines = songs.flatMap((song) => song.lines.map((line, position) => ({
-      songId: songIdByClientId.get(song.id)!,
-      position,
-      label: line.label ?? null,
-      chord: line.chord,
-      lyric: line.lyric,
-      tab: line.tab ?? null,
-    })));
-    // PostgreSQL has a 65,535-parameter limit. Chunk line inserts so a full
-    // phone library can be pushed in one atomic snapshot.
-    for (let offset = 0; offset < lines.length; offset += 5_000) {
-      await tx.insert(chordshiftSongLines).values(lines.slice(offset, offset + 5_000));
-    }
-    await tx.update(chordshiftLibraries).set({ updatedAt: new Date() }).where(eq(chordshiftLibraries.id, libraryId));
-  });
-  return { saved: songs.length };
-}
-
 async function readSongs(libraryId: string): Promise<SyncedSong[]> {
   const database = getDb();
   const songs = await database.select().from(chordshiftSongs).where(eq(chordshiftSongs.libraryId, libraryId));
-  if (!songs.length) return [];
-  const lines = await database.select().from(chordshiftSongLines).where(inArray(chordshiftSongLines.songId, songs.map((song) => song.id)));
+  const lines = songs.length ? await database.select().from(chordshiftSongLines).where(inArray(chordshiftSongLines.songId, songs.map((song) => song.id))) : [];
   const linesBySong = new Map<number, SyncedSongLine[]>();
   lines.sort((a, b) => a.position - b.position).forEach((line) => {
     const current = linesBySong.get(line.songId) ?? [];
@@ -150,9 +152,72 @@ async function readSongs(libraryId: string): Promise<SyncedSong[]> {
   }));
 }
 
-async function loadLibrarySnapshot(libraryId: string, secret: string) {
-  await assertLibrary(libraryId, secret, false);
-  return readSongs(libraryId);
+async function loadLibrarySnapshot(libraryId: string, secret: string): Promise<LibrarySyncSnapshot> {
+  const database = await assertLibrary(libraryId, secret, false);
+  const library = await database.select({ revision: chordshiftLibraries.revision }).from(chordshiftLibraries).where(eq(chordshiftLibraries.id, libraryId)).limit(1);
+  const tombstones = await database.select({ sourceUrl: chordshiftSongTombstones.sourceUrl }).from(chordshiftSongTombstones).where(eq(chordshiftSongTombstones.libraryId, libraryId));
+  return {
+    revision: Number(library[0]?.revision ?? 0),
+    songs: await readSongs(libraryId),
+    deletedSourceUrls: tombstones.map((tombstone) => tombstone.sourceUrl),
+    completedOperationIds: [],
+    rejectedOperationIds: [],
+  };
+}
+
+async function syncLibraryOperations(libraryId: string, secret: string, operations: LibrarySyncOperation[]): Promise<LibrarySyncSnapshot> {
+  const database = await assertLibrary(libraryId, secret, true);
+  const completedOperationIds: string[] = [];
+  const rejectedOperationIds: string[] = [];
+
+  await database.transaction(async (tx) => {
+    const locked = await tx.select({ revision: chordshiftLibraries.revision }).from(chordshiftLibraries).where(eq(chordshiftLibraries.id, libraryId)).for("update");
+    let revision = Number(locked[0]?.revision ?? 0);
+
+    for (const operation of operations) {
+      const prior = await tx.select({ outcome: chordshiftSyncOperations.outcome }).from(chordshiftSyncOperations)
+        .where(and(eq(chordshiftSyncOperations.libraryId, libraryId), eq(chordshiftSyncOperations.operationId, operation.operationId))).limit(1);
+      if (prior[0]) {
+        completedOperationIds.push(operation.operationId);
+        if (prior[0].outcome === "rejected") rejectedOperationIds.push(operation.operationId);
+        continue;
+      }
+
+      if (operation.kind === "upsert") {
+        if (operation.song.sourceUrl !== operation.sourceUrl) throw new Error("INVALID_SYNC_OPERATION");
+        const tombstone = await tx.select({ syncRevision: chordshiftSongTombstones.syncRevision }).from(chordshiftSongTombstones)
+          .where(and(eq(chordshiftSongTombstones.libraryId, libraryId), eq(chordshiftSongTombstones.sourceUrl, operation.sourceUrl))).limit(1);
+        const tombstoneRevision = tombstone[0] ? Number(tombstone[0].syncRevision) : null;
+        if (!canApplyUpsert(operation.baseRevision, tombstoneRevision)) {
+          await tx.insert(chordshiftSyncOperations).values({ libraryId, operationId: operation.operationId, deviceId: operation.deviceId, kind: operation.kind, sourceUrl: operation.sourceUrl, baseRevision: operation.baseRevision, serverRevision: revision, outcome: "rejected" });
+          completedOperationIds.push(operation.operationId);
+          rejectedOperationIds.push(operation.operationId);
+          continue;
+        }
+
+        revision += 1;
+        const now = new Date();
+        const inserted = await tx.insert(chordshiftSongs).values({ libraryId, clientSongId: operation.song.id, title: operation.song.title, artist: operation.song.artist, sourceUrl: operation.sourceUrl, note: operation.song.note, addedAt: operation.song.addedAt, syncRevision: revision, updatedAt: now })
+          .onConflictDoUpdate({ target: [chordshiftSongs.libraryId, chordshiftSongs.sourceUrl], set: { clientSongId: operation.song.id, title: operation.song.title, artist: operation.song.artist, note: operation.song.note, addedAt: operation.song.addedAt, syncRevision: revision, updatedAt: now } })
+          .returning({ id: chordshiftSongs.id });
+        const songId = inserted[0]!.id;
+        await tx.delete(chordshiftSongLines).where(eq(chordshiftSongLines.songId, songId));
+        if (operation.song.lines.length) await tx.insert(chordshiftSongLines).values(operation.song.lines.map((line, position) => ({ songId, position, label: line.label ?? null, chord: line.chord, lyric: line.lyric, tab: line.tab ?? null })));
+        await tx.delete(chordshiftSongTombstones).where(and(eq(chordshiftSongTombstones.libraryId, libraryId), eq(chordshiftSongTombstones.sourceUrl, operation.sourceUrl)));
+      } else {
+        revision += 1;
+        await tx.delete(chordshiftSongs).where(and(eq(chordshiftSongs.libraryId, libraryId), eq(chordshiftSongs.sourceUrl, operation.sourceUrl)));
+        await tx.insert(chordshiftSongTombstones).values({ libraryId, sourceUrl: operation.sourceUrl, clientSongId: operation.clientSongId ?? null, syncRevision: revision, deletedAt: new Date() })
+          .onConflictDoUpdate({ target: [chordshiftSongTombstones.libraryId, chordshiftSongTombstones.sourceUrl], set: { clientSongId: operation.clientSongId ?? null, syncRevision: revision, deletedAt: new Date() } });
+      }
+
+      await tx.update(chordshiftLibraries).set({ revision, updatedAt: new Date() }).where(eq(chordshiftLibraries.id, libraryId));
+      await tx.insert(chordshiftSyncOperations).values({ libraryId, operationId: operation.operationId, deviceId: operation.deviceId, kind: operation.kind, sourceUrl: operation.sourceUrl, baseRevision: operation.baseRevision, serverRevision: revision, outcome: "applied" });
+      completedOperationIds.push(operation.operationId);
+    }
+  });
+
+  return { ...(await loadLibrarySnapshot(libraryId, secret)), completedOperationIds, rejectedOperationIds };
 }
 
 const IMPORTED_LIBRARY_ID = "2c41a12f-5f5a-4bd1-9f99-460299979c3d";
@@ -162,7 +227,7 @@ const DEFAULT_LIBRARY_API_ORIGIN = "https://tab4uchord-t2tntlcw.manus.space";
 
 export function isLibrarySyncPath(path: string) {
   const procedures = path.split(",").filter(Boolean);
-  return procedures.length > 0 && procedures.every((procedure) => /^librarySync\.(catalog|pull|push)$/.test(procedure));
+  return procedures.length > 0 && procedures.every((procedure) => /^librarySync\.(catalog|pull|sync)$/.test(procedure));
 }
 
 export function buildUpstreamTrpcUrl(requestUrl: URL, path: string, origin = DEFAULT_LIBRARY_API_ORIGIN) {
@@ -252,12 +317,17 @@ const syncedSongSchema = z.object({
   id: z.string().min(1).max(120), title: z.string().min(1).max(2000), artist: z.string().min(1).max(512), sourceUrl: z.string().url().max(2048), note: z.string().max(10000), addedAt: z.number().int().nonnegative(),
   lines: z.array(z.object({ label: z.string().max(2000).optional(), chord: z.string().max(10000), lyric: z.string().max(10000), tab: z.string().max(10000).optional() })).max(3000),
 });
+const syncOperationBaseSchema = z.object({ operationId: z.string().min(1).max(64), deviceId: z.string().min(1).max(64), baseRevision: z.number().int().nonnegative(), sourceUrl: z.string().url().max(2048) });
+const syncOperationSchema = z.discriminatedUnion("kind", [
+  syncOperationBaseSchema.extend({ kind: z.literal("upsert"), song: syncedSongSchema }),
+  syncOperationBaseSchema.extend({ kind: z.literal("delete"), clientSongId: z.string().min(1).max(120).optional() }),
+]);
 const vercelRouter = t.router({
   tab4u: t.router({ fetchSong: t.procedure.input(z.object({ url: z.string().url().max(2048) })).query(({ input }) => fetchTab4uSong(input.url)) }),
   librarySync: t.router({
     catalog: t.procedure.query(() => loadImportedLibraryCatalog()),
     pull: t.procedure.input(libraryKeySchema).query(({ input }) => loadLibrarySnapshot(input.libraryId, input.secret)),
-    push: t.procedure.input(libraryKeySchema.extend({ songs: z.array(syncedSongSchema).max(500) })).mutation(({ input }) => saveLibrarySnapshot(input.libraryId, input.secret, input.songs)),
+    sync: t.procedure.input(libraryKeySchema.extend({ operations: z.array(syncOperationSchema).max(500) })).mutation(({ input }) => syncLibraryOperations(input.libraryId, input.secret, input.operations)),
   }),
 });
 

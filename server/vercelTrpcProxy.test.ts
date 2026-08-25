@@ -5,6 +5,8 @@ describe("Vercel library sync fallback", () => {
   it("only proxies library sync procedures", () => {
     expect(isLibrarySyncPath("librarySync.catalog")).toBe(true);
     expect(isLibrarySyncPath("librarySync.pull,librarySync.catalog")).toBe(true);
+    expect(isLibrarySyncPath("librarySync.sync")).toBe(true);
+    expect(isLibrarySyncPath("librarySync.push")).toBe(false);
     expect(isLibrarySyncPath("tab4u.fetchSong")).toBe(false);
     expect(isLibrarySyncPath("librarySync.catalog,tab4u.fetchSong")).toBe(false);
     expect(isLibrarySyncPath("librarySync.catalog/../../auth.me")).toBe(false);

@@ -25,6 +25,7 @@ export type InsertUser = typeof users.$inferInsert;
 export const chordshiftLibraries = pgTable("chordshift_libraries", {
   id: varchar("id", { length: 64 }).primaryKey(),
   secretHash: varchar("secretHash", { length: 128 }).notNull(),
+  revision: bigint("revision", { mode: "number" }).default(0).notNull(),
   createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -38,6 +39,7 @@ export const chordshiftSongs = pgTable("chordshift_songs", {
   sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
   note: text("note").notNull(),
   addedAt: bigint("addedAt", { mode: "number" }).notNull(),
+  syncRevision: bigint("syncRevision", { mode: "number" }).default(0).notNull(),
   updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
   uniqueIndex("chordshift_songs_library_client_unique").on(table.libraryId, table.clientSongId),
@@ -58,6 +60,40 @@ export const chordshiftSongLines = pgTable("chordshift_song_lines", {
   index("chordshift_song_lines_song_index").on(table.songId),
 ]);
 
+/**
+ * A deletion is data, not the absence of data. Tombstones prevent an older
+ * offline device or the curated catalog from resurrecting a removed song.
+ */
+export const chordshiftSongTombstones = pgTable("chordshift_song_tombstones", {
+  id: serial("id").primaryKey(),
+  libraryId: varchar("libraryId", { length: 64 }).notNull().references(() => chordshiftLibraries.id, { onDelete: "cascade" }),
+  sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
+  clientSongId: varchar("clientSongId", { length: 120 }),
+  syncRevision: bigint("syncRevision", { mode: "number" }).notNull(),
+  deletedAt: timestamp("deletedAt", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("chordshift_tombstones_library_source_unique").on(table.libraryId, table.sourceUrl),
+  index("chordshift_tombstones_library_index").on(table.libraryId),
+]);
+
+/** Idempotency ledger for retried offline operations. */
+export const chordshiftSyncOperations = pgTable("chordshift_sync_operations", {
+  id: serial("id").primaryKey(),
+  libraryId: varchar("libraryId", { length: 64 }).notNull().references(() => chordshiftLibraries.id, { onDelete: "cascade" }),
+  operationId: varchar("operationId", { length: 64 }).notNull(),
+  deviceId: varchar("deviceId", { length: 64 }).notNull(),
+  kind: varchar("kind", { length: 16 }).notNull(),
+  sourceUrl: varchar("sourceUrl", { length: 2048 }).notNull(),
+  baseRevision: bigint("baseRevision", { mode: "number" }).notNull(),
+  serverRevision: bigint("serverRevision", { mode: "number" }).notNull(),
+  outcome: varchar("outcome", { length: 16 }).notNull(),
+  createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("chordshift_sync_operations_library_operation_unique").on(table.libraryId, table.operationId),
+  index("chordshift_sync_operations_library_index").on(table.libraryId),
+]);
+
 export type ChordshiftLibrary = typeof chordshiftLibraries.$inferSelect;
 export type ChordshiftSong = typeof chordshiftSongs.$inferSelect;
 export type ChordshiftSongLine = typeof chordshiftSongLines.$inferSelect;
+export type ChordshiftSongTombstone = typeof chordshiftSongTombstones.$inferSelect;
