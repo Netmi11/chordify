@@ -4,7 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { fetchTab4uSong } from "./tab4u";
-import { loadImportedLibraryCatalog, loadLibrarySnapshot, saveLibrarySnapshot } from "./librarySync";
+import { loadImportedLibraryCatalog, loadLibrarySnapshot, syncLibraryOperations } from "./librarySync";
 
 const libraryKeySchema = z.object({
   libraryId: z.string().uuid(),
@@ -25,6 +25,18 @@ const syncedSongSchema = z.object({
     tab: z.string().max(10000).optional(),
   })).max(3000),
 });
+
+const syncOperationBaseSchema = z.object({
+  operationId: z.string().min(1).max(64),
+  deviceId: z.string().min(1).max(64),
+  baseRevision: z.number().int().nonnegative(),
+  sourceUrl: z.string().url().max(2048),
+});
+
+const syncOperationSchema = z.discriminatedUnion("kind", [
+  syncOperationBaseSchema.extend({ kind: z.literal("upsert"), song: syncedSongSchema }),
+  syncOperationBaseSchema.extend({ kind: z.literal("delete"), clientSongId: z.string().min(1).max(120).optional() }),
+]);
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -50,9 +62,9 @@ export const appRouter = router({
     pull: publicProcedure
       .input(libraryKeySchema)
       .query(({ input }) => loadLibrarySnapshot(input.libraryId, input.secret)),
-    push: publicProcedure
-      .input(libraryKeySchema.extend({ songs: z.array(syncedSongSchema).max(500) }))
-      .mutation(({ input }) => saveLibrarySnapshot(input.libraryId, input.secret, input.songs)),
+    sync: publicProcedure
+      .input(libraryKeySchema.extend({ operations: z.array(syncOperationSchema).max(500) }))
+      .mutation(({ input }) => syncLibraryOperations(input.libraryId, input.secret, input.operations)),
   }),
 });
 
