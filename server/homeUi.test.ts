@@ -54,6 +54,18 @@ describe("song player mobile cleanup", () => {
     expect(librarySource).not.toContain('סנכרן 247 שירים');
   });
 
+  it("finishes catalog sync with a non-blocking notification", () => {
+    const syncHandler = homeSource.slice(
+      homeSource.indexOf("const syncImportedLibrary"),
+      homeSource.indexOf("const restoreFromCloud"),
+    );
+    expect(homeSource).toContain('import { toast } from "sonner"');
+    expect(syncHandler).toContain("toast.success(message)");
+    expect(syncHandler).toContain("toast.info(message)");
+    expect(syncHandler).toContain('toast.error("לא הצלחתי לסנכרן כרגע.');
+    expect(syncHandler).not.toContain("window.alert");
+  });
+
   it("keeps maintenance tools secondary and the mobile player controls compact", () => {
     expect(homeSource).toContain('className="app-menu"');
     expect(homeSource).toContain("ניהול הספרייה");

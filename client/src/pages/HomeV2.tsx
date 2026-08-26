@@ -11,6 +11,7 @@ import { makeSavedSong, parseSongBatchImport, parseSongImport, parseSongLibraryB
 import { mergeLibraryForSync } from "@/lib/syncPolicy";
 import { trpc } from "@/lib/trpc";
 import type { SongCategory } from "@shared/songCategories";
+import { toast } from "sonner";
 
 const demoSong: SongLine[] = [
   { label: "פתיחה", chord: "Am   Gm   Am   Fmaj7", lyric: "" },
@@ -250,10 +251,14 @@ export default function HomeV2() {
       setSyncTick((value) => value + 1);
       const changed = result.added + result.updated;
       setCloudStatus(changed ? `סונכרנו ${changed} שירים מהספרייה בענן` : "הספרייה כבר מעודכנת");
-      window.alert(changed ? `נוספו ${result.added} ועודכנו ${result.updated} שירים. יש לך עכשיו ${next.length} שירים.` : `הספרייה כבר מעודכנת עם ${next.length} שירים.`);
+      const message = changed
+        ? `נוספו ${result.added} ועודכנו ${result.updated} שירים. יש לך עכשיו ${next.length} שירים.`
+        : `הספרייה כבר מעודכנת עם ${next.length} שירים.`;
+      if (changed) toast.success(message);
+      else toast.info(message);
     } catch {
       setCloudStatus("הסנכרון נכשל — נסה שוב עם חיבור לאינטרנט");
-      window.alert("לא הצלחתי לסנכרן כרגע. בדוק את החיבור לאינטרנט ונסה שוב.");
+      toast.error("לא הצלחתי לסנכרן כרגע. בדוק את החיבור לאינטרנט ונסה שוב.");
     } finally {
       setIsSyncing(false);
     }
